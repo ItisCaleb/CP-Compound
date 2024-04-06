@@ -1,6 +1,6 @@
 .gradle
 build/
-!gradle/wrapper/gradle-wrapper.jar
+gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
@@ -40,3 +40,7 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+.idea/workspace.xml
+.idea/vcs.xml
+.idea/misc.xml
+.idea/gradle.xml
