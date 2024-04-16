@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class MainApplication extends Application {
+    static MainController mainController;
     @Override
     public void start(Stage stage) throws IOException {
         initIDE();
