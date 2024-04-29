@@ -1,4 +1,4 @@
-package com.itiscaleb.cpcompound.misc;
+package com.itiscaleb.cpcompound.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -6,7 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
-import com.itiscaleb.cpcompound.misc.SysInfo;
+import com.itiscaleb.cpcompound.utils.SysInfo;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -18,16 +18,12 @@ import org.fxmisc.richtext.LineNumberFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.Files;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -44,7 +40,7 @@ public class MainController {
     private CodeArea editorTextArea;
 
     public void initialize(){
-        MainApplication.mainController = this;
+        CPCompound.mainController = this;
         initCodeArea();
     }
 
@@ -94,38 +90,43 @@ public class MainController {
         System.out.println(res.body());
         return res.body();
     }
-    public static void unzipFolder(Path source, Path target) throws IOException {
+    public static String unzipFolder(Path source, String target) throws IOException {
 
+        System.out.println("Unzipping " + source + " to " + target);
+        Path dest = Paths.get(target);
+        if(!Files.exists(source)) {
+            Files.createDirectories(dest);
+        }
+        String root;
         try (ZipInputStream zis = new ZipInputStream(new FileInputStream(source.toFile()))) {
 
             // list files in zip
             ZipEntry zipEntry = zis.getNextEntry();
-
+            root = Paths.get(zipEntry.getName()).getParent().toString();
             while (zipEntry != null) {
-
+                Path path = dest.resolve(zipEntry.getName());
                 boolean isDirectory = zipEntry.getName().endsWith(File.separator);
 
                 if (isDirectory) {
-                    Files.createDirectories(target);
+                    Files.createDirectories(path);
                 } else {
                     
-                    if (target.getParent() != null) {
-                        if (Files.notExists(target.getParent())) {
-                            Files.createDirectories(target.getParent());
+                    if (path.getParent() != null) {
+                        if (Files.notExists(path.getParent())) {
+                            Files.createDirectories(path.getParent());
                         }
                     }
 
                     // copy files, nio
-                    Files.copy(zis, target, StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(zis, path, StandardCopyOption.REPLACE_EXISTING);
                 }
 
                 zipEntry = zis.getNextEntry();
 
             }
             zis.closeEntry();
-
         }
-
+        return root;
     }
 
     @FXML
@@ -146,7 +147,10 @@ public class MainController {
                 for (JsonElement elem : arr) {
                     if(elem.getAsJsonObject().get("name").getAsString().contains(substr)){
                         String url = elem.getAsJsonObject().get("browser_download_url").getAsString();
+                        if(!CPCompound.getConfig().cpp_lang_server_path.isEmpty()) break;
                         Path path = downloadFromHTTP(url);
+                        CPCompound.getConfig().cpp_lang_server_path = "./installed/"+unzipFolder(path, "./installed");
+                        CPCompound.getConfig().save();
                         System.out.println(path);
                         break;
                     }
