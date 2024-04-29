@@ -1,17 +1,15 @@
 package com.itiscaleb.cpcompound.editor;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
 public class EditorContext {
-    StringProperty code = new SimpleStringProperty();
+    String code;
 
     public String getCode(){
-        return code.get();
-    }
-
-    public StringProperty getStringProperty(){
         return code;
     }
+
+    public void setCode(String code){
+        this.code = code;
+    }
+
 
 }
