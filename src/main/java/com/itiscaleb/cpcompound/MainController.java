@@ -61,6 +61,9 @@ public class MainController {
                 editorTextArea.replaceText( caretPosition-1,caretPosition, "    ");
             }
         });
+        editorTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            Editor.getInstance().getCurrentContext().setCode(newValue);
+        });
     }
 
     @FXML
