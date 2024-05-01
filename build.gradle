@@ -26,7 +26,8 @@ tasks.withType(JavaCompile) {
 
 application {
     mainModule = 'com.itiscaleb.cpcompound'
-    mainClass = 'com.itiscaleb.cpcompound.HelloApplication'
+    mainClass = 'com.itiscaleb.cpcompound.CPCompound'
+    tasks.run.workingDir = "./build"
 }
 
 javafx {
@@ -39,6 +40,8 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
     implementation group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.11.2'
     implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.apache.logging.log4j:log4j-api:2.23.1'
+    runtimeOnly 'org.apache.logging.log4j:log4j-core:2.23.1'
     implementation group: 'org.eclipse.lsp4j', name: 'org.eclipse.lsp4j', version: '0.22.0'
 }
 

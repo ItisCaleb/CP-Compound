@@ -4,19 +4,24 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
 import com.itiscaleb.cpcompound.utils.SysInfo;
+import com.itiscaleb.cpcompound.utils.Utils;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.Range;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.model.StyleSpan;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,10 +29,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.WRITE;
@@ -42,6 +48,7 @@ public class MainController {
     public void initialize(){
         CPCompound.mainController = this;
         initCodeArea();
+
     }
 
     private void initCodeArea(){
@@ -62,8 +69,23 @@ public class MainController {
             }
         });
         editorTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            Editor.getInstance().getCurrentContext().setCode(newValue);
+            EditorContext context = CPCompound.getEditor().getCurrentContext();
+            context.setCode(newValue);
+            CPCompound.getLSPProxy().didChange(context);
         });
+
+        // render diagnostic from language server
+        EditorContext context = CPCompound.getEditor().getCurrentContext();
+        context.getDiagnostics().addListener((ListChangeListener<? super Diagnostic>) (list)->{
+            Platform.runLater(() -> {
+                // do your GUI stuff here
+                editorTextArea.setStyleSpans(0,
+                        computeDiagnostic(
+                                (List<Diagnostic>) list.getList(),
+                                context.getCode().length()));
+            });
+        });
+
     }
 
     @FXML
@@ -71,11 +93,6 @@ public class MainController {
         welcomeText.setText("Welcome to JavaFX Application!");
     }
 
-    @FXML
-    protected void onEditorInput(){
-        EditorContext context = Editor.getInstance().getCurrentContext();
-        System.out.println(context.getCode());
-    }
 
     private Path downloadFromHTTP(String url) throws URISyntaxException, IOException, InterruptedException {
         System.out.println("Downloading \"" + url + "\"");
@@ -90,47 +107,10 @@ public class MainController {
         HttpResponse<Path> res = client.send(req,
                 HttpResponse.BodyHandlers
                         .ofFileDownload(downloadDir.getCanonicalFile().toPath(), CREATE, WRITE));
-        System.out.println(res.body());
+        CPCompound.getLogger().info(res.body());
         return res.body();
     }
-    public static String unzipFolder(Path source, String target) throws IOException {
 
-        System.out.println("Unzipping " + source + " to " + target);
-        Path dest = Paths.get(target);
-        if(!Files.exists(source)) {
-            Files.createDirectories(dest);
-        }
-        String root;
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(source.toFile()))) {
-
-            // list files in zip
-            ZipEntry zipEntry = zis.getNextEntry();
-            root = Paths.get(zipEntry.getName()).getParent().toString();
-            while (zipEntry != null) {
-                Path path = dest.resolve(zipEntry.getName());
-                boolean isDirectory = zipEntry.getName().endsWith(File.separator);
-
-                if (isDirectory) {
-                    Files.createDirectories(path);
-                } else {
-                    
-                    if (path.getParent() != null) {
-                        if (Files.notExists(path.getParent())) {
-                            Files.createDirectories(path.getParent());
-                        }
-                    }
-
-                    // copy files, nio
-                    Files.copy(zis, path, StandardCopyOption.REPLACE_EXISTING);
-                }
-
-                zipEntry = zis.getNextEntry();
-
-            }
-            zis.closeEntry();
-        }
-        return root;
-    }
 
     @FXML
     protected void download(){
@@ -152,9 +132,9 @@ public class MainController {
                         String url = elem.getAsJsonObject().get("browser_download_url").getAsString();
                         if(!CPCompound.getConfig().cpp_lang_server_path.isEmpty()) break;
                         Path path = downloadFromHTTP(url);
-                        CPCompound.getConfig().cpp_lang_server_path = "./installed/"+unzipFolder(path, "./installed");
+                        CPCompound.getConfig().cpp_lang_server_path = "./installed/"+ Utils.unzipFolder(path, "./installed");
                         CPCompound.getConfig().save();
-                        System.out.println(path);
+                        CPCompound.getLogger().info(path);
                         break;
                     }
                 }
@@ -164,5 +144,36 @@ public class MainController {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    // Reference: https://github.com/FXMisc/RichTextFX/blob/master/richtextfx-demos/src/main/java/org/fxmisc/richtext/demo/SpellCheckingDemo.java
+    // for compute diagnostic style
+    public StyleSpans<Collection<String>> computeDiagnostic(List<Diagnostic> diagnostics, int codeLength){
+        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+        int last = 0;
+        for (Diagnostic diagnostic : diagnostics) {
+            // convert line and character to index
+            Range range = diagnostic.getRange();
+            int from = editorTextArea
+                    .getAbsolutePosition(
+                            range.getStart().getLine(),
+                            range.getStart().getCharacter());
+            int to = editorTextArea
+                    .getAbsolutePosition(
+                            range.getEnd().getLine(),
+                            range.getEnd().getCharacter());
+            spansBuilder.add(Collections.emptyList(), from - last);
+            last = to;
+            switch (diagnostic.getSeverity()) {
+                case Error -> {
+                    spansBuilder.add(Collections.singleton("underlined-red"), to - from);
+                }
+                case Warning -> {
+                    spansBuilder.add(Collections.singleton("underlined-yellow"), to-from);
+                }
+            }
+        }
+        spansBuilder.add(Collections.emptyList(), codeLength - last);
+        return spansBuilder.create();
     }
 }
