@@ -34,7 +34,8 @@ public class CPCompound extends Application {
         proxy = new LSPProxy("c++", config.cpp_lang_server_path+"/bin/clangd");
         proxy.start();
         editor = new Editor();
-        editor.addContext("unnamed");
+        String key = editor.addContext("unnamed");
+        editor.switchContext(key);
     }
     public static Config getConfig(){
         return config;

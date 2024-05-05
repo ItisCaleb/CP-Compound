@@ -8,28 +8,34 @@ import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
 public class LSPProxy {
+    HashMap<String, String> langToServer = new HashMap<>();
     String lang;
     String remotePath;
     Process process;
-    Launcher<LanguageServer> launcher;
+    Launcher<LanguageServer> launcher = null;
 
     public LSPProxy(String lang, String remotePath){
         this.lang = lang;
         this.remotePath = remotePath;
     }
 
-    public void start() throws IOException {
-        ProcessBuilder builder = new ProcessBuilder(remotePath);
-        builder.redirectError(ProcessBuilder.Redirect.INHERIT);
-        this.process = builder.start();
-        LSPClient client = new LSPClient();
-        this.launcher = LSPLauncher.createClientLauncher(client,
-                process.getInputStream(), process.getOutputStream());
-        launcher.startListening();
-        init();
+    public void start() {
+        try{
+            ProcessBuilder builder = new ProcessBuilder(remotePath);
+            builder.redirectError(ProcessBuilder.Redirect.INHERIT);
+            this.process = builder.start();
+            LSPClient client = new LSPClient();
+            this.launcher = LSPLauncher.createClientLauncher(client,
+                    process.getInputStream(), process.getOutputStream());
+            launcher.startListening();
+            init();
+        }catch (IOException ignored){
+        }
+
     }
     private void init(){
         LanguageServer s = launcher.getRemoteProxy();
@@ -48,6 +54,9 @@ public class LSPProxy {
     }
 
     public void didOpen(EditorContext context){
+        if(launcher == null){
+            return;
+        }
         DidOpenTextDocumentParams params = new DidOpenTextDocumentParams();
         params.setTextDocument(new TextDocumentItem(
                 context.getFileURI(),
@@ -59,6 +68,9 @@ public class LSPProxy {
     }
 
     public void didChange(EditorContext context){
+        if(launcher == null){
+            return;
+        }
         DidChangeTextDocumentParams params = new DidChangeTextDocumentParams();
         params.setTextDocument(
                 new VersionedTextDocumentIdentifier(

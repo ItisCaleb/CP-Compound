@@ -76,16 +76,14 @@ public class MainController {
 
         // render diagnostic from language server
         EditorContext context = CPCompound.getEditor().getCurrentContext();
-        context.getDiagnostics().addListener((ListChangeListener<? super Diagnostic>) (list)->{
-            Platform.runLater(() -> {
-                // do your GUI stuff here
-                editorTextArea.setStyleSpans(0,
-                        computeDiagnostic(
-                                (List<Diagnostic>) list.getList(),
-                                context.getCode().length()));
-            });
+        ListChangeListener<? super Diagnostic> listener = (list)-> Platform.runLater(() -> {
+            // do your GUI stuff here
+            editorTextArea.setStyleSpans(0,
+                    computeDiagnostic(
+                            (List<Diagnostic>) list.getList(),
+                            context.getCode().length()));
         });
-
+        context.getDiagnostics().addListener(listener);
     }
 
     @FXML

@@ -13,10 +13,9 @@ public class Editor {
 
     public void switchContext(String key){
         EditorContext context = contexts.get(key);
-        if(context == null){
-            return;
+        if(context != null){
+            currentContext = context;
         }
-        currentContext = context;
     }
 
     public EditorContext getCurrentContext(){
@@ -27,31 +26,27 @@ public class Editor {
         return contexts.get(key);
     }
 
-    public void addContext(String name) throws IOException {
+    public String addContext(String name) throws IOException {
         Path path = Path.of("tmp", name);
         String key = "file://" + path.toFile().getCanonicalPath();
         if(contexts.containsKey(key)){
-            return;
+            return key;
         }
         EditorContext context = new EditorContext(path.toFile().getCanonicalPath(),"cpp","");
-        if(currentContext == null){
-            currentContext = context;
-        }
         contexts.put(key, context);
         CPCompound.getLSPProxy().didOpen(context);
+        return key;
     }
 
-    public void addContext(Path path) throws IOException {
+    public String addContext(Path path) throws IOException {
         String key = "file://" + path.toFile().getCanonicalPath();
         if(contexts.containsKey(key)){
-            return;
+            return key;
         }
         EditorContext context = new EditorContext(path.toFile().getCanonicalPath(), "cpp", Files.readString(path));
-        if(currentContext == null){
-            currentContext = context;
-        }
         contexts.put(key, context);
         CPCompound.getLSPProxy().didOpen(context);
+        return key;
     }
 
 }
