@@ -9,15 +9,21 @@ import com.itiscaleb.cpcompound.utils.SysInfo;
 import com.itiscaleb.cpcompound.utils.Utils;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Popup;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
-import org.fxmisc.richtext.model.StyleSpan;
+import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
@@ -29,6 +35,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.*;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +52,11 @@ public class MainController {
     @FXML
     private CodeArea editorTextArea;
 
+    private List<Diagnostic> diagnostics;
+
+    private Popup diagPopup;
+    private Label diagPopupLabel;
+
     public void initialize(){
         CPCompound.mainController = this;
         initCodeArea();
@@ -52,6 +64,18 @@ public class MainController {
     }
 
     private void initCodeArea(){
+        editorTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            EditorContext context = CPCompound.getEditor().getCurrentContext();
+            context.setCode(newValue);
+            CPCompound.getLSPProxy(context.getLang()).didChange(context);
+        });
+        initEditorUtility();
+        initDiagnosticTooltip();
+        initDiagnosticRendering();
+
+    }
+
+    private void initEditorUtility(){
         editorTextArea.setParagraphGraphicFactory(LineNumberFactory.get(editorTextArea));
         final Pattern whiteSpace = Pattern.compile( "^\\s+" );
         editorTextArea.addEventHandler( KeyEvent.KEY_PRESSED, KE -> {
@@ -68,29 +92,56 @@ public class MainController {
                 editorTextArea.replaceText( caretPosition-1,caretPosition, "    ");
             }
         });
-        editorTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            EditorContext context = CPCompound.getEditor().getCurrentContext();
-            context.setCode(newValue);
-            CPCompound.getLSPProxy().didChange(context);
-        });
+    }
 
+    private void initDiagnosticTooltip(){
+        // tooltip
+        diagPopup = new Popup();
+        diagPopupLabel = new Label();
+        diagPopup.getContent().add(diagPopupLabel);
+        diagPopupLabel.setStyle(
+                "-fx-background-color: black;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-padding: 5;");
+        editorTextArea.setMouseOverTextDelay(Duration.ofMillis(500));
+        editorTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e->{
+            for (Diagnostic diagnostic : diagnostics) {
+                Range range = diagnostic.getRange();
+                int from = editorTextArea
+                        .getAbsolutePosition(
+                                range.getStart().getLine(),
+                                range.getStart().getCharacter());
+                int to = editorTextArea
+                        .getAbsolutePosition(
+                                range.getEnd().getLine(),
+                                range.getEnd().getCharacter());
+                int chIdx = e.getCharacterIndex();
+                Point2D pos = e.getScreenPosition();
+                if(chIdx >= from && chIdx <= to){
+                    diagPopupLabel.setText(diagnostic.getMessage());
+                    diagPopup.show(editorTextArea, pos.getX(), pos.getY() + 10);
+                    break;
+                }
+            }
+        });
+        editorTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
+            diagPopup.hide();
+        });
+    }
+
+    private void initDiagnosticRendering(){
         // render diagnostic from language server
         EditorContext context = CPCompound.getEditor().getCurrentContext();
         ListChangeListener<? super Diagnostic> listener = (list)-> Platform.runLater(() -> {
             // do your GUI stuff here
+            this.diagnostics = (List<Diagnostic>) list.getList();
             editorTextArea.setStyleSpans(0,
                     computeDiagnostic(
-                            (List<Diagnostic>) list.getList(),
+                            this.diagnostics,
                             context.getCode().length()));
         });
         context.getDiagnostics().addListener(listener);
     }
-
-    @FXML
-    protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
-    }
-
 
     private Path downloadFromHTTP(String url) throws URISyntaxException, IOException, InterruptedException {
         System.out.println("Downloading \"" + url + "\"");
@@ -174,4 +225,6 @@ public class MainController {
         spansBuilder.add(Collections.emptyList(), codeLength - last);
         return spansBuilder.create();
     }
+
 }
+

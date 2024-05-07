@@ -2,6 +2,7 @@ package com.itiscaleb.cpcompound;
 
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
+import com.itiscaleb.cpcompound.langServer.Language;
 import com.itiscaleb.cpcompound.utils.Config;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -11,11 +12,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class CPCompound extends Application {
     static MainController mainController;
     static Config config;
-    static LSPProxy proxy;
+    static HashMap<Language, LSPProxy> proxies = new HashMap<>();
     static Logger logger = LogManager.getLogger(CPCompound.class);
     static Editor editor;
     @Override
@@ -31,8 +33,13 @@ public class CPCompound extends Application {
     public void initIDE() throws IOException {
         config = Config.load("./config.json");
         config.save();
-        proxy = new LSPProxy("c++", config.cpp_lang_server_path+"/bin/clangd");
-        proxy.start();
+
+        // init Language Server proxies
+        LSPProxy clang = new LSPProxy(config.cpp_lang_server_path+"/bin/clangd" );
+        proxies.put(Language.CPP, clang);
+        proxies.put(Language.C, clang);
+        clang.start();
+
         editor = new Editor();
         String key = editor.addContext("unnamed");
         editor.switchContext(key);
@@ -45,8 +52,8 @@ public class CPCompound extends Application {
         return logger;
     }
 
-    public static LSPProxy getLSPProxy(){
-        return proxy;
+    public static LSPProxy getLSPProxy(Language lang){
+        return proxies.get(lang);
     }
 
     public static Editor getEditor(){

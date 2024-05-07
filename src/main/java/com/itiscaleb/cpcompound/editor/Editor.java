@@ -1,6 +1,8 @@
 package com.itiscaleb.cpcompound.editor;
 
 import com.itiscaleb.cpcompound.CPCompound;
+import com.itiscaleb.cpcompound.langServer.LSPProxy;
+import com.itiscaleb.cpcompound.langServer.Language;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,9 +34,12 @@ public class Editor {
         if(contexts.containsKey(key)){
             return key;
         }
-        EditorContext context = new EditorContext(path.toFile().getCanonicalPath(),"cpp","");
+        EditorContext context = new EditorContext(path.toFile().getCanonicalPath(), Language.CPP,"");
         contexts.put(key, context);
-        CPCompound.getLSPProxy().didOpen(context);
+        LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
+        if(proxy != null){
+            proxy.didOpen(context);
+        }
         return key;
     }
 
@@ -43,9 +48,12 @@ public class Editor {
         if(contexts.containsKey(key)){
             return key;
         }
-        EditorContext context = new EditorContext(path.toFile().getCanonicalPath(), "cpp", Files.readString(path));
+        EditorContext context = new EditorContext(path.toFile().getCanonicalPath(), Language.CPP, Files.readString(path));
         contexts.put(key, context);
-        CPCompound.getLSPProxy().didOpen(context);
+        LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
+        if(proxy != null){
+            proxy.didOpen(context);
+        }
         return key;
     }
 

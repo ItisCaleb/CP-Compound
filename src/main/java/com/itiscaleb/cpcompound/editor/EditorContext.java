@@ -1,5 +1,6 @@
 package com.itiscaleb.cpcompound.editor;
 
+import com.itiscaleb.cpcompound.langServer.Language;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.eclipse.lsp4j.Diagnostic;
@@ -9,16 +10,33 @@ import java.util.List;
 public class EditorContext {
     private String filePath;
     private String code;
-    private String lang;
+    private Language lang;
     private int version;
     private int lastVersion;
     private final ObservableList<Diagnostic> diagnostics = FXCollections.observableArrayList();
-    EditorContext(String filePath, String lang, String code) {
+    EditorContext(String filePath, Language lang, String code) {
         this.filePath = filePath;
         this.code = code;
         this.lang = lang;
         this.version = 0;
         this.lastVersion = 0;
+    }
+
+    EditorContext(String filePath, String code) {
+        this.filePath = filePath;
+        this.code = code;
+        this.version = 0;
+        this.lastVersion = 0;
+        if(this.filePath.endsWith(".cpp") || this.filePath.endsWith(".cc")
+                || this.filePath.endsWith(".c++")){
+            this.lang = Language.CPP;
+        }else if (this.filePath.endsWith(".c")){
+            this.lang = Language.C;
+        }else if (this.filePath.endsWith(".py")){
+            this.lang = Language.Python;
+        }else
+            this.lang = Language.None;
+
     }
 
     public String getCode(){
@@ -37,7 +55,7 @@ public class EditorContext {
         return version;
     }
 
-    public String getLang(){
+    public Language getLang(){
         return lang;
     }
 
