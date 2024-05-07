@@ -13,6 +13,5 @@
 
     <Label fx:id="welcomeText"/>
     <CodeArea minHeight="100" fx:id="editorTextArea"/>
-    <Button text="Hello!" onAction="#onHelloButtonClick"/>
     <Button text="Download Clangd" onAction="#download"/>
 </VBox>

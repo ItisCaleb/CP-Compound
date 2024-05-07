@@ -13,13 +13,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class LSPProxy {
     HashMap<String, String> langToServer = new HashMap<>();
-    String lang;
     String remotePath;
     Process process;
     Launcher<LanguageServer> launcher = null;
 
-    public LSPProxy(String lang, String remotePath){
-        this.lang = lang;
+    public LSPProxy(String remotePath){
         this.remotePath = remotePath;
     }
 
@@ -33,7 +31,8 @@ public class LSPProxy {
                     process.getInputStream(), process.getOutputStream());
             launcher.startListening();
             init();
-        }catch (IOException ignored){
+        }catch (IOException e){
+            e.printStackTrace();
         }
 
     }
@@ -60,7 +59,7 @@ public class LSPProxy {
         DidOpenTextDocumentParams params = new DidOpenTextDocumentParams();
         params.setTextDocument(new TextDocumentItem(
                 context.getFileURI(),
-                context.getLang(),
+                context.getLang().lang,
                 context.getVersion(), ""));
         launcher.getRemoteProxy()
                 .getTextDocumentService()

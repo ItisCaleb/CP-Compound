@@ -22,6 +22,9 @@ public class LSPClient implements LanguageClient {
             CPCompound.getLogger().debug("Diagnostic: URI {} not found", diagnostics.getUri());
             return;
         }
+        for (Diagnostic diagnostic: diagnostics.getDiagnostics()){
+            CPCompound.getLogger().info(diagnostic);
+        }
         context.setDiagnostics(diagnostics.getDiagnostics());
     }
 
