@@ -1,5 +1,6 @@
 package com.itiscaleb.cpcompound.langServer;
 
+import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.editor.EditorContext;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
@@ -9,17 +10,14 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
 
 public class LSPProxy {
     HashMap<String, String> langToServer = new HashMap<>();
-    String lang;
     String remotePath;
     Process process;
     Launcher<LanguageServer> launcher = null;
 
-    public LSPProxy(String lang, String remotePath){
-        this.lang = lang;
+    public LSPProxy(String remotePath){
         this.remotePath = remotePath;
     }
 
@@ -33,13 +31,14 @@ public class LSPProxy {
                     process.getInputStream(), process.getOutputStream());
             launcher.startListening();
             init();
-        }catch (IOException ignored){
+        }catch (IOException e){
+            e.printStackTrace();
         }
 
     }
     private void init(){
         LanguageServer s = launcher.getRemoteProxy();
-        CompletableFuture<?> future = s.initialize(new InitializeParams());
+        var future = s.initialize(new InitializeParams());
         future.join();
         s.initialized(new InitializedParams());
     }
@@ -60,7 +59,7 @@ public class LSPProxy {
         DidOpenTextDocumentParams params = new DidOpenTextDocumentParams();
         params.setTextDocument(new TextDocumentItem(
                 context.getFileURI(),
-                context.getLang(),
+                context.getLang().lang,
                 context.getVersion(), ""));
         launcher.getRemoteProxy()
                 .getTextDocumentService()
@@ -82,6 +81,23 @@ public class LSPProxy {
         launcher.getRemoteProxy()
                 .getTextDocumentService()
                 .didChange(params);
+    }
+
+    public void requestCompletion(EditorContext context, Position position){
+        if(launcher == null){
+            return;
+        }
+        CompletionParams params = new CompletionParams();
+        params.setTextDocument(new VersionedTextDocumentIdentifier(
+                context.getFileURI(),
+                context.getLastVersion()));
+        params.setPosition(position);
+        var future = launcher.getRemoteProxy()
+                .getTextDocumentService()
+                .completion(params);
+        future.whenComplete((result, throwable) -> {
+            CPCompound.getEditor().setCompletionList(result.getLeft());
+        });
     }
 
     public void stop() throws IOException {}

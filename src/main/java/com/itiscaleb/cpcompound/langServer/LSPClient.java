@@ -1,6 +1,7 @@
 package com.itiscaleb.cpcompound.langServer;
 
 import com.itiscaleb.cpcompound.CPCompound;
+import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -17,12 +18,17 @@ public class LSPClient implements LanguageClient {
     @Override
     public void publishDiagnostics(PublishDiagnosticsParams diagnostics) {
         CPCompound.getLogger().info(diagnostics);
-        EditorContext context = CPCompound.getEditor().getContext(diagnostics.getUri());
+        Editor editor = CPCompound.getEditor();
+        EditorContext context = editor.getContext(diagnostics.getUri());
         if (context == null) {
             CPCompound.getLogger().debug("Diagnostic: URI {} not found", diagnostics.getUri());
             return;
         }
+        for (Diagnostic diagnostic: diagnostics.getDiagnostics()){
+            CPCompound.getLogger().info(diagnostic);
+        }
         context.setDiagnostics(diagnostics.getDiagnostics());
+        editor.refreshDiagnostic();
     }
 
     @Override
