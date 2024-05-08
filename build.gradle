@@ -43,6 +43,7 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-api:2.23.1'
     runtimeOnly 'org.apache.logging.log4j:log4j-core:2.23.1'
     implementation group: 'org.eclipse.lsp4j', name: 'org.eclipse.lsp4j', version: '0.22.0'
+    implementation 'io.github.palexdev:materialfx:11.17.0'
 }
 
 test {
