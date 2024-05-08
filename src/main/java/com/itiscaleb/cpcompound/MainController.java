@@ -1,53 +1,33 @@
 package com.itiscaleb.cpcompound;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.itiscaleb.cpcompound.editor.EditorContext;
-import com.itiscaleb.cpcompound.utils.SysInfo;
-import com.itiscaleb.cpcompound.utils.Utils;
+import com.itiscaleb.cpcompound.langServer.LSPProxy;
+import com.itiscaleb.cpcompound.utils.ClangdDownloader;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Popup;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.*;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.file.*;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.WRITE;
-
 public class MainController {
-    @FXML
-    private Label welcomeText;
 
     @FXML
     private CodeArea editorTextArea;
@@ -56,6 +36,9 @@ public class MainController {
 
     private Popup diagPopup;
     private Label diagPopupLabel;
+
+    private Popup completionPopup;
+    private Label completionPopupLabel;
 
     public void initialize(){
         CPCompound.mainController = this;
@@ -67,12 +50,17 @@ public class MainController {
         editorTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             EditorContext context = CPCompound.getEditor().getCurrentContext();
             context.setCode(newValue);
-            CPCompound.getLSPProxy(context.getLang()).didChange(context);
+            LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
+            // request to change
+            proxy.didChange(context);
+
+            // request for completion request
+            proxy.requestCompletion(context, new Position(editorTextArea.getCurrentParagraph(), editorTextArea.getCaretColumn()));
         });
         initEditorUtility();
         initDiagnosticTooltip();
         initDiagnosticRendering();
-
+        initCompletionTooltip();
     }
 
     private void initEditorUtility(){
@@ -129,6 +117,40 @@ public class MainController {
         });
     }
 
+    private void initCompletionTooltip(){
+        completionPopup = new Popup();
+        completionPopupLabel = new Label();
+        completionPopup.getContent().add(completionPopupLabel);
+        completionPopupLabel.setStyle(
+                "-fx-background-color: black;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-padding: 5;");
+
+        ListChangeListener<? super CompletionItem> listener = (list)-> Platform.runLater(() -> {
+            // do your GUI stuff here
+            System.out.println("123 ");
+            var compList = (List<CompletionItem>) list.getList();
+            if(compList.isEmpty()){
+                completionPopup.hide();
+            }else {
+                StringBuilder builder = new StringBuilder();
+                for (CompletionItem item : compList) {
+                    builder.append(item.getLabel());
+                }
+                Optional<Bounds> opt = editorTextArea.getCaretBounds();
+                if(opt.isPresent()){
+                    completionPopupLabel.setText(builder.toString());
+                    double x = opt.get().getCenterX();
+                    double y = opt.get().getCenterY();
+                    completionPopup.show(editorTextArea, x+10, y);
+                }
+            }
+        });
+
+        // listen for diagnostics change
+        CPCompound.getEditor().getCompletionList().addListener(listener);
+    }
+
     private void initDiagnosticRendering(){
         // render diagnostic from language server
         EditorContext context = CPCompound.getEditor().getCurrentContext();
@@ -140,59 +162,15 @@ public class MainController {
                             this.diagnostics,
                             context.getCode().length()));
         });
-        context.getDiagnostics().addListener(listener);
-    }
 
-    private Path downloadFromHTTP(String url) throws URISyntaxException, IOException, InterruptedException {
-        System.out.println("Downloading \"" + url + "\"");
-        HttpClient client = HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.NORMAL)
-                .build();
-        HttpRequest req = HttpRequest.newBuilder()
-                .uri(new URI(url))
-                .GET().build();
-        File downloadDir = new File("./downloads");
-        downloadDir.mkdir();
-        HttpResponse<Path> res = client.send(req,
-                HttpResponse.BodyHandlers
-                        .ofFileDownload(downloadDir.getCanonicalFile().toPath(), CREATE, WRITE));
-        CPCompound.getLogger().info(res.body());
-        return res.body();
+        // listen for diagnostics change
+        CPCompound.getEditor().getDiagnostics().addListener(listener);
     }
 
 
     @FXML
-    protected void download(){
-        try{
-            HttpRequest req = HttpRequest.newBuilder()
-                    .uri(new URI("https://api.github.com/repos/clangd/clangd/releases/latest"))
-                    .GET().build();
-            HttpClient client = HttpClient.newHttpClient();
-            HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
-            JsonObject json = new Gson().fromJson(res.body(), JsonObject.class);
-            SysInfo.OS os = SysInfo.getOS();
-            String arch = SysInfo.getArch();
-            if(arch.equals("x86_64") || os == SysInfo.OS.WIN ||
-                    (arch.equals("arm64") && os == SysInfo.OS.MAC)){
-                String substr = "clangd-" + os.name;
-                JsonArray arr = json.get("assets").getAsJsonArray();
-                for (JsonElement elem : arr) {
-                    if(elem.getAsJsonObject().get("name").getAsString().contains(substr)){
-                        String url = elem.getAsJsonObject().get("browser_download_url").getAsString();
-                        if(!CPCompound.getConfig().cpp_lang_server_path.isEmpty()) break;
-                        Path path = downloadFromHTTP(url);
-                        CPCompound.getConfig().cpp_lang_server_path = "./installed/"+ Utils.unzipFolder(path, "./installed");
-                        CPCompound.getConfig().save();
-                        CPCompound.getLogger().info(path);
-                        break;
-                    }
-                }
-            }
-
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+    protected void downloadClangd(){
+        new ClangdDownloader().download();
     }
 
     // Reference: https://github.com/FXMisc/RichTextFX/blob/master/richtextfx-demos/src/main/java/org/fxmisc/richtext/demo/SpellCheckingDemo.java
@@ -214,12 +192,13 @@ public class MainController {
             spansBuilder.add(Collections.emptyList(), from - last);
             last = to;
             switch (diagnostic.getSeverity()) {
-                case Error -> {
+                case Error:
                     spansBuilder.add(Collections.singleton("underlined-red"), to - from);
-                }
-                case Warning -> {
-                    spansBuilder.add(Collections.singleton("underlined-yellow"), to-from);
-                }
+                    break;
+                case Warning:
+                case Information:
+                    spansBuilder.add(Collections.singleton("underlined-yellow"), to - from);
+                    break;
             }
         }
         spansBuilder.add(Collections.emptyList(), codeLength - last);

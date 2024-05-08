@@ -3,20 +3,29 @@ package com.itiscaleb.cpcompound.editor;
 import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.langServer.Language;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Diagnostic;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 
 public class Editor {
     EditorContext currentContext;
     HashMap<String, EditorContext> contexts = new HashMap<>();
 
+    private final ObservableList<Diagnostic> diagnostics = FXCollections.observableArrayList();
+    private final ObservableList<CompletionItem> completionItems = FXCollections.observableArrayList();
+
     public void switchContext(String key){
         EditorContext context = contexts.get(key);
         if(context != null){
             currentContext = context;
+            refreshDiagnostic();
         }
     }
 
@@ -57,4 +66,24 @@ public class Editor {
         return key;
     }
 
+    public void refreshDiagnostic(){
+        this.diagnostics.setAll(currentContext.getDiagnostics());
+    }
+
+    public void setCompletionList(List<CompletionItem> items){
+        System.out.println("Completion List");
+        if(items != null){
+            System.out.println(items.size());
+            this.completionItems.setAll(items);
+            System.out.println(this.completionItems);
+        }
+    }
+
+    public ObservableList<CompletionItem> getCompletionList(){
+        return this.completionItems;
+    }
+
+    public ObservableList<Diagnostic> getDiagnostics() {
+        return this.diagnostics;
+    }
 }
