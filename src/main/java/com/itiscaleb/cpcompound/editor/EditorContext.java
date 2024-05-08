@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.eclipse.lsp4j.Diagnostic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EditorContext {
@@ -13,7 +14,7 @@ public class EditorContext {
     private Language lang;
     private int version;
     private int lastVersion;
-    private final ObservableList<Diagnostic> diagnostics = FXCollections.observableArrayList();
+    private List<Diagnostic> diagnostics = new ArrayList<>();
     EditorContext(String filePath, Language lang, String code) {
         this.filePath = filePath;
         this.code = code;
@@ -70,10 +71,10 @@ public class EditorContext {
     }
 
     public void setDiagnostics(List<Diagnostic> diagnostics){
-        this.diagnostics.setAll(diagnostics);
+        this.diagnostics = diagnostics;
     }
 
-    public ObservableList<Diagnostic> getDiagnostics(){
+    public List<Diagnostic> getDiagnostics(){
         return diagnostics;
     }
 

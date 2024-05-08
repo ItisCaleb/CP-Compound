@@ -6,14 +6,14 @@
 }
 
 .underlined-yellow {
-    -rtfx-underline-color: red;
+    -rtfx-underline-color: yellow;
     -rtfx-underline-dash-array: 2 2;
     -rtfx-underline-width: 1;
     -rtfx-underline-cap: butt;
 }
 
 .underlined-green {
-    -rtfx-underline-color: red;
+    -rtfx-underline-color: green;
     -rtfx-underline-dash-array: 2 2;
     -rtfx-underline-width: 1;
     -rtfx-underline-cap: butt;
