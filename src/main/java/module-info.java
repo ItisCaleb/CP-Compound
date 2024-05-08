@@ -7,6 +7,7 @@ module com.itiscaleb.cpcompound {
     requires org.eclipse.lsp4j;
     requires org.eclipse.lsp4j.jsonrpc;
     requires org.apache.logging.log4j;
+    requires MaterialFX;
 
     opens com.itiscaleb.cpcompound to javafx.fxml;
     exports com.itiscaleb.cpcompound;

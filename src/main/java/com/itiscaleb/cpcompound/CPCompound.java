@@ -5,6 +5,7 @@ import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.utils.Config;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
@@ -19,14 +20,16 @@ public class CPCompound extends Application {
     static Logger logger = LogManager.getLogger(CPCompound.class);
     static Editor editor;
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage primaryStage) throws IOException {
         initIDE();
-        FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
-        scene.getStylesheets().add(CPCompound.class.getResource("ide.css").toExternalForm());
-        stage.setTitle("Hello!");
-        stage.setScene(scene);
-        stage.show();
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/editor-main.fxml"));
+        Parent editorRoot = fxmlLoader.load();
+        Scene scene = new Scene(editorRoot);
+//        scene.getStylesheets().add(CPCompound.class.getResource("ide.css").toExternalForm());
+        primaryStage.setFullScreen(true);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("CP Compound");
+        primaryStage.show();
     }
     public void initIDE() throws IOException {
         config = Config.load("./config.json");
