@@ -1,8 +1,12 @@
 package com.itiscaleb.cpcompound;
 
+import com.itiscaleb.cpcompound.controller.MainEditorController;
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.utils.Config;
+import io.github.palexdev.materialfx.theming.JavaFXThemes;
+import io.github.palexdev.materialfx.theming.MaterialFXStylesheets;
+import io.github.palexdev.materialfx.theming.UserAgentBuilder;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,7 +14,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.io.IOException;
 
 public class CPCompound extends Application {
@@ -21,8 +24,19 @@ public class CPCompound extends Application {
     static Editor editor;
     @Override
     public void start(Stage primaryStage) throws IOException {
+
         initIDE();
+
+        UserAgentBuilder.builder()
+                .themes(JavaFXThemes.MODENA)
+                .themes(MaterialFXStylesheets.forAssemble(true))
+                .setDeploy(true)
+                .setResolveAssets(true)
+                .build()
+                .setGlobal();
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/editor-main.fxml"));
+        fxmlLoader.setController(new MainEditorController());
         Parent editorRoot = fxmlLoader.load();
         Scene scene = new Scene(editorRoot);
 //        scene.getStylesheets().add(CPCompound.class.getResource("ide.css").toExternalForm());

@@ -17,6 +17,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
@@ -50,8 +51,9 @@ public class MainController {
         initCodeArea();
 
     }
-
+//    StyleClassedTextArea area =
     private void initCodeArea(){
+//        editorTextArea.setStyle(0,100,Collections.singleton("green"));
         editorTextArea.setParagraphGraphicFactory(LineNumberFactory.get(editorTextArea));
         final Pattern whiteSpace = Pattern.compile( "^\\s+" );
         editorTextArea.addEventHandler( KeyEvent.KEY_PRESSED, KE -> {

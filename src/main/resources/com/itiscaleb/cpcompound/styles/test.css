@@ -1,0 +1,8 @@
+.tab-header-area .tab-header-background {
+    -fx-background-color: lightgray;
+}
+
+.tab-pane {
+    -fx-tab-min-width: 50px;
+    -fx-tab-max-width: 150px;
+}

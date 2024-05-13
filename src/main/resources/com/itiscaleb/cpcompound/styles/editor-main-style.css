@@ -1,3 +1,286 @@
-#borderPane{
-    -fx-background-color: #1E1E1E;
-}
+    AnchorPane{
+        -fx-background-color: #1E1E1E;
+    }
+    #functionArea{
+        -fx-background-color: #2C2C2C;
+    }
+    TextArea{
+        /*-fx-border-color: #2C2C2C #414141 #414141 #414141;*/
+        -fx-background-color: #2C2C2C;
+        -fx-background-radius: 0px 0px 5px 0px;
+        -fx-text-fill: white;
+        -fx-border-width:0px;
+        -fx-font-size: 20px;
+        -fx-border-radius: 0px 0px 5px 0px;
+        -fx-padding: 0;
+    }
+    .text-area .content{
+        -fx-background-radius:0px;
+        -fx-border-radius: 0px;
+        -fx-border-width: 0px;
+        /*-fx-background-color: red;*/
+        -fx-background-color: #2C2C2C;
+    }
+    /*.text-area .text{*/
+    /*    -fx-line-spacing: 0px;*/
+    /*}*/
+    /*---------------------------------------------------ScrollBar樣式------------------------------------------------------*/
+    .scroll-bar:horizontal .track,
+    .scroll-bar:vertical .track{
+        -fx-background-color :transparent;
+        -fx-border-color :transparent;
+        -fx-background-radius : 2.0em;
+    }
+
+    .scroll-bar:horizontal .increment-button ,
+    .scroll-bar:horizontal .decrement-button {
+        -fx-background-color :transparent;
+        -fx-background-radius : 0.0em;
+        /*讓button不見*/
+        -fx-padding :0.0 0.0 10.0 0.0;
+    }
+
+    .scroll-bar:vertical .track-background,
+    .scroll-bar:horizontal .track-background {
+        -fx-background-color: transparent;
+        -fx-border-color :transparent;
+        -fx-background-insets: 0;
+        -fx-background-radius: 2em;
+    }
+
+    .scroll-bar:vertical .increment-button ,
+    .scroll-bar:vertical .decrement-button {
+        -fx-background-color :transparent;
+        -fx-background-radius : 0.0em;
+        /*讓button不見*/
+        -fx-padding :0.0 10.0 0.0 0.0;
+    }
+
+    .scroll-bar .increment-arrow,
+    .scroll-bar .decrement-arrow{
+        -fx-shape : " ";
+        -fx-padding :0.15em 0.0;
+    }
+
+    .scroll-bar:vertical .increment-arrow,
+    .scroll-bar:vertical .decrement-arrow{
+        -fx-shape : " ";
+        -fx-padding :0.0 0.15em;
+    }
+
+    .scroll-bar:horizontal .thumb,
+    .scroll-bar:vertical .thumb {
+        -fx-background-color : #989898;
+        -fx-background-radius : 2px;
+    }
+
+    .scroll-bar:horizontal .thumb:hover,
+    .scroll-bar:vertical .thumb:hover {
+        -fx-background-color : #9e9e9e;
+        -fx-background-radius : 2.0em;
+    }
+    .scroll-bar {
+        -fx-pref-width: 15px;
+        -fx-pref-height: 15px;
+        -fx-background-color: transparent;
+        -fx-border-color: transparent;
+        -fx-background-radius: 2em;
+        -fx-focus-color: transparent;
+        -fx-faint-focus-color: transparent;
+    }
+    .scroll-bar:vertical:focused {
+        -fx-background-color: transparent;
+    }
+
+    .corner{
+        -fx-background-color:transparent;
+        -fx-border-color:transparent;
+    }
+
+    /*---------------------------------------------------TabPane樣式------------------------------------------------------*/
+
+    .tab-pane{
+        -fx-background-color: transparent;
+        -fx-border-color: transparent;
+        -fx-border-width: 0;
+    }
+    .tab-label{
+        -fx-font-weight: bold;
+        -fx-pref-width: 200px;
+        -fx-text-fill: white;
+        /*-fx-border-color: blue;*/
+        -fx-padding: 0 0 0 0;
+    }
+    .tab-container{
+        -fx-border-width: 0px;
+    }
+    /*tab內圈的border設定，blue-bar的樣式*/
+    .tab:selected .tab-container{
+        -fx-border-width: 2px;
+        -fx-border-radius: 3px 3px 0 0;
+        -fx-border-color: #709AEC #2C2C2C #2C2C2C #2C2C2C;
+    }
+    .tab{
+        -fx-pref-height: 38px;
+        -fx-pref-width: 200px;
+        -fx-border-radius: 5px 5px 0 0;
+        -fx-background-radius: 5px 5px 0 0;;
+        -fx-background-color: #414141;
+        -fx-border-width: 0px;
+        -fx-padding: 0 0 0 0;
+        /*-fx-border-color: #414141;*/
+        /*-fx-border-color: transparent;*/
+    }
+    .tab-pane .tab:selected {
+        -fx-background-color: #2C2C2C;
+        -fx-border-radius: 5px 5px 0 0;
+        -fx-background-radius: 5px 5px 0 0;;
+        -fx-border-width: 0px ;
+        /*-fx-border-color: #414141 #414141 #2C2C2C #414141;*/
+        -fx-focus-color: transparent;
+        -fx-faint-focus-color: transparent;
+        /*-fx-background-insets: 0 0 0 0;*/
+        /*-fx-background-radius: 5px 5px 0 0;*/
+    }
+    .tab-close-button {
+        -fx-background-color: white;
+        -fx-opacity: 0.7;
+    }
+    .tab-close-button:hover {
+        -fx-opacity: 1;
+    }
+
+    .tab-pane > .tab-header-area > .headers-region {
+        -fx-background-color: #1E1E1E;
+    }
+    .tab-pane:top *.tab-header-area {
+        -fx-background-color: transparent;
+        -fx-padding: 0 0 0 0;
+    }
+    .tab-header-area .tab-header-background{
+        -fx-background-color: #1E1E1E;
+        -fx-border-color: transparent transparent #2C2C2C transparent;
+    }
+
+    .tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button .context-menu {
+        -fx-background-color: #414141;
+        -fx-background-radius: 5px;
+        -fx-translate-x: -15px;
+    }
+
+    .tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button{
+        -fx-translate-x: -5;
+        -fx-translate-y: -10;
+        -fx-background-color: #1E1E1E;
+        -fx-cursor: HAND;
+    }
+    .tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button .arrow{
+        -fx-background-color: #C2C2C2;
+
+    }
+    /*Access menu item's text*/
+    .tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button .context-menu .radio-menu-item .label {
+        -fx-text-fill: white;
+        -fx-font-weight: bold;
+    }
+    /*Access menu item*/
+    .tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button  .radio-menu-item{
+        -fx-background-color: #414141;
+    }
+    .tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button  .radio-menu-item:hover{
+        -fx-background-color: #2C2C2C;
+    }
+    .tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button  .radio-menu-item:pressed{
+        -fx-background-color: #2C2C2C;
+    }
+    /*Access menu item's check sign*/
+    .tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button .context-menu .radio-menu-item .left-container .radio {
+        -fx-background-color: #C2C2C2;
+    }
+
+
+    /*---------------------------------------------------SplitPane樣式------------------------------------------------------*/
+
+    .split-pane {
+        -fx-border-color: transparent;
+        /*-fx-border-radius: 5px;*/
+        /*-rx-border-width: 5px;*/
+        -fx-background-color: transparent;
+    }
+    .split-pane-divider{
+        -fx-border-color: #1E1E1E;
+        -fx-background-color: #1E1E1E;
+    }
+
+
+    /*---------------------------------------------------SplitPane樣式------------------------------------------------------*/
+
+    .code-area-split-pane >.split-pane-divider{
+        -fx-border-color: transparent;
+        -fx-border-width: 0;
+        -fx-border-insets: 0;
+        -fx-pref-width: 1px;
+        -fx-background-color: #414141;
+        -fx-cursor: DEFAULT;
+    }
+    .code-area-split-pane {
+        -fx-border-color: transparent #414141 #414141 #414141;
+        -fx-border-width: 0px 1px 1px 1px;
+        -fx-border-insets: 0;
+        -fx-background-color: transparent;
+        fx-background-radius: 0px 0px 5px 5px;
+        -fx-border-radius: 0px 0px 5px 5px;
+    }
+    .code-area-line-view{
+        -fx-border-radius: 0px 0px 0px 5px;
+        -fx-background-radius: 0px 0px 0px 5px;
+        -fx-border-color: transparent;
+        -fx-border-width: 0;
+        -fx-background-color: #2C2C2C;
+        -fx-opacity: 0.8;
+        -fx-cursor: DEFAULT;
+        -fx-padding: 6px 0 0 0 ;
+    }
+    .code-area-line-view .scroll-bar{
+        -fx-pref-width: 0;
+        -fx-pref-height: 0;
+    }
+
+    .code-area-line-view .list-cell{
+        -fx-background-color: #2C2C2C;
+        -fx-opacity: 0.8;
+        -fx-text-fill: white;
+        -fx-font-size: 12px;
+        -fx-pref-height: 28px;
+        -fx-border-color: white;
+        -fx-padding: 0;
+    }
+
+    .code-area {
+        -fx-background-color: #2C2C2C;
+        -fx-background-radius: 0px 0px 5px 5px;
+        -fx-border-radius: 0px 0px 5px 5px;
+        /*-rtfx-text-color: white;*/
+        -fx-font-size: 20;
+        /*-fx-display-caret: white;*/
+        /*-fx-padding: 0 300 0 0;*/
+    }
+
+    .code-area .text {
+        -fx-fill: green;
+    }
+    .styled-text-area .label{
+        -fx-fill: red !important;
+    }
+    .caret {
+        -fx-stroke: white; /* 设置光标颜色为红色 */
+        -fx-stroke-width: 2; /* 可以调整光标的宽度 */
+    }
+    .styled-text-area .lineno{
+        -fx-background-color:  #2C2C2C;
+        -fx-font-size: 20;
+    }
+    .editor-tab-pane-base{
+        -fx-background-color: #2C2C2C;
+        -fx-background-radius: 5px;
+    }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.itiscaleb.cpcompound.controller.TestController">
+    <Pane fx:id="scrollBar" layoutX="0" layoutY="100" prefHeight="10" prefWidth="200" style="-fx-background-color: grey;"/>
+    <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs >
+            <Tab text="Tab 1">
+                <content>
+                    <Pane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                </content>
+            </Tab>
+            <Tab text="Tab 2">
+                <content>
+                    <Pane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                </content>
+            </Tab>
+        </tabs>
+    </TabPane>
+</AnchorPane>
