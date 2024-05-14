@@ -1,0 +1,28 @@
+.code-area {
+    -fx-background-color: #2C2C2C;
+    -fx-background-radius: 0px 0px 5px 5px;
+    -fx-border-radius: 0px 0px 5px 5px;
+    /*-rtfx-text-color: white;*/
+    -fx-font-size: 20;
+    /*-fx-display-caret: white;*/
+    /*-fx-padding: 0 300 0 0;*/
+}
+
+.code-area .text {
+    -fx-fill: white;
+}
+.styled-text-area .label{
+    -fx-fill: red !important;
+}
+.caret {
+    -fx-stroke: white; /* 设置光标颜色为红色 */
+    -fx-stroke-width: 2; /* 可以调整光标的宽度 */
+}
+.styled-text-area .lineno{
+    -fx-background-color:  #2C2C2C;
+    -fx-font-size: 20;
+}
+.virtualized-scroll-pane{
+    -fx-background-color: #2C2C2C;
+    -fx-background-radius: 0 0 5 5;
+}
