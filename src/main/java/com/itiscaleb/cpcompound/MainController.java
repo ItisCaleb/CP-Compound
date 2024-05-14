@@ -128,14 +128,13 @@ public class MainController {
 
         ListChangeListener<? super CompletionItem> listener = (list)-> Platform.runLater(() -> {
             // do your GUI stuff here
-            System.out.println("123 ");
             var compList = (List<CompletionItem>) list.getList();
             if(compList.isEmpty()){
                 completionPopup.hide();
             }else {
                 StringBuilder builder = new StringBuilder();
                 for (CompletionItem item : compList) {
-                    builder.append(item.getLabel());
+                    builder.append(item.getLabel()).append("\n");
                 }
                 Optional<Bounds> opt = editorTextArea.getCaretBounds();
                 if(opt.isPresent()){
@@ -147,7 +146,7 @@ public class MainController {
             }
         });
 
-        // listen for diagnostics change
+        // listen for completion change
         CPCompound.getEditor().getCompletionList().addListener(listener);
     }
 

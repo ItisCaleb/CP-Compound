@@ -96,7 +96,7 @@ public class LSPProxy {
                 .getTextDocumentService()
                 .completion(params);
         future.whenComplete((result, throwable) -> {
-            CPCompound.getEditor().setCompletionList(result.getLeft());
+            CPCompound.getEditor().setCompletionList(result.getRight().getItems());
         });
     }
 

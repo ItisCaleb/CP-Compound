@@ -73,9 +73,7 @@ public class Editor {
     public void setCompletionList(List<CompletionItem> items){
         System.out.println("Completion List");
         if(items != null){
-            System.out.println(items.size());
             this.completionItems.setAll(items);
-            System.out.println(this.completionItems);
         }
     }
 
