@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class CPCompound extends Application {
-//    static MainController mainController;
+    static MainEditorController mainEditorController;
     static Config config;
     static HashMap<Language, LSPProxy> proxies = new HashMap<>();
     static Logger logger = LogManager.getLogger(CPCompound.class);
@@ -28,7 +28,7 @@ public class CPCompound extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-//        initIDE();
+        initIDE();
 
         UserAgentBuilder.builder()
                 .themes(JavaFXThemes.MODENA)
@@ -41,7 +41,8 @@ public class CPCompound extends Application {
 
         primaryStage.initStyle(StageStyle.DECORATED);
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/editor-main.fxml"));
-        fxmlLoader.setController(new MainEditorController(primaryStage));
+        mainEditorController = fxmlLoader.getController();
+        fxmlLoader.setController(mainEditorController);
         Parent editorRoot = fxmlLoader.load();
         Scene scene = new Scene(editorRoot);
 //        primaryStage.setFullScreen(true);
