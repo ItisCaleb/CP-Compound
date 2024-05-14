@@ -135,6 +135,19 @@ public class MainEditorController {
         System.out.println("initialize");
     }
 
+    public void reloadContext(){
+        Platform.runLater(() -> {
+            var contexts = CPCompound.getEditor().getContexts();
+            editorTextTabPane.getTabs().clear();
+            for(var key: contexts.keySet()){
+                var tab = new Tab();
+                tab.setText(key.substring(key.lastIndexOf("/")));
+                editorTextTabPane.getTabs().add(tab);
+                tab.setUserData(key);
+            }
+        });
+    }
+
 
     private void initEditorUtility(){
         editorTextArea.setParagraphGraphicFactory(LineNumberFactory.get(editorTextArea));
@@ -239,11 +252,6 @@ public class MainEditorController {
         CPCompound.getEditor().getDiagnostics().addListener(listener);
     }
 
-
-    @FXML
-    protected void downloadClangd(){
-        new ClangdDownloader().download();
-    }
 
     // Reference: https://github.com/FXMisc/RichTextFX/blob/master/richtextfx-demos/src/main/java/org/fxmisc/richtext/demo/SpellCheckingDemo.java
     // for compute diagnostic style

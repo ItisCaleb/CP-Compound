@@ -77,6 +77,10 @@ public class Editor {
         }
     }
 
+    public HashMap<String, EditorContext> getContexts(){
+        return contexts;
+    }
+
     public ObservableList<CompletionItem> getCompletionList(){
         return this.completionItems;
     }
