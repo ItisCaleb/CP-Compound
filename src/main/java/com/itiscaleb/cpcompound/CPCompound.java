@@ -13,13 +13,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.HashMap;
 
 public class CPCompound extends Application {
-    static MainController mainController;
+//    static MainController mainController;
     static Config config;
     static HashMap<Language, LSPProxy> proxies = new HashMap<>();
     static Logger logger = LogManager.getLogger(CPCompound.class);
@@ -27,7 +28,7 @@ public class CPCompound extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        initIDE();
+//        initIDE();
 
         UserAgentBuilder.builder()
                 .themes(JavaFXThemes.MODENA)
@@ -37,12 +38,13 @@ public class CPCompound extends Application {
                 .build()
                 .setGlobal();
 
+
+        primaryStage.initStyle(StageStyle.DECORATED);
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/editor-main.fxml"));
-        fxmlLoader.setController(new MainEditorController());
+        fxmlLoader.setController(new MainEditorController(primaryStage));
         Parent editorRoot = fxmlLoader.load();
         Scene scene = new Scene(editorRoot);
-//        scene.getStylesheets().add(CPCompound.class.getResource("ide.css").toExternalForm());
-        primaryStage.setFullScreen(true);
+//        primaryStage.setFullScreen(true);
         primaryStage.setScene(scene);
         primaryStage.setTitle("CP Compound");
         primaryStage.show();
@@ -77,9 +79,9 @@ public class CPCompound extends Application {
         return editor;
     }
 
-    public static MainController getMainController(){
-        return mainController;
-    }
+//    public static MainController getMainController(){
+//        return mainController;
+//    }
 
     public static void main(String[] args) {
         launch();
