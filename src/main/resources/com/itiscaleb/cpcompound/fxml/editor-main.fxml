@@ -13,7 +13,8 @@
 
 <?import org.fxmisc.richtext.CodeArea?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:controller="com.itiscaleb.cpcompound.controller.MainEditorController"
+             maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
    <children>
        <SplitPane fx:id="codeAreaSplitPane" dividerPositions="0.2" layoutX="165.0" layoutY="39.0" prefHeight="241.0" prefWidth="398.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="54.0">
          <items>
@@ -42,7 +43,7 @@
                <tabs>
                    <Tab fx:id="tab1" text="b.cpp">
                        <content>
-                           <CodeArea fx:id="editorTextArea1" />
+                           <CodeArea fx:id="editorTextArea" />
                        </content>
                    </Tab>
                </tabs>
