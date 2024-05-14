@@ -7,11 +7,26 @@ module com.itiscaleb.cpcompound {
     requires org.eclipse.lsp4j;
     requires org.eclipse.lsp4j.jsonrpc;
     requires org.apache.logging.log4j;
+    requires MaterialFX;
+    requires org.fxmisc.flowless;
+    requires org.kordamp.ikonli.core;
+    requires org.kordamp.ikonli.javafx;
+    requires org.kordamp.ikonli.whhg;
+    requires org.kordamp.ikonli.fluentui;
+    requires org.kordamp.ikonli.carbonicons;
+    requires org.kordamp.ikonli.codicons;
+    requires org.kordamp.ikonli.boxicons;
+    requires org.kordamp.ikonli.antdesignicons;
+    requires org.kordamp.ikonli.materialdesign;
+    requires org.kordamp.ikonli.runestroicons;
+    requires org.kordamp.ikonli.coreui;
+    requires org.kordamp.ikonli.lineawesome;
 
-    opens com.itiscaleb.cpcompound to javafx.fxml;
     exports com.itiscaleb.cpcompound;
     exports com.itiscaleb.cpcompound.utils;
     exports com.itiscaleb.cpcompound.langServer;
     exports com.itiscaleb.cpcompound.editor;
-
+    exports com.itiscaleb.cpcompound.controller to javafx.fxml;
+    opens com.itiscaleb.cpcompound;
+    opens com.itiscaleb.cpcompound.controller;
 }

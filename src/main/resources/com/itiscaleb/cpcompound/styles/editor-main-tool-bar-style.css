@@ -1,0 +1,183 @@
+.tool-bar{
+    -fx-background-color: transparent;
+    -fx-spacing: 40;
+}
+#Template-button{
+    -fx-background-color: #ad3fa6;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-text-size: 30px;
+    -fx-cursor: HAND;
+}
+#Template-button:hover{
+    -fx-background-color: #e25dd5;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-text-size: 30px;
+    -fx-cursor: HAND;
+}
+#Template-button .ikonli-font-icon{
+    -fx-icon-code: "ci-template";
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 20px;
+}
+#Compile-button{
+    -fx-background-color: #406bbf;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-text-size: 30px;
+    -fx-cursor: HAND;
+}
+#Compile-button:hover{
+    -fx-background-color: #5fa8f1;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-text-size: 30px;
+    -fx-cursor: HAND;
+}
+#Compile-button .ikonli-font-icon{
+    -fx-icon-code: "fltral-calendar-settings-20";
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 20px;
+}
+#Run-button{
+    -fx-background-color: #009118;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-text-size: 30px;
+    -fx-cursor: HAND;
+}
+#Run-button:hover{
+    -fx-background-color: #5fdf73;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-text-size: 30px;
+    -fx-cursor: HAND;
+}
+#Run-button .ikonli-font-icon{
+    -fx-icon-code: "ci-play";
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 20px;
+}
+
+#Search-icon-button{
+    -fx-background-color: transparent;
+    /*-fx-text-fill: #FFFFFF;*/
+    -fx-font-weight: bold;
+    -fx-text-size: 30px;
+    -fx-cursor: HAND;
+}
+
+#Search-icon-button .ikonli-font-icon{
+    -fx-icon-code: "anto-search";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 24px;
+}
+#Search-icon-button:hover .ikonli-font-icon{
+    -fx-icon-code: "anto-search";
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 24px;
+}
+#Replace-icon-button{
+    -fx-background-color: transparent;
+    /*-fx-text-fill: #FFFFFF;*/
+    -fx-font-weight: bold;
+    -fx-text-size: 30px;
+    -fx-cursor: HAND;
+}
+
+#Replace-icon-button .ikonli-font-icon{
+    -fx-icon-code: "codicon-replace";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 24px;
+    -fx-cursor: HAND;
+}
+#Replace-icon-button:hover .ikonli-font-icon{
+    -fx-icon-code: "codicon-replace";
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 24px;
+    -fx-cursor: HAND;
+}
+
+#Help-icon-button{
+    -fx-background-color: transparent;
+    /*-fx-text-fill: #FFFFFF;*/
+    -fx-font-weight: bold;
+    -fx-text-size: 30px;
+    -fx-cursor: HAND;
+}
+
+#Help-icon-button .ikonli-font-icon{
+    -fx-icon-code: "bx-help-circle";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 24px;
+}
+#Help-icon-button:hover .ikonli-font-icon{
+    -fx-icon-code: "bx-help-circle";
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 24px;
+}
+
+#Minimize-window-icon-button{
+    -fx-background-color: transparent;
+    /*-fx-text-fill: #FFFFFF;*/
+    -fx-font-weight: bold;
+    -fx-text-size: 30px;
+    -fx-cursor: HAND;
+}
+
+#Minimize-window-icon-button .ikonli-font-icon{
+    -fx-icon-code: "ri-window-minimize";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 13px;
+}
+#Minimize-window-icon-button .ikonli-font-icon:hover{
+    -fx-icon-code: "ri-window-minimize";
+    -fx-icon-color: #EEEEEE;
+    -fx-icon-size: 13px;
+}
+
+#Adjust-window-icon-button{
+    -fx-background-color: transparent;
+    /*-fx-text-fill: #FFFFFF;*/
+    -fx-font-weight: bold;
+    -fx-text-size: 20px;
+    -fx-cursor: HAND;
+}
+
+#Adjust-window-icon-button:selected.ikonli-font-icon{
+    -fx-icon-code: "ri-window-restore";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 12px;
+}
+#Adjust-window-icon-button .ikonli-font-icon{
+    -fx-icon-code: "ri-window-maximize";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 12px;
+}
+#Adjust-window-icon-button .ikonli-font-icon:hover{
+    /*-fx-icon-code: "mdi-window-maximize";*/
+    -fx-icon-color: #EEEEEE;
+    -fx-icon-size: 12px;
+}
+
+#Close-window-icon-button{
+    -fx-background-color: transparent;
+    /*-fx-text-fill: #FFFFFF;*/
+    -fx-font-weight: bold;
+    -fx-text-size: 30px;
+    -fx-cursor: HAND;
+}
+
+#Close-window-icon-button .ikonli-font-icon{
+    -fx-icon-code: "mdi-window-close";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 15px;
+}
+#Close-window-icon-button .ikonli-font-icon:hover{
+    -fx-icon-code: "mdi-window-close";
+    -fx-icon-color: #EEEEEE;
+    -fx-icon-size: 15px;
+}
+
+

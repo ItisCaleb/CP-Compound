@@ -1,0 +1,99 @@
+
+.tab-pane{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+.tab-label{
+    -fx-font-weight: bold;
+    -fx-pref-width: 200px;
+    -fx-text-fill: white;
+    /*-fx-border-color: blue;*/
+    -fx-padding: 0 0 0 0;
+}
+.tab-container{
+    -fx-border-width: 0px;
+}
+/*tab內圈的border設定，blue-bar的樣式*/
+.tab:selected .tab-container{
+    -fx-border-width: 2px;
+    -fx-border-radius: 3px 3px 0 0;
+    -fx-border-color: #709AEC #2C2C2C #2C2C2C #2C2C2C;
+}
+.tab{
+    -fx-pref-height: 38px;
+    -fx-pref-width: 200px;
+    -fx-border-radius: 5px 5px 0 0;
+    -fx-background-radius: 5px 5px 0 0;;
+    -fx-background-color: #414141;
+    -fx-border-width: 0px;
+    -fx-padding: 0 0 0 0;
+    /*-fx-border-color: #414141;*/
+    /*-fx-border-color: transparent;*/
+}
+.tab-pane .tab:selected {
+    -fx-background-color: #2C2C2C;
+    -fx-border-radius: 5px 5px 0 0;
+    -fx-background-radius: 5px 5px 0 0;;
+    -fx-border-width: 0px ;
+    /*-fx-border-color: #414141 #414141 #2C2C2C #414141;*/
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    /*-fx-background-insets: 0 0 0 0;*/
+    /*-fx-background-radius: 5px 5px 0 0;*/
+}
+.tab-close-button {
+    -fx-background-color: white;
+    -fx-opacity: 0.7;
+}
+.tab-close-button:hover {
+    -fx-opacity: 1;
+}
+
+.tab-pane > .tab-header-area > .headers-region {
+    -fx-background-color: #1E1E1E;
+}
+.tab-pane:top *.tab-header-area {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 0 0;
+}
+.tab-header-area .tab-header-background{
+    -fx-background-color: #1E1E1E;
+    -fx-border-color: transparent transparent #2C2C2C transparent;
+}
+
+.tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button .context-menu {
+    -fx-background-color: #414141;
+    -fx-background-radius: 5px;
+    -fx-translate-x: -15px;
+}
+
+.tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button{
+    -fx-translate-x: -5;
+    -fx-translate-y: -10;
+    -fx-background-color: #1E1E1E;
+    -fx-cursor: HAND;
+}
+.tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button .arrow{
+    -fx-background-color: #C2C2C2;
+
+}
+/*Access menu item's text*/
+.tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button .context-menu .radio-menu-item .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+/*Access menu item*/
+.tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button  .radio-menu-item{
+    -fx-background-color: #414141;
+}
+.tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button  .radio-menu-item:hover{
+    -fx-background-color: #2C2C2C;
+}
+.tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button  .radio-menu-item:pressed{
+    -fx-background-color: #2C2C2C;
+}
+/*Access menu item's check sign*/
+.tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button .context-menu .radio-menu-item .left-container .radio {
+    -fx-background-color: #C2C2C2;
+}

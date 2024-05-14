@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<!--<?import org.fxmisc.richtext.CodeArea?>-->
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@../styles/editor-main-style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <SplitPane  dividerPositions="0.2" layoutX="165.0" layoutY="39.0" prefHeight="241.0" prefWidth="398.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="54.0">
+            <items>
+                <AnchorPane id="functionArea" fx:id="functionPane" onMouseClicked="#mouseClickTest" prefHeight="200.0" prefWidth="200.0" />
+                <TabPane id="editorTabPane" prefHeight="341.0" prefWidth="397.0" rotateGraphic="true" stylesheets="@../styles/editor-main-style.css">
+                    <tabs>
+                        <!--                  <Tab text="b.cpp" >-->
+                        <!--                      <content >-->
+                        <!--                          <CodeArea fx:id="editorTextArea" stylesheets="../styles/editor-main-style.css"/>-->
+                        <!--                      </content>-->
+                        <!--                  </Tab>-->
+                        <Tab text="a.cpp">
+                            <content>
+                                <AnchorPane fx:id="editorTabPaneBase" styleClass="editor-tab-pane-base" prefHeight="200.0" prefWidth="200.0" >
+                                    <!--                            <CodeArea fx:id="editorTextArea" stylesheets="../styles/editor-main-style.css"/>-->
+                                </AnchorPane>
+                            </content>
+                        </Tab>
+                        <Tab text="Untitled Tab 2">
+                            <content>
+                                <TextArea prefHeight="200.0" prefWidth="200.0" stylesheets="@../styles/editor-main-style.css" />
+                            </content>
+                        </Tab>
+                        <Tab text="Untitled Tab 1">
+                            <content>
+                                <SplitPane fx:id="codeAreaSplitPane" disable="true" dividerPositions="0.1" onMouseDragged="#dragTest" onMousePressed="#mousePressedTest" prefHeight="160.0" prefWidth="200.0" styleClass="code-area-split-pane">
+                                    <items>
+                                        <ListView fx:id="codeAreaLineViewer" prefHeight="200.0" prefWidth="200.0" styleClass="code-area-line-view" />
+                                        <TextArea fx:id="codeAreaTextArea" onKeyReleased="#onKeyReleased" prefHeight="341.0" prefWidth="139.0" stylesheets="@../styles/editor-main-style.css">
+                                            <padding>
+                                                <Insets right="20.0" />
+                                            </padding>
+                                        </TextArea>
+                                    </items>
+                                </SplitPane>
+                            </content>
+                        </Tab>
+                        <Tab text="Untitled Tab 1">
+                            <content>
+                                <TextArea prefHeight="200.0" prefWidth="200.0" stylesheets="@../styles/editor-main-style.css" />
+                            </content>
+                        </Tab>
+                        <Tab text="Untitled Tab 1">
+                            <content>
+                                <TextArea prefHeight="200.0" prefWidth="200.0" stylesheets="@../styles/editor-main-style.css" />
+                            </content>
+                        </Tab>
+                        <Tab text="Untitled Tab 1">
+                            <content>
+                                <TextArea prefHeight="200.0" prefWidth="200.0" stylesheets="@../styles/editor-main-style.css" />
+                            </content>
+                        </Tab>
+                        <Tab text="Untitled Tab 1">
+                            <content>
+                                <TextArea prefHeight="200.0" prefWidth="200.0" stylesheets="@../styles/editor-main-style.css" />
+                            </content>
+                        </Tab>
+                        <Tab text="Untitled Tab 1">
+                            <content>
+                                <TextArea prefHeight="200.0" prefWidth="200.0" stylesheets="@../styles/editor-main-style.css" />
+                            </content>
+                        </Tab>
+                        <Tab text="Untitled Tab 1">
+                            <content>
+                                <TextArea prefHeight="200.0" prefWidth="200.0" stylesheets="@../styles/editor-main-style.css" />
+                            </content>
+                        </Tab>
+                        <Tab text="Untitled Tab 1">
+                            <content>
+                                <TextArea prefHeight="200.0" prefWidth="200.0" stylesheets="@../styles/editor-main-style.css" />
+                            </content>
+                        </Tab>
+                        <Tab text="Untitled Tab 1">
+                            <content>
+                                <TextArea prefHeight="200.0" prefWidth="200.0" stylesheets="@../styles/editor-main-style.css" />
+                            </content>
+                        </Tab>
+                        <Tab text="Untitled Tab 1">
+                            <content>
+                                <TextArea prefHeight="200.0" prefWidth="200.0" stylesheets="@../styles/editor-main-style.css" />
+                            </content>
+                        </Tab>
+                    </tabs>
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+                </TabPane>
+            </items>
+        </SplitPane>
+    </children>
+</AnchorPane>

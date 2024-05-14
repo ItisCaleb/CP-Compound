@@ -1,0 +1,126 @@
+#main-editor-menu-bar{
+    -fx-padding: 0;
+    /*-fx-alignment: BASELINE_CENTER;*/
+    -fx-spacing: 48;
+}
+
+#Home-button{
+    -fx-background-color: transparent;
+    /*-fx-border-color: red;*/
+    /*-fx-text-fill: #FFFFFF;*/
+    -fx-font-weight: bold;
+    -fx-text-size: 40px;
+    -fx-cursor: HAND;
+}
+
+#Home-button .ikonli-font-icon{
+    -fx-icon-code: "cil-home";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 35px;
+}
+#Home-button .ikonli-font-icon:hover{
+    -fx-icon-code: "cil-home";
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 35px;
+}
+
+#File-button{
+    -fx-background-color: transparent;
+    /*-fx-border-color: red;*/
+    /*-fx-text-fill: #FFFFFF;*/
+    -fx-font-weight: bold;
+    -fx-text-size: 40px;
+    -fx-cursor: HAND;
+}
+
+#File-button .ikonli-font-icon{
+    -fx-icon-code: "cil-folder";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 32px;
+}
+#File-button .ikonli-font-icon:hover{
+    -fx-icon-code: "cil-folder";
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 32px;
+}
+
+#Checker-button{
+    -fx-background-color: transparent;
+    /*-fx-border-color: red;*/
+    /*-fx-text-fill: #FFFFFF;*/
+    -fx-font-weight: bold;
+    -fx-text-size: 40px;
+    -fx-cursor: HAND;
+}
+
+#Checker-button .ikonli-font-icon{
+    -fx-icon-code: "ci-compare";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 35px;
+}
+#Checker-button .ikonli-font-icon:hover{
+    -fx-icon-code: "ci-compare";
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 35px;
+}
+
+#Generator-button{
+    -fx-background-color: transparent;
+    /*-fx-border-color: red;*/
+    /*-fx-text-fill: #FFFFFF;*/
+    -fx-font-weight: bold;
+    -fx-text-size: 40px;
+    -fx-cursor: HAND;
+}
+
+#Generator-button .ikonli-font-icon{
+    -fx-icon-code: "las-dice-d6";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 37px;
+}
+#Generator-button .ikonli-font-icon:hover{
+    -fx-icon-code: "las-dice-d6";
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 37px;
+}
+
+#Note-system-button{
+    -fx-background-color: transparent;
+    /*-fx-border-color: red;*/
+    /*-fx-text-fill: #FFFFFF;*/
+    -fx-font-weight: bold;
+    -fx-text-size: 40px;
+    -fx-cursor: HAND;
+}
+
+#Note-system-button .ikonli-font-icon{
+    -fx-icon-code: "codicon-notebook";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 35px;
+}
+#Note-system-button .ikonli-font-icon:hover{
+    -fx-icon-code: "codicon-notebook";
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 35px;
+}
+
+#Setting-button{
+    -fx-background-color: transparent;
+    /*-fx-border-color: red;*/
+    /*-fx-text-fill: #FFFFFF;*/
+    -fx-font-weight: bold;
+    -fx-text-size: 40px;
+    -fx-cursor: HAND;
+}
+
+#Setting-button .ikonli-font-icon{
+    -fx-icon-code: "cil-settings";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 35px;
+}
+#Setting-button .ikonli-font-icon:hover{
+    -fx-icon-code: "cil-settings";
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 35px;
+}
+
