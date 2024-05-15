@@ -40,6 +40,12 @@ public class CPCompound extends Application {
 
 
         primaryStage.initStyle(StageStyle.DECORATED);
+        primaryStage.setOnCloseRequest((event)->{
+            for (var proxy: proxies.values()){
+                proxy.stop();
+            }
+            System.exit(0);
+        });
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/editor-main.fxml"));
         mainEditorController = fxmlLoader.getController();
         fxmlLoader.setController(mainEditorController);

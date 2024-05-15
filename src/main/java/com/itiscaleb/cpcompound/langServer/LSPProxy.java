@@ -44,11 +44,7 @@ public class LSPProxy {
     }
 
     public void restart() throws IOException {
-        if(process != null){
-            launcher.getRemoteProxy().exit();
-            process.destroy();
-            process = null;
-        }
+        stop();
         start();
     }
 
@@ -100,5 +96,14 @@ public class LSPProxy {
         });
     }
 
-    public void stop() throws IOException {}
+    public void stop() {
+        if(launcher == null){
+            return;
+        }
+        if(process != null){
+            launcher.getRemoteProxy().exit();
+            process.destroy();
+            process = null;
+        }
+    }
 }
