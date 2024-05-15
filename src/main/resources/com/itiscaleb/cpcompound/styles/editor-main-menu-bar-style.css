@@ -1,7 +1,7 @@
 #main-editor-menu-bar{
     -fx-padding: 0;
     /*-fx-alignment: BASELINE_CENTER;*/
-    -fx-spacing: 48;
+    -fx-spacing: 56;
 }
 
 #Home-button{
