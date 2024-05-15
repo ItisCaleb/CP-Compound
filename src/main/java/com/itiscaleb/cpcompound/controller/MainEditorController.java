@@ -28,6 +28,7 @@ import org.eclipse.lsp4j.Range;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
@@ -69,8 +70,7 @@ public class MainEditorController {
     Popup diagPopup;
     Label diagPopupLabel;
 
-    Popup completionPopup;
-    Label completionPopupLabel;
+    ContextMenu completionMenu;
 
     private void initEditorTextArea() {
         editorTextArea.setParagraphGraphicFactory(LineNumberFactory.get(editorTextArea));
@@ -84,7 +84,10 @@ public class MainEditorController {
             proxy.didChange(context);
 
             // request for completion request
-            proxy.requestCompletion(context, new Position(editorTextArea.getCurrentParagraph(), editorTextArea.getCaretColumn()));
+            int paragraph = editorTextArea.getCurrentParagraph();
+            int column =  editorTextArea.getCaretColumn();
+            String text = editorTextArea.getText();
+            proxy.requestCompletion(context, new Position(paragraph, column));
         });
         initEditorUtility();
         initDiagnosticTooltip();
@@ -148,13 +151,17 @@ public class MainEditorController {
         });
     }
 
+    int rangeToPosition(StyleClassedTextArea area, Position p) {
+       return area.getAbsolutePosition(p.getLine(), p.getCharacter());
+    }
+
 
     private void initEditorUtility(){
         editorTextArea.setParagraphGraphicFactory(LineNumberFactory.get(editorTextArea));
         final Pattern whiteSpace = Pattern.compile( "^\\s+" );
         editorTextArea.addEventHandler( KeyEvent.KEY_PRESSED, KE -> {
             // auto-indent
-            if ( KE.getCode() == KeyCode.ENTER ) {
+            if ( KE.getCode() == KeyCode.ENTER && !KE.isShiftDown() ) {
                 int caretPosition = editorTextArea.getCaretPosition();
                 int currentParagraph = editorTextArea.getCurrentParagraph();
                 Matcher m0 = whiteSpace.matcher( editorTextArea.getParagraph( currentParagraph-1 ).getSegments().get( 0 ) );
@@ -181,14 +188,8 @@ public class MainEditorController {
         editorTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e->{
             for (Diagnostic diagnostic : diagnostics) {
                 Range range = diagnostic.getRange();
-                int from = editorTextArea
-                        .getAbsolutePosition(
-                                range.getStart().getLine(),
-                                range.getStart().getCharacter());
-                int to = editorTextArea
-                        .getAbsolutePosition(
-                                range.getEnd().getLine(),
-                                range.getEnd().getCharacter());
+                int from = rangeToPosition(editorTextArea, range.getStart());
+                int to = rangeToPosition(editorTextArea, range.getEnd());
                 int chIdx = e.getCharacterIndex();
                 Point2D pos = e.getScreenPosition();
                 if(chIdx >= from && chIdx <= to){
@@ -204,30 +205,45 @@ public class MainEditorController {
     }
 
     private void initCompletionTooltip(){
-        completionPopup = new Popup();
-        completionPopupLabel = new Label();
-        completionPopup.getContent().add(completionPopupLabel);
-        completionPopupLabel.setStyle(
-                "-fx-background-color: black;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-padding: 5;");
+        completionMenu = new ContextMenu();
+        completionMenu.setOnAction((event)->{
+            MenuItem item = (MenuItem)event.getTarget();
+            String text = item.getText();
+            Range range = (Range) item.getUserData();
+            int from = rangeToPosition(editorTextArea, range.getStart());
+            int to = rangeToPosition(editorTextArea, range.getEnd());
+            editorTextArea.replaceText(from, to, text);
+        });
+
+        completionMenu.addEventFilter(KeyEvent.KEY_PRESSED, e->{
+            if(e.getCode() == KeyCode.SPACE){e.consume();}
+        });
+        completionMenu.getStyleClass().add("completion-menu");
 
         ListChangeListener<? super CompletionItem> listener = (list)-> Platform.runLater(() -> {
             // do your GUI stuff here
             var compList = (List<CompletionItem>) list.getList();
             if(compList.isEmpty()){
-                completionPopup.hide();
+                completionMenu.hide();
             }else {
-                StringBuilder builder = new StringBuilder();
+                List<MenuItem> tmpList = new ArrayList<>();
+                int count = 0;
                 for (CompletionItem item : compList) {
-                    builder.append(item.getLabel()).append("\n");
+                    if(count++ > 30) break;
+                    var edit = item.getTextEdit().getLeft();
+                    var menuItem = new MenuItem(edit.getNewText());
+                    menuItem.setUserData(edit.getRange());
+                    menuItem.getStyleClass().add("completion-menu-item");
+                    tmpList.add(menuItem);
                 }
+                completionMenu.getItems().setAll(tmpList);
+
                 Optional<Bounds> opt = editorTextArea.getCaretBounds();
+
                 if(opt.isPresent()){
-                    completionPopupLabel.setText(builder.toString());
                     double x = opt.get().getCenterX();
                     double y = opt.get().getCenterY();
-                    completionPopup.show(editorTextArea, x+10, y);
+                    completionMenu.show(editorTextArea, x+10, y);
                 }
             }
         });

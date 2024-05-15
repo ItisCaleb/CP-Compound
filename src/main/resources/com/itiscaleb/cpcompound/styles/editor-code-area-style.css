@@ -47,3 +47,10 @@
     -rtfx-underline-width: 1;
     -rtfx-underline-cap: butt;
 }
+
+.completion-menu {
+    -fx-background-color: black;
+}
+.completion-menu-item{
+    -fx-font-size: 14;
+}
