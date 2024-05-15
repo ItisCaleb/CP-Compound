@@ -161,7 +161,7 @@ public class MainEditorController {
         final Pattern whiteSpace = Pattern.compile( "^\\s+" );
         editorTextArea.addEventHandler( KeyEvent.KEY_PRESSED, KE -> {
             // auto-indent
-            if ( KE.getCode() == KeyCode.ENTER ) {
+            if ( KE.getCode() == KeyCode.ENTER && !KE.isShiftDown() ) {
                 int caretPosition = editorTextArea.getCaretPosition();
                 int currentParagraph = editorTextArea.getCurrentParagraph();
                 Matcher m0 = whiteSpace.matcher( editorTextArea.getParagraph( currentParagraph-1 ).getSegments().get( 0 ) );

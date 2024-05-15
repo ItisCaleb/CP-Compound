@@ -1,5 +1,6 @@
 package com.itiscaleb.cpcompound;
 
+import com.itiscaleb.cpcompound.controller.InitController;
 import com.itiscaleb.cpcompound.controller.MainEditorController;
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
@@ -27,38 +28,45 @@ public class CPCompound extends Application {
     static Editor editor;
     @Override
     public void start(Stage primaryStage) throws IOException {
+        config = Config.load("./config.json");
+        config.save();
 
-        initIDE();
+        if(!config.inited){
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/init.fxml"));
+            primaryStage.setScene(new Scene(fxmlLoader.load(), 800, 600));
+        }else {
+            initIDE();
+            UserAgentBuilder.builder()
+                    .themes(JavaFXThemes.MODENA)
+                    .themes(MaterialFXStylesheets.forAssemble(true))
+                    .setDeploy(true)
+                    .setResolveAssets(true)
+                    .build()
+                    .setGlobal();
 
-        UserAgentBuilder.builder()
-                .themes(JavaFXThemes.MODENA)
-                .themes(MaterialFXStylesheets.forAssemble(true))
-                .setDeploy(true)
-                .setResolveAssets(true)
-                .build()
-                .setGlobal();
 
-
-        primaryStage.initStyle(StageStyle.DECORATED);
+            primaryStage.initStyle(StageStyle.DECORATED);
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/editor-main.fxml"));
+            mainEditorController = fxmlLoader.getController();
+            fxmlLoader.setController(mainEditorController);
+            Parent editorRoot = fxmlLoader.load();
+            Scene scene = new Scene(editorRoot);
+//        primaryStage.setFullScreen(true);
+            primaryStage.setScene(scene);
+        }
         primaryStage.setOnCloseRequest((event)->{
             for (var proxy: proxies.values()){
                 proxy.stop();
             }
             System.exit(0);
         });
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/editor-main.fxml"));
-        mainEditorController = fxmlLoader.getController();
-        fxmlLoader.setController(mainEditorController);
-        Parent editorRoot = fxmlLoader.load();
-        Scene scene = new Scene(editorRoot);
-//        primaryStage.setFullScreen(true);
-        primaryStage.setScene(scene);
         primaryStage.setTitle("CP Compound");
         primaryStage.show();
+
+
     }
     public void initIDE() throws IOException {
-        config = Config.load("./config.json");
-        config.save();
+
 
         // init Language Server proxies
         LSPProxy clang = new LSPProxy(config.cpp_lang_server_path+"/bin/clangd" );

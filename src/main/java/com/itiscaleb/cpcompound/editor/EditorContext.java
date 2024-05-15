@@ -9,31 +9,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EditorContext {
-    private String filePath;
+    private String fileURI;
     private String code;
     private Language lang;
     private int version;
     private int lastVersion;
     private List<Diagnostic> diagnostics = new ArrayList<>();
-    EditorContext(String filePath, Language lang, String code) {
-        this.filePath = filePath;
+    EditorContext(String fileURI, Language lang, String code) {
+        this.fileURI = fileURI;
         this.code = code;
         this.lang = lang;
         this.version = 0;
         this.lastVersion = 0;
     }
 
-    EditorContext(String filePath, String code) {
-        this.filePath = filePath;
+    EditorContext(String fileURI, String code) {
+        this.fileURI = fileURI;
         this.code = code;
         this.version = 0;
         this.lastVersion = 0;
-        if(this.filePath.endsWith(".cpp") || this.filePath.endsWith(".cc")
-                || this.filePath.endsWith(".c++")){
+        if(this.fileURI.endsWith(".cpp") || this.fileURI.endsWith(".cc")
+                || this.fileURI.endsWith(".c++")){
             this.lang = Language.CPP;
-        }else if (this.filePath.endsWith(".c")){
+        }else if (this.fileURI.endsWith(".c")){
             this.lang = Language.C;
-        }else if (this.filePath.endsWith(".py")){
+        }else if (this.fileURI.endsWith(".py")){
             this.lang = Language.Python;
         }else
             this.lang = Language.None;
@@ -44,12 +44,8 @@ public class EditorContext {
         return code;
     }
 
-    public String getFilePath() {
-        return filePath;
-    }
-
     public String getFileURI() {
-        return "file://" + filePath;
+        return fileURI;
     }
 
     public int getVersion(){
