@@ -13,10 +13,8 @@
 
 <?import org.fxmisc.richtext.CodeArea?>
 
-<AnchorPane fx:controller="com.itiscaleb.cpcompound.controller.MainEditorController"
-             maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-       <SplitPane fx:id="codeAreaSplitPane" dividerPositions="0.2" layoutX="165.0" layoutY="39.0" prefHeight="241.0" prefWidth="398.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="54.0">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.MainEditorController">
+       <SplitPane fx:id="codeAreaSplitPane" dividerPositions="0.2" layoutX="165.0" layoutY="39.0" prefHeight="241.0" prefWidth="398.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="54.0">
          <items>
             <TabPane fx:id="funtionTabPane" prefHeight="341.0" prefWidth="397.0" rotateGraphic="true" styleClass="function-tab-pane" tabClosingPolicy="UNAVAILABLE">
               <tabs>
@@ -69,7 +67,7 @@
 <!--            <MFXButton id="Close-window-icon-button" fx:id="closeWindowBtn" onAction="#closeWindow" rippleAnimateBackground="false" rippleColor="#bdbdbd00" stylesheets="@../styles/editor-main-tool-bar-style.css" text="" textAlignment="RIGHT" />-->
         </items>
       </ToolBar>
-      <VBox id="main-editor-menu-bar" fx:id="mainEditorMenuBar" alignment="BASELINE_CENTER" layoutX="-1.0" layoutY="72.0" prefHeight="341.0" prefWidth="53.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="54.0">
+      <VBox id="main-editor-menu-bar" fx:id="mainEditorMenuBar" alignment="BASELINE_CENTER" layoutX="-1.0" layoutY="72.0" prefHeight="341.0" prefWidth="65.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="54.0">
          <children>
             <Button id="Home-button" fx:id="homeBtn" />
             <Button id="File-button" fx:id="fileBtn" mnemonicParsing="false" />
@@ -79,7 +77,6 @@
             <Button id="Setting-button" fx:id="settingBtn" mnemonicParsing="false" />
          </children>
       </VBox>
-   </children>
    <stylesheets>
       <URL value="@../styles/editor-main-style.css" />
       <URL value="@../styles/editor-scroll-bar.css" />

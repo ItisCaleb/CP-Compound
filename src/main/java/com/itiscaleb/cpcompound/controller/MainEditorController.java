@@ -4,11 +4,11 @@ import java.time.Duration;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.editor.EditorContext;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.utils.ClangdDownloader;
+import com.itiscaleb.cpcompound.utils.FileManager;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -34,21 +34,24 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-
 public class MainEditorController {
-    public MainEditorController() {}
+    public MainEditorController() {
+    }
+
     public MainEditorController(Stage stage) {
         setCurrentStage(stage);
     }
+
     public void setCurrentStage(Stage currentStage) {
         this.currentStage = currentStage;
     }
+
     @FXML
     private Stage currentStage;
     @FXML
-    private TabPane funtionTabPane,editorTextTabPane;
+    private TabPane funtionTabPane, editorTextTabPane;
     @FXML
-    private SplitPane codeAreaSplitPane,codeAreaBase;
+    private SplitPane codeAreaSplitPane, codeAreaBase;
     @FXML
     private AnchorPane editorTabPaneBase;
     @FXML
@@ -56,11 +59,12 @@ public class MainEditorController {
     @FXML
     ToolBar mainEditorToolBar;
     @FXML
-    MFXButton compileBtn,templateBtn,runBtn,searchIconBtn,replaceIconBtn,helpIconBtn,minimizeWindowBtn,closeWindowBtn;
+    MFXButton compileBtn, templateBtn, runBtn, searchIconBtn, replaceIconBtn, helpIconBtn, minimizeWindowBtn,
+            closeWindowBtn;
     @FXML
     ToggleButton adjustWindowBtn;
     @FXML
-    Button homeBtn,fileBtn,checkerBtn,generatorBtn,noteSystemBtn,settingBtn;
+    Button homeBtn, fileBtn, checkerBtn, generatorBtn, noteSystemBtn, settingBtn;
 
     @FXML
     CodeArea editorTextArea;
@@ -72,10 +76,19 @@ public class MainEditorController {
 
     ContextMenu completionMenu;
 
+    private void loadText2EditorTextArea(String fileName) {
+        // System.out.println("Current working directory: " +
+        // System.getProperty("user.dir"));
+
+        String content = FileManager.readTextFile("../src/main/resources/com/itiscaleb/cpcompound/data/" + fileName);
+        this.editorTextArea.append(content, "-fx-fill:red");
+    }
+
     private void initEditorTextArea() {
         editorTextArea.setParagraphGraphicFactory(LineNumberFactory.get(editorTextArea));
         VirtualizedScrollPane<CodeArea> vsPane = new VirtualizedScrollPane<>(editorTextArea);
         tab1.setContent(vsPane);
+        loadText2EditorTextArea("a.txt");
         editorTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             EditorContext context = CPCompound.getEditor().getCurrentContext();
             context.setCode(newValue);
@@ -85,7 +98,7 @@ public class MainEditorController {
 
             // request for completion request
             int paragraph = editorTextArea.getCurrentParagraph();
-            int column =  editorTextArea.getCaretColumn();
+            int column = editorTextArea.getCaretColumn();
             String text = editorTextArea.getText();
             proxy.requestCompletion(context, new Position(paragraph, column));
         });
@@ -94,7 +107,8 @@ public class MainEditorController {
         initDiagnosticRendering();
         initCompletionTooltip();
     }
-    private void initIcons(){
+
+    private void initIcons() {
         compileBtn.setGraphic(new FontIcon());
         templateBtn.setGraphic(new FontIcon());
         runBtn.setGraphic(new FontIcon());
@@ -107,28 +121,29 @@ public class MainEditorController {
         generatorBtn.setGraphic(new FontIcon());
         noteSystemBtn.setGraphic(new FontIcon());
         settingBtn.setGraphic(new FontIcon());
-//        for custom stage title bar's button
-//        minimizeWindowBtn.setGraphic(new FontIcon());
-//        adjustWindowBtn.setGraphic(new FontIcon());
-//        closeWindowBtn.setGraphic(new FontIcon());
+        // for custom stage title bar's button
+        // minimizeWindowBtn.setGraphic(new FontIcon());
+        // adjustWindowBtn.setGraphic(new FontIcon());
+        // closeWindowBtn.setGraphic(new FontIcon());
     }
-// for custom stage title bar's button function
-//    @FXML
-//    private void minimizeWindow() {
-//        currentStage.setIconified(true);
-//    }
-//    @FXML
-//    private void adjustWindow() {
-//        if (currentStage.isMaximized()) {
-//            currentStage.setMaximized(false);
-//        } else {
-//            currentStage.setMaximized(true);
-//        }
-//    }
-//    @FXML
-//    private void closeWindow() {
-//        currentStage.close();
-//    }
+
+    // for custom stage title bar's button function
+    // @FXML
+    // private void minimizeWindow() {
+    // currentStage.setIconified(true);
+    // }
+    // @FXML
+    // private void adjustWindow() {
+    // if (currentStage.isMaximized()) {
+    // currentStage.setMaximized(false);
+    // } else {
+    // currentStage.setMaximized(true);
+    // }
+    // }
+    // @FXML
+    // private void closeWindow() {
+    // currentStage.close();
+    // }
     @FXML
     public void initialize() {
         Platform.runLater(() -> {
@@ -138,11 +153,11 @@ public class MainEditorController {
         System.out.println("initialize");
     }
 
-    public void reloadContext(){
+    public void reloadContext() {
         Platform.runLater(() -> {
             var contexts = CPCompound.getEditor().getContexts();
             editorTextTabPane.getTabs().clear();
-            for(var key: contexts.keySet()){
+            for (var key : contexts.keySet()) {
                 var tab = new Tab();
                 tab.setText(key.substring(key.lastIndexOf("/")));
                 editorTextTabPane.getTabs().add(tab);
@@ -152,30 +167,30 @@ public class MainEditorController {
     }
 
     int rangeToPosition(StyleClassedTextArea area, Position p) {
-       return area.getAbsolutePosition(p.getLine(), p.getCharacter());
+        return area.getAbsolutePosition(p.getLine(), p.getCharacter());
     }
 
-
-    private void initEditorUtility(){
+    private void initEditorUtility() {
         editorTextArea.setParagraphGraphicFactory(LineNumberFactory.get(editorTextArea));
-        final Pattern whiteSpace = Pattern.compile( "^\\s+" );
-        editorTextArea.addEventHandler( KeyEvent.KEY_PRESSED, KE -> {
+        final Pattern whiteSpace = Pattern.compile("^\\s+");
+        editorTextArea.addEventHandler(KeyEvent.KEY_PRESSED, KE -> {
             // auto-indent
-            if ( KE.getCode() == KeyCode.ENTER && !KE.isShiftDown() ) {
+            if (KE.getCode() == KeyCode.ENTER && !KE.isShiftDown()) {
                 int caretPosition = editorTextArea.getCaretPosition();
                 int currentParagraph = editorTextArea.getCurrentParagraph();
-                Matcher m0 = whiteSpace.matcher( editorTextArea.getParagraph( currentParagraph-1 ).getSegments().get( 0 ) );
-                if ( m0.find() ) Platform.runLater( () -> editorTextArea.insertText( caretPosition, m0.group() ) );
+                Matcher m0 = whiteSpace.matcher(editorTextArea.getParagraph(currentParagraph - 1).getSegments().get(0));
+                if (m0.find())
+                    Platform.runLater(() -> editorTextArea.insertText(caretPosition, m0.group()));
             }
             // replace tab to four space
-            if(KE.getCode() == KeyCode.TAB){
+            if (KE.getCode() == KeyCode.TAB) {
                 int caretPosition = editorTextArea.getCaretPosition();
-                editorTextArea.replaceText( caretPosition-1,caretPosition, "    ");
+                editorTextArea.replaceText(caretPosition - 1, caretPosition, "    ");
             }
         });
     }
 
-    private void initDiagnosticTooltip(){
+    private void initDiagnosticTooltip() {
         // tooltip
         diagPopup = new Popup();
         diagPopupLabel = new Label();
@@ -185,14 +200,14 @@ public class MainEditorController {
                         "-fx-text-fill: white;" +
                         "-fx-padding: 5;");
         editorTextArea.setMouseOverTextDelay(Duration.ofMillis(500));
-        editorTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e->{
+        editorTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
             for (Diagnostic diagnostic : diagnostics) {
                 Range range = diagnostic.getRange();
                 int from = rangeToPosition(editorTextArea, range.getStart());
                 int to = rangeToPosition(editorTextArea, range.getEnd());
                 int chIdx = e.getCharacterIndex();
                 Point2D pos = e.getScreenPosition();
-                if(chIdx >= from && chIdx <= to){
+                if (chIdx >= from && chIdx <= to) {
                     diagPopupLabel.setText(diagnostic.getMessage());
                     diagPopup.show(editorTextArea, pos.getX(), pos.getY() + 10);
                     break;
@@ -204,10 +219,10 @@ public class MainEditorController {
         });
     }
 
-    private void initCompletionTooltip(){
+    private void initCompletionTooltip() {
         completionMenu = new ContextMenu();
-        completionMenu.setOnAction((event)->{
-            MenuItem item = (MenuItem)event.getTarget();
+        completionMenu.setOnAction((event) -> {
+            MenuItem item = (MenuItem) event.getTarget();
             String text = item.getText();
             Range range = (Range) item.getUserData();
             int from = rangeToPosition(editorTextArea, range.getStart());
@@ -215,21 +230,24 @@ public class MainEditorController {
             editorTextArea.replaceText(from, to, text);
         });
 
-        completionMenu.addEventFilter(KeyEvent.KEY_PRESSED, e->{
-            if(e.getCode() == KeyCode.SPACE){e.consume();}
+        completionMenu.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.SPACE) {
+                e.consume();
+            }
         });
         completionMenu.getStyleClass().add("completion-menu");
 
-        ListChangeListener<? super CompletionItem> listener = (list)-> Platform.runLater(() -> {
+        ListChangeListener<? super CompletionItem> listener = (list) -> Platform.runLater(() -> {
             // do your GUI stuff here
             var compList = (List<CompletionItem>) list.getList();
-            if(compList.isEmpty()){
+            if (compList.isEmpty()) {
                 completionMenu.hide();
-            }else {
+            } else {
                 List<MenuItem> tmpList = new ArrayList<>();
                 int count = 0;
                 for (CompletionItem item : compList) {
-                    if(count++ > 30) break;
+                    if (count++ > 30)
+                        break;
                     var edit = item.getTextEdit().getLeft();
                     var menuItem = new MenuItem(edit.getNewText());
                     menuItem.setUserData(edit.getRange());
@@ -240,10 +258,10 @@ public class MainEditorController {
 
                 Optional<Bounds> opt = editorTextArea.getCaretBounds();
 
-                if(opt.isPresent()){
+                if (opt.isPresent()) {
                     double x = opt.get().getCenterX();
                     double y = opt.get().getCenterY();
-                    completionMenu.show(editorTextArea, x+10, y);
+                    completionMenu.show(editorTextArea, x + 10, y);
                 }
             }
         });
@@ -252,10 +270,10 @@ public class MainEditorController {
         CPCompound.getEditor().getCompletionList().addListener(listener);
     }
 
-    private void initDiagnosticRendering(){
+    private void initDiagnosticRendering() {
         // render diagnostic from language server
         EditorContext context = CPCompound.getEditor().getCurrentContext();
-        ListChangeListener<? super Diagnostic> listener = (list)-> Platform.runLater(() -> {
+        ListChangeListener<? super Diagnostic> listener = (list) -> Platform.runLater(() -> {
             // do your GUI stuff here
             this.diagnostics = (List<Diagnostic>) list.getList();
             editorTextArea.setStyleSpans(0,
@@ -268,10 +286,10 @@ public class MainEditorController {
         CPCompound.getEditor().getDiagnostics().addListener(listener);
     }
 
-
-    // Reference: https://github.com/FXMisc/RichTextFX/blob/master/richtextfx-demos/src/main/java/org/fxmisc/richtext/demo/SpellCheckingDemo.java
+    // Reference:
+    // https://github.com/FXMisc/RichTextFX/blob/master/richtextfx-demos/src/main/java/org/fxmisc/richtext/demo/SpellCheckingDemo.java
     // for compute diagnostic style
-    public StyleSpans<Collection<String>> computeDiagnostic(List<Diagnostic> diagnostics, int codeLength){
+    public StyleSpans<Collection<String>> computeDiagnostic(List<Diagnostic> diagnostics, int codeLength) {
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
         int last = 0;
         for (Diagnostic diagnostic : diagnostics) {

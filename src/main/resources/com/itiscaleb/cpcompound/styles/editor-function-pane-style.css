@@ -1,6 +1,10 @@
 .function-tab-pane{
     -fx-background-color: #2C2C2C;
+    -fx-background-radius: 0 0 5 5;
+    -fx-border-radius: 0 0 5 5;
 }
 AnchorPane{
     -fx-background-color: #2C2C2C;
+    -fx-background-radius: 0 0 5 5;
+    -fx-border-radius: 0 0 5 5;
 }
