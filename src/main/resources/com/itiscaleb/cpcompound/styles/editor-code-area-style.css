@@ -26,3 +26,31 @@
     -fx-background-color: #2C2C2C;
     -fx-background-radius: 0 0 5 5;
 }
+
+.underlined-red {
+    -rtfx-underline-color: red;
+    -rtfx-underline-dash-array: 2 2;
+    -rtfx-underline-width: 1;
+    -rtfx-underline-cap: butt;
+}
+
+.underlined-yellow {
+    -rtfx-underline-color: yellow;
+    -rtfx-underline-dash-array: 2 2;
+    -rtfx-underline-width: 1;
+    -rtfx-underline-cap: butt;
+}
+
+.underlined-green {
+    -rtfx-underline-color: green;
+    -rtfx-underline-dash-array: 2 2;
+    -rtfx-underline-width: 1;
+    -rtfx-underline-cap: butt;
+}
+
+.completion-menu {
+    -fx-background-color: black;
+}
+.completion-menu-item{
+    -fx-font-size: 14;
+}

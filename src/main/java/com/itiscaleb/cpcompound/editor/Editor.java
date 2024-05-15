@@ -39,11 +39,12 @@ public class Editor {
 
     public String addContext(String name) throws IOException {
         Path path = Path.of("tmp", name);
-        String key = "file://" + path.toFile().getCanonicalPath();
+        String key = path.normalize().toUri().toString();
+        System.out.println(key);
         if(contexts.containsKey(key)){
             return key;
         }
-        EditorContext context = new EditorContext(path.toFile().getCanonicalPath(), Language.CPP,"");
+        EditorContext context = new EditorContext(key, Language.CPP,"");
         contexts.put(key, context);
         LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
         if(proxy != null){
@@ -53,11 +54,11 @@ public class Editor {
     }
 
     public String addContext(Path path) throws IOException {
-        String key = "file://" + path.toFile().getCanonicalPath();
+        String key = path.normalize().toUri().toString();
         if(contexts.containsKey(key)){
             return key;
         }
-        EditorContext context = new EditorContext(path.toFile().getCanonicalPath(), Language.CPP, Files.readString(path));
+        EditorContext context = new EditorContext(key, Language.CPP, Files.readString(path));
         contexts.put(key, context);
         LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
         if(proxy != null){
@@ -73,10 +74,12 @@ public class Editor {
     public void setCompletionList(List<CompletionItem> items){
         System.out.println("Completion List");
         if(items != null){
-            System.out.println(items.size());
             this.completionItems.setAll(items);
-            System.out.println(this.completionItems);
         }
+    }
+
+    public HashMap<String, EditorContext> getContexts(){
+        return contexts;
     }
 
     public ObservableList<CompletionItem> getCompletionList(){

@@ -13,14 +13,8 @@
 
 <?import org.fxmisc.richtext.CodeArea?>
 
-<<<<<<< Updated upstream
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-       <SplitPane fx:id="codeAreaSplitPane" dividerPositions="0.2" layoutX="165.0" layoutY="39.0" prefHeight="241.0" prefWidth="398.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="54.0">
-=======
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.MainEditorController">
        <SplitPane fx:id="codeAreaSplitPane" dividerPositions="0.2" layoutX="165.0" layoutY="39.0" prefHeight="241.0" prefWidth="398.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="54.0">
->>>>>>> Stashed changes
          <items>
             <TabPane fx:id="funtionTabPane" prefHeight="341.0" prefWidth="397.0" rotateGraphic="true" styleClass="function-tab-pane" tabClosingPolicy="UNAVAILABLE">
               <tabs>
@@ -47,7 +41,7 @@
                <tabs>
                    <Tab fx:id="tab1" text="b.cpp">
                        <content>
-                           <CodeArea fx:id="editorTextArea1" />
+                           <CodeArea fx:id="editorTextArea" />
                        </content>
                    </Tab>
                </tabs>

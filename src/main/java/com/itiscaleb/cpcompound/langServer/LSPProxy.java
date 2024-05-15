@@ -44,11 +44,7 @@ public class LSPProxy {
     }
 
     public void restart() throws IOException {
-        if(process != null){
-            launcher.getRemoteProxy().exit();
-            process.destroy();
-            process = null;
-        }
+        stop();
         start();
     }
 
@@ -96,9 +92,18 @@ public class LSPProxy {
                 .getTextDocumentService()
                 .completion(params);
         future.whenComplete((result, throwable) -> {
-            CPCompound.getEditor().setCompletionList(result.getLeft());
+            CPCompound.getEditor().setCompletionList(result.getRight().getItems());
         });
     }
 
-    public void stop() throws IOException {}
+    public void stop() {
+        if(launcher == null){
+            return;
+        }
+        if(process != null){
+            launcher.getRemoteProxy().exit();
+            process.destroy();
+            process = null;
+        }
+    }
 }

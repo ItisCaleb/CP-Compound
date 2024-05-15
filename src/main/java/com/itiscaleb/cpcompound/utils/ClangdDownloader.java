@@ -31,7 +31,6 @@ public class ClangdDownloader extends Downloader {
                 for (JsonElement elem : arr) {
                     if(elem.getAsJsonObject().get("name").getAsString().contains(substr)){
                         String url = elem.getAsJsonObject().get("browser_download_url").getAsString();
-                        if(!CPCompound.getConfig().cpp_lang_server_path.isEmpty()) break;
                         Path path = Downloader.downloadFromHTTP(url);
                         CPCompound.getConfig().cpp_lang_server_path = "./installed/"+ Utils.unzipFolder(path, "./installed");
                         CPCompound.getConfig().save();
