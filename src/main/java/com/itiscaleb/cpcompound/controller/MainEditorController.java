@@ -3,6 +3,13 @@ package com.itiscaleb.cpcompound.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+<<<<<<< Updated upstream
+=======
+import com.itiscaleb.cpcompound.CPCompound;
+import com.itiscaleb.cpcompound.editor.EditorContext;
+import com.itiscaleb.cpcompound.langServer.LSPProxy;
+import com.itiscaleb.cpcompound.utils.FileManager;
+>>>>>>> Stashed changes
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import io.github.palexdev.materialfx.controls.MFXTooltip;
@@ -61,10 +68,49 @@ public class MainEditorController {
     ToggleButton adjustWindowBtn;
     @FXML
     Button homeBtn,fileBtn,checkerBtn,generatorBtn,noteSystemBtn,settingBtn;
+<<<<<<< Updated upstream
     private void initEditorTextArea() {
         editorTextArea1.setParagraphGraphicFactory(LineNumberFactory.get(editorTextArea1));
         VirtualizedScrollPane<CodeArea> vsPane = new VirtualizedScrollPane<>(editorTextArea1);
         tab1.setContent(vsPane);
+=======
+
+    @FXML
+    CodeArea editorTextArea;
+
+    List<Diagnostic> diagnostics;
+
+    Popup diagPopup;
+    Label diagPopupLabel;
+
+    Popup completionPopup;
+    Label completionPopupLabel;
+    private void loadText2EditorTextArea(String fileName){
+//        System.out.println("Current working directory: " + System.getProperty("user.dir"));
+
+        String content = FileManager.readTextFile("../src/main/resources/com/itiscaleb/cpcompound/data/"+fileName);
+        this.editorTextArea.append(content,"-fx-fill:red");
+    }
+    private void initEditorTextArea() {
+        editorTextArea.setParagraphGraphicFactory(LineNumberFactory.get(editorTextArea));
+        loadText2EditorTextArea("a.txt");
+        VirtualizedScrollPane<CodeArea> vsPane = new VirtualizedScrollPane<>(editorTextArea);
+        tab1.setContent(vsPane);
+        editorTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            EditorContext context = CPCompound.getEditor().getCurrentContext();
+            context.setCode(newValue);
+            LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
+            // request to change
+            proxy.didChange(context);
+
+            // request for completion request
+            proxy.requestCompletion(context, new Position(editorTextArea.getCurrentParagraph(), editorTextArea.getCaretColumn()));
+        });
+//        initEditorUtility();
+//        initDiagnosticTooltip();
+//        initDiagnosticRendering();
+//        initCompletionTooltip();
+>>>>>>> Stashed changes
     }
     private void initIcons(){
         compileBtn.setGraphic(new FontIcon());
