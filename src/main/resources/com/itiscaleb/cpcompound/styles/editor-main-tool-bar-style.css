@@ -1,6 +1,26 @@
 .tool-bar{
     -fx-background-color: transparent;
+    -fx-alignment: BASELINE_RIGHT;
     -fx-spacing: 40;
+}
+#Add-file-button{
+    -fx-background-color: #b68b45;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-text-size: 30px;
+    -fx-cursor: HAND;
+}
+#Add-file-button:hover{
+    -fx-background-color: #eab051;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-text-size: 30px;
+    -fx-cursor: HAND;
+}
+#Add-file-button .ikonli-font-icon{
+    -fx-icon-code: "anto-file-add";
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 20px;
 }
 #Template-button{
     -fx-background-color: #ad3fa6;

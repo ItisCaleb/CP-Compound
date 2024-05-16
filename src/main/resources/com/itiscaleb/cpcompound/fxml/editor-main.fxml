@@ -39,7 +39,7 @@
             </TabPane>
             <TabPane id="editor-text-tab-pane" fx:id="editorTextTabPane" prefHeight="341.0" prefWidth="397.0" rotateGraphic="true">
                <tabs>
-                   <Tab fx:id="tab1" text="b.cpp">
+                   <Tab fx:id="currentTab" text="a.txt">
                        <content>
                            <CodeArea fx:id="editorTextArea" />
                        </content>
@@ -54,8 +54,9 @@
             </TabPane>
          </items>
       </SplitPane>
-      <ToolBar id="main-editor-tool-bar" fx:id="mainEditorToolBar" layoutX="48.0" layoutY="6.0" prefHeight="47.0" prefWidth="600" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+      <ToolBar id="main-editor-tool-bar" fx:id="mainEditorToolBar" layoutX="48.0" layoutY="6.0" prefHeight="47.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="10.0">
         <items>
+            <MFXButton id="Add-file-button" fx:id="addFileBtn" text="" textAlignment="RIGHT" onAction="#handleAddNewFile" />
             <MFXButton id="Template-button" fx:id="templateBtn" text="Template" textAlignment="RIGHT" />
             <MFXButton id="Compile-button" fx:id="compileBtn" text="Compile" textAlignment="RIGHT" />
             <MFXButton id="Run-button" fx:id="runBtn" text="Run" textAlignment="RIGHT" />
