@@ -56,6 +56,7 @@ dependencies {
     implementation 'lk.vivoxalabs.customstage:CustomStage:1.3.2'
     implementation 'org.kordamp.ikonli:ikonli-coreui-pack:12.3.1'
     implementation 'org.kordamp.ikonli:ikonli-lineawesome-pack:12.3.1'
+    implementation 'org.kordamp.ikonli:ikonli-antdesignicons-pack:12.3.1'
 }
 
 test {
