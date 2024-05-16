@@ -11,7 +11,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<?import org.fxmisc.richtext.CodeArea?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.MainEditorController">
        <SplitPane fx:id="codeAreaSplitPane" dividerPositions="0.2" layoutX="165.0" layoutY="39.0" prefHeight="241.0" prefWidth="398.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="54.0">
@@ -39,11 +38,6 @@
             </TabPane>
             <TabPane id="editor-text-tab-pane" fx:id="editorTextTabPane" prefHeight="341.0" prefWidth="397.0" rotateGraphic="true">
                <tabs>
-                   <Tab fx:id="currentTab" text="a.txt">
-                       <content>
-                           <CodeArea fx:id="editorTextArea" />
-                       </content>
-                   </Tab>
                </tabs>
                <cursor>
                   <Cursor fx:constant="HAND" />

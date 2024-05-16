@@ -1,5 +1,6 @@
 package com.itiscaleb.cpcompound.controller;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -7,11 +8,13 @@ import java.util.regex.Pattern;
 import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.editor.EditorContext;
 import com.itiscaleb.cpcompound.utils.FileManager;
+import com.itiscaleb.cpcompound.utils.TabManager;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
@@ -55,33 +58,29 @@ public class MainEditorController {
     private SplitPane codeAreaSplitPane, codeAreaBase;
     @FXML
     private AnchorPane editorTabPaneBase;
-
     @FXML
     ToolBar mainEditorToolBar;
     @FXML
-    MFXButton addFileBtn,compileBtn, templateBtn, runBtn, searchIconBtn, replaceIconBtn, helpIconBtn, minimizeWindowBtn,
-            closeWindowBtn;
+    MFXButton addFileBtn,compileBtn, templateBtn, runBtn, searchIconBtn, replaceIconBtn, helpIconBtn, minimizeWindowBtn, closeWindowBtn;
     @FXML
     ToggleButton adjustWindowBtn;
     @FXML
     Button homeBtn, fileBtn, checkerBtn, generatorBtn, noteSystemBtn, settingBtn;
-    @FXML
-    CodeArea editorTextArea;
-    @FXML
+
+    CodeArea currentTextArea = new CodeArea();
     Tab currentTab;
     List<Diagnostic> diagnostics;
 
     Popup diagPopup;
     Label diagPopupLabel;
-
+    final TabManager tabManager = new TabManager();
     ContextMenu completionMenu;
-    private Map<Object, String> tabContentMap = new HashMap<>();
-    private Map<Object, Boolean> tabContentSaveStateMap = new HashMap<>();
+
     private void loadText2EditorTextArea(String fileName,Tab tab) {
         // System.out.println("Current working directory: " +System.getProperty("user.dir"));
         String content = FileManager.readTextFile("../src/main/resources/com/itiscaleb/cpcompound/data/" + fileName);
-        editorTextArea.replace(0,editorTextArea.getLength(),content, "-fx-fill:red");
-        tabContentMap.put(tab, content);
+        replaceCodeArea(currentTextArea, content);
+        tabManager.updateTabContent(tab,content);
     }
     private void saveTextFile(String fileName) {
         FileManager.writeTextFile("../src/main/resources/com/itiscaleb/cpcompound/data/" + fileName,"");
@@ -91,31 +90,33 @@ public class MainEditorController {
         codeArea.setOnKeyPressed(event -> {
             if (saveCombination.match(event)) {
                 String currentText = codeArea.getText();
-                tabContentMap.put(currentTab, currentText);
-                String fileName = currentTab.getText().substring(0,currentTab.getText().length()-1);
-                currentTab.setText(fileName);
-                FileManager.writeTextFile(fileName,currentText);
-                System.out.println("Content saved for tab: " + currentTab.getText());
+                tabManager.updateTabContent(currentTab, currentText);
+                tabManager.saveTab(currentTab, currentText);
+                FileManager.writeTextFile(currentTab.getText(),currentText);
             }
         });
     }
     private void setUpCodeArea(Tab setUpTab){
-        System.out.println("set up : "+setUpTab.getText());
-        editorTextArea.setParagraphGraphicFactory(LineNumberFactory.get(editorTextArea));
-        VirtualizedScrollPane<CodeArea> vsPane = new VirtualizedScrollPane<>(editorTextArea);
+        currentTextArea.setParagraphGraphicFactory(LineNumberFactory.get(currentTextArea));
+        VirtualizedScrollPane<CodeArea> vsPane = new VirtualizedScrollPane<>(currentTextArea);
         setUpTab.setContent(vsPane);
-        setCodeAreaListener(editorTextArea);
+        setCodeAreaListener(currentTextArea);
         setUpTab.setOnClosed(event -> handleTabClosed(event, setUpTab));
+        currentTab = setUpTab;
     }
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/itiscaleb/cpcompound/fxml/dynamic-codeArea-template.fxml"));
     @FXML
     private void handleAddNewFile() {
         currentTabCount++;
         String fileName="Untitled"+currentTabCount+".txt";
-        Tab newTab = new Tab(fileName+"*");
-        saveTextFile(fileName);
-        tabContentMap.put(newTab,"");
-        tabContentSaveStateMap.put(newTab,false);
-        editorTextArea.replace(0,editorTextArea.getLength(),"","-fx-fill:white");
+        Tab newTab = new Tab();
+        try {
+            newTab = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        tabManager.addTab(newTab,fileName,"");
+        replaceCodeArea(currentTextArea,"");
         setUpCodeArea(newTab);
         editorTextTabPane.getTabs().add(newTab);
         editorTextTabPane.getSelectionModel().select(newTab);
@@ -123,39 +124,21 @@ public class MainEditorController {
     @FXML
     private void handleTabClosed(Event event, Tab closedTab){
         System.out.println("Tab" + currentTabCount+"closed");
-        if(!tabContentSaveStateMap.get(closedTab)){
-            tabContentMap.remove(closedTab);
+        if(!tabManager.getTabSaveState(closedTab)){
+            tabManager.removeTab(closedTab);
         }
-
+    }
+    private void replaceCodeArea(CodeArea codeArea, String content){
+        codeArea.replace(0,codeArea.getLength(),content,"-fx-fill:white");
     }
     private void setHandleChangeTab(){
         editorTextTabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
-            System.out.println("change tab "+newTab.getText());
-            //change tab
-            currentTab = newTab;
-            System.out.println("current tab "+currentTab.getText());
-            loadContentIntoCodeArea();
+            replaceCodeArea(currentTextArea,tabManager.getTabContent(newTab));
             setUpCodeArea(newTab);
         });
     }
-    private void loadContentIntoCodeArea() {
-        System.out.println("load content:");
-        System.out.println(tabContentMap.get(currentTab));
-        editorTextArea.replace(0,editorTextArea.getLength(),tabContentMap.get(currentTab),"-fx-fill:white");
-        System.out.println("editor content:"+editorTextArea.getText());
-    }
     private void initEditorTextArea() {
-//        Tab initTab = new Tab(currentTab.getText());
-//        tabContentMap.put(initTab,"");
-//        loadText2EditorTextArea(initTab.getText(),initTab);
-//        editorTextArea.setParagraphGraphicFactory(LineNumberFactory.get(editorTextArea));
-//        VirtualizedScrollPane<CodeArea> vsPane = new VirtualizedScrollPane<>(editorTextArea);
-//        currentTab.setContent(vsPane);
-//        System.out.println("init: "+tabContentMap.get(initTab));
-//        tabContentSaveStateMap.put(initTab,true);
-//        setUpCodeArea(initTab);
-
-//        editorTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
+//        currentTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
 //            EditorContext context = CPCompound.getEditor().getCurrentContext();
 //            context.setCode(newValue);
 //            LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
@@ -163,9 +146,9 @@ public class MainEditorController {
 //            proxy.didChange(context);
 //
 //            // request for completion request
-//            int paragraph = editorTextArea.getCurrentParagraph();
-//            int column = editorTextArea.getCaretColumn();
-//            String text = editorTextArea.getText();
+//            int paragraph = currentTextArea.getCurrentParagraph();
+//            int column = currentTextArea.getCaretColumn();
+//            String text = currentTextArea.getText();
 //            proxy.requestCompletion(context, new Position(paragraph, column));
 //        });
 //        initEditorUtility();
@@ -212,6 +195,10 @@ public class MainEditorController {
     // currentStage.close();
     // }
     @FXML
+    private Tab dynamicTab;
+    @FXML
+    private CodeArea dynamicEditorTextArea;
+    @FXML
     public void initialize() {
         Platform.runLater(() -> {
             initIcons();
@@ -239,21 +226,21 @@ public class MainEditorController {
     }
 
     private void initEditorUtility() {
-        editorTextArea.setParagraphGraphicFactory(LineNumberFactory.get(editorTextArea));
+        currentTextArea.setParagraphGraphicFactory(LineNumberFactory.get(currentTextArea));
         final Pattern whiteSpace = Pattern.compile("^\\s+");
-        editorTextArea.addEventHandler(KeyEvent.KEY_PRESSED, KE -> {
+        currentTextArea.addEventHandler(KeyEvent.KEY_PRESSED, KE -> {
             // auto-indent
             if (KE.getCode() == KeyCode.ENTER && !KE.isShiftDown()) {
-                int caretPosition = editorTextArea.getCaretPosition();
-                int currentParagraph = editorTextArea.getCurrentParagraph();
-                Matcher m0 = whiteSpace.matcher(editorTextArea.getParagraph(currentParagraph - 1).getSegments().get(0));
+                int caretPosition = currentTextArea.getCaretPosition();
+                int currentParagraph = currentTextArea.getCurrentParagraph();
+                Matcher m0 = whiteSpace.matcher(currentTextArea.getParagraph(currentParagraph - 1).getSegments().get(0));
                 if (m0.find())
-                    Platform.runLater(() -> editorTextArea.insertText(caretPosition, m0.group()));
+                    Platform.runLater(() -> currentTextArea.insertText(caretPosition, m0.group()));
             }
             // replace tab to four space
             if (KE.getCode() == KeyCode.TAB) {
-                int caretPosition = editorTextArea.getCaretPosition();
-                editorTextArea.replaceText(caretPosition - 1, caretPosition, "    ");
+                int caretPosition = currentTextArea.getCaretPosition();
+                currentTextArea.replaceText(caretPosition - 1, caretPosition, "    ");
             }
         });
     }
@@ -267,22 +254,22 @@ public class MainEditorController {
                 "-fx-background-color: black;" +
                         "-fx-text-fill: white;" +
                         "-fx-padding: 5;");
-        editorTextArea.setMouseOverTextDelay(Duration.ofMillis(500));
-        editorTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
+        currentTextArea.setMouseOverTextDelay(Duration.ofMillis(500));
+        currentTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
             for (Diagnostic diagnostic : diagnostics) {
                 Range range = diagnostic.getRange();
-                int from = rangeToPosition(editorTextArea, range.getStart());
-                int to = rangeToPosition(editorTextArea, range.getEnd());
+                int from = rangeToPosition(currentTextArea, range.getStart());
+                int to = rangeToPosition(currentTextArea, range.getEnd());
                 int chIdx = e.getCharacterIndex();
                 Point2D pos = e.getScreenPosition();
                 if (chIdx >= from && chIdx <= to) {
                     diagPopupLabel.setText(diagnostic.getMessage());
-                    diagPopup.show(editorTextArea, pos.getX(), pos.getY() + 10);
+                    diagPopup.show(currentTextArea, pos.getX(), pos.getY() + 10);
                     break;
                 }
             }
         });
-        editorTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
+        currentTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
             diagPopup.hide();
         });
     }
@@ -293,9 +280,9 @@ public class MainEditorController {
             MenuItem item = (MenuItem) event.getTarget();
             String text = item.getText();
             Range range = (Range) item.getUserData();
-            int from = rangeToPosition(editorTextArea, range.getStart());
-            int to = rangeToPosition(editorTextArea, range.getEnd());
-            editorTextArea.replaceText(from, to, text);
+            int from = rangeToPosition(currentTextArea, range.getStart());
+            int to = rangeToPosition(currentTextArea, range.getEnd());
+            currentTextArea.replaceText(from, to, text);
         });
 
         completionMenu.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
@@ -324,12 +311,12 @@ public class MainEditorController {
                 }
                 completionMenu.getItems().setAll(tmpList);
 
-                Optional<Bounds> opt = editorTextArea.getCaretBounds();
+                Optional<Bounds> opt = currentTextArea.getCaretBounds();
 
                 if (opt.isPresent()) {
                     double x = opt.get().getCenterX();
                     double y = opt.get().getCenterY();
-                    completionMenu.show(editorTextArea, x + 10, y);
+                    completionMenu.show(currentTextArea, x + 10, y);
                 }
             }
         });
@@ -344,7 +331,7 @@ public class MainEditorController {
         ListChangeListener<? super Diagnostic> listener = (list) -> Platform.runLater(() -> {
             // do your GUI stuff here
             this.diagnostics = (List<Diagnostic>) list.getList();
-            editorTextArea.setStyleSpans(0,
+            currentTextArea.setStyleSpans(0,
                     computeDiagnostic(
                             this.diagnostics,
                             context.getCode().length()));
@@ -363,11 +350,11 @@ public class MainEditorController {
         for (Diagnostic diagnostic : diagnostics) {
             // convert line and character to index
             Range range = diagnostic.getRange();
-            int from = editorTextArea
+            int from = currentTextArea
                     .getAbsolutePosition(
                             range.getStart().getLine(),
                             range.getStart().getCharacter());
-            int to = editorTextArea
+            int to = currentTextArea
                     .getAbsolutePosition(
                             range.getEnd().getLine(),
                             range.getEnd().getCharacter());
