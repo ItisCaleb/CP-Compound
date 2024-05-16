@@ -17,12 +17,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.eclipse.lsp4j.CompletionItem;
@@ -53,7 +52,7 @@ public class MainEditorController {
     @FXML
     private Stage currentStage;
     @FXML
-    private TabPane funtionTabPane, editorTextTabPane;
+    private TabPane functionTabPane, editorTextTabPane;
     @FXML
     private SplitPane codeAreaSplitPane, codeAreaBase;
     @FXML
@@ -196,16 +195,74 @@ public class MainEditorController {
     // private void closeWindow() {
     // currentStage.close();
     // }
-    @FXML
-    private Tab dynamicTab;
-    @FXML
-    private CodeArea dynamicEditorTextArea;
+    private boolean isDragging = false;
+    private void updateTabWidths() {
+        double tabPaneWidth = functionTabPane.getWidth();
+        double newTabWidth = tabPaneWidth / 2;  // 保证有两个标签，每个宽度为一半
+        Label tabLabel;
+        String tabLabelStyle =
+                "-fx-font-weight: bold;" +
+                "-fx-alignment: CENTER;" +
+                "-fx-text-fill: white;" +
+                "-fx-padding: 0 0 0 0;";
+        // 设置每个标签的宽度
+        String tabStyle=
+                "-fx-pref-height: 38px;" +
+                "-fx-border-radius: 5px 5px 0 0;" +
+                "-fx-background-radius: 5px 5px 0 0;" +
+                "-fx-border-width: 1px;" +
+                "-fx-padding: 0 0 0 0;"+
+                "-fx-pref-width: " + newTabWidth + ";";
+        for (Tab tab : functionTabPane.getTabs()) {
+            tab.setStyle(tabStyle);
+            tabLabel = new Label(tab.getText());
+            tabLabelStyle +="-fx-pref-width: " + newTabWidth + ";";
+            tabLabel.setStyle(tabLabelStyle);
+            tab.setGraphic(tabLabel);
+
+        }
+//        for (Node node : functionTabPane.lookupAll("*")) {
+//            System.out.println(node.getClass().getSimpleName() + ": " + node.getStyleClass());
+//        }
+
+    }
+    private boolean isEventFromTabHeader(ScrollEvent event) {
+        // 递归检查事件源是否位于TabPane的标签头部
+        Node target = (Node) event.getTarget();
+        while (target != null && target != codeAreaSplitPane) {
+            if (target.getStyleClass().contains("tab-header-area")) {
+                return true;
+            }
+            target = target.getParent();
+        }
+        return false;
+    }
+
     @FXML
     public void initialize() {
         Platform.runLater(() -> {
             initIcons();
             initEditorTextArea();
             setHandleChangeTab();
+
+            // 监听分隔符位置变化
+            codeAreaSplitPane.getDividers().get(0).positionProperty().addListener((obs, oldPos, newPos) -> {
+                isDragging = true;
+            });
+
+            // 监听鼠标事件来更新Tab宽度
+            codeAreaSplitPane.addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
+                if (isDragging) {
+                    updateTabWidths();
+                    isDragging = false;
+                }
+            });
+            codeAreaSplitPane.addEventFilter(ScrollEvent.SCROLL, event -> {
+                if (isEventFromTabHeader(event)) {
+                    event.consume(); // 消耗事件，防止TabPane滚动
+                }
+            });
+
         });
         System.out.println("initialize");
     }

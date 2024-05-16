@@ -14,7 +14,7 @@
 <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1098.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.MainEditorController">
        <SplitPane fx:id="codeAreaSplitPane" dividerPositions="0.2" layoutX="165.0" layoutY="39.0" prefHeight="241.0" prefWidth="398.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="54.0">
          <items>
-            <TabPane fx:id="funtionTabPane" prefHeight="341.0" prefWidth="397.0" rotateGraphic="true" styleClass="function-tab-pane" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="functionTabPane" prefHeight="341.0" prefWidth="397.0" rotateGraphic="true" styleClass="function-tab-pane" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab fx:id="functionTab" text="Checker">
                      <content>
