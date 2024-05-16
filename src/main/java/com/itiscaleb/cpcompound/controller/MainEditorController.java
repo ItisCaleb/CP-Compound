@@ -82,17 +82,19 @@ public class MainEditorController {
         replaceCodeArea(currentTextArea, content);
         tabManager.updateTabContent(tab,content);
     }
-    private void saveTextFile(String fileName) {
-        FileManager.writeTextFile("../src/main/resources/com/itiscaleb/cpcompound/data/" + fileName,"");
+    private void saveTextFile(String fileName,String content) {
+        FileManager.writeTextFile("../src/main/resources/com/itiscaleb/cpcompound/data/" + fileName,content);
     }
     static private int currentTabCount = 1;
     private void setCodeAreaListener(CodeArea codeArea) {
         codeArea.setOnKeyPressed(event -> {
             if (saveCombination.match(event)) {
                 String currentText = codeArea.getText();
+                System.out.println("save content:\n " + currentText);
+                System.out.println("in "+ currentTab.getText()+" tab");
                 tabManager.updateTabContent(currentTab, currentText);
                 tabManager.saveTab(currentTab, currentText);
-                FileManager.writeTextFile(currentTab.getText(),currentText);
+                saveTextFile(currentTab.getText(),currentText);
             }
         });
     }
