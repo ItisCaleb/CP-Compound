@@ -20,6 +20,7 @@ public class Editor {
 
     private final ObservableList<Diagnostic> diagnostics = FXCollections.observableArrayList();
     private final ObservableList<CompletionItem> completionItems = FXCollections.observableArrayList();
+    private int lastUnnamed = 0;
 
     public void switchContext(String key){
         EditorContext context = contexts.get(key);
@@ -37,7 +38,12 @@ public class Editor {
         return contexts.get(key);
     }
 
-    public String addContext(String name) throws IOException {
+    public String addContext() {
+        return this.addContext("Untitled-"+(lastUnnamed++));
+    }
+
+    public String addContext(String name){
+        System.out.println(name);
         Path path = Path.of("tmp", name);
         String key = path.normalize().toUri().toString();
         System.out.println(key);
@@ -65,6 +71,14 @@ public class Editor {
             proxy.didOpen(context);
         }
         return key;
+    }
+
+    public void removeContext(String name) {
+        EditorContext context = contexts.get(name);
+        if(context != null){
+            contexts.remove(name);
+
+        }
     }
 
     public void refreshDiagnostic(){

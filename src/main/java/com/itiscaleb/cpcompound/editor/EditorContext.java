@@ -14,6 +14,7 @@ public class EditorContext {
     private Language lang;
     private int version;
     private int lastVersion;
+    private boolean hasChanged;
     private List<Diagnostic> diagnostics = new ArrayList<>();
     EditorContext(String fileURI, Language lang, String code) {
         this.fileURI = fileURI;
@@ -64,6 +65,11 @@ public class EditorContext {
         this.code = code;
         this.lastVersion = this.version;
         this.version++;
+        this.hasChanged = true;
+    }
+
+    void save(){
+        this.hasChanged = false;
     }
 
     public void setDiagnostics(List<Diagnostic> diagnostics){

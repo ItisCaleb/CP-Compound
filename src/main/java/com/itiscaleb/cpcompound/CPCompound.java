@@ -75,8 +75,6 @@ public class CPCompound extends Application {
         clang.start();
 
         editor = new Editor();
-        String key = editor.addContext("unnamed");
-        editor.switchContext(key);
     }
     public static Config getConfig(){
         return config;
