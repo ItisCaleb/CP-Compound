@@ -1,5 +1,6 @@
 package com.itiscaleb.cpcompound.controller;
 
+import java.io.File;
 import java.time.Duration;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -22,6 +23,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import org.eclipse.lsp4j.CompletionItem;
@@ -112,9 +114,11 @@ public class MainEditorController {
     }
     private void setHandleChangeTab(){
         editorTextTabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
-            String key = (String)newTab.getUserData();
-            CPCompound.getEditor().switchContext(key);
-            switchCodeArea(newTab);
+            if(newTab != null){
+                String key = (String)newTab.getUserData();
+                CPCompound.getEditor().switchContext(key);
+                switchCodeArea(newTab);
+            }
         });
     }
     private void initEditorTextArea() {
@@ -210,10 +214,27 @@ public class MainEditorController {
                 mainTextArea.replaceText(caretPosition - 1, caretPosition, "    ");
             }
         });
+
+        // save code
         mainTextArea.setOnKeyPressed(event -> {
             if (saveCombination.match(event)) {
                 tabManager.saveTab(currentTab);
-                //FileManager.writeTextFile(currentTab.getText(),currentText);
+                EditorContext context = CPCompound.getEditor().getCurrentContext();
+                if(context.isTemp()){
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Save File");
+                    fileChooser.getExtensionFilters().addAll(
+                            new FileChooser.ExtensionFilter("C File", "*.c"),
+                            new FileChooser.ExtensionFilter("C++ File", "*.cc", "*.cpp"),
+                            new FileChooser.ExtensionFilter("Python File","*.py"),
+                            new FileChooser.ExtensionFilter("All file", "*.*"));
+                    File file = fileChooser.showSaveDialog(mainTextArea.getScene().getWindow());
+                    if(file != null){
+                        context.setPath(file);
+                        context.setTemp(false);
+                    }
+                }
+                context.save();
             }
         });
     }

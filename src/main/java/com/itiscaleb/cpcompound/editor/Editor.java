@@ -50,7 +50,7 @@ public class Editor {
         if(contexts.containsKey(key)){
             return key;
         }
-        EditorContext context = new EditorContext(key, Language.CPP,"");
+        EditorContext context = new EditorContext(path, Language.CPP,"",true);
         contexts.put(key, context);
         LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
         if(proxy != null){
@@ -64,7 +64,7 @@ public class Editor {
         if(contexts.containsKey(key)){
             return key;
         }
-        EditorContext context = new EditorContext(key, Language.CPP, Files.readString(path));
+        EditorContext context = new EditorContext(path, Language.CPP, Files.readString(path), false);
         contexts.put(key, context);
         LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
         if(proxy != null){
@@ -74,11 +74,7 @@ public class Editor {
     }
 
     public void removeContext(String name) {
-        EditorContext context = contexts.get(name);
-        if(context != null){
-            contexts.remove(name);
-
-        }
+        contexts.remove(name);
     }
 
     public void refreshDiagnostic(){
