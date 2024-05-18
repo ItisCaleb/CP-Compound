@@ -20,6 +20,7 @@ public class Editor {
 
     private final ObservableList<Diagnostic> diagnostics = FXCollections.observableArrayList();
     private final ObservableList<CompletionItem> completionItems = FXCollections.observableArrayList();
+    private int lastUnnamed = 0;
 
     public void switchContext(String key){
         EditorContext context = contexts.get(key);
@@ -37,14 +38,19 @@ public class Editor {
         return contexts.get(key);
     }
 
-    public String addContext(String name) throws IOException {
+    public String addContext() {
+        return this.addContext("Untitled-"+(lastUnnamed++));
+    }
+
+    public String addContext(String name){
+        System.out.println(name);
         Path path = Path.of("tmp", name);
         String key = path.normalize().toUri().toString();
         System.out.println(key);
         if(contexts.containsKey(key)){
             return key;
         }
-        EditorContext context = new EditorContext(key, Language.CPP,"");
+        EditorContext context = new EditorContext(path, Language.CPP,"",true);
         contexts.put(key, context);
         LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
         if(proxy != null){
@@ -58,13 +64,17 @@ public class Editor {
         if(contexts.containsKey(key)){
             return key;
         }
-        EditorContext context = new EditorContext(key, Language.CPP, Files.readString(path));
+        EditorContext context = new EditorContext(path, Language.CPP, Files.readString(path), false);
         contexts.put(key, context);
         LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
         if(proxy != null){
             proxy.didOpen(context);
         }
         return key;
+    }
+
+    public void removeContext(String name) {
+        contexts.remove(name);
     }
 
     public void refreshDiagnostic(){
