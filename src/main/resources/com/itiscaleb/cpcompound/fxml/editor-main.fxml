@@ -35,16 +35,15 @@
                     <URL value="@../styles/editor-function-pane-style.css" />
                 </stylesheets>
             </TabPane>
-            <TabPane id="editor-text-tab-pane" fx:id="editorTextTabPane" prefHeight="341.0" prefWidth="397.0" rotateGraphic="true">
-               <tabs>
-               </tabs>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-                <stylesheets>
-                    <URL value="@../styles/editor-main-tab-pane-style.css" />
-                </stylesheets>
-            </TabPane>
+             <TabPane id="editor-text-tab-pane" fx:id="editorTextTabPane" prefHeight="341.0" prefWidth="397.0"
+                      rotateGraphic="true">
+                 <cursor>
+                     <Cursor fx:constant="HAND"/>
+                 </cursor>
+                 <stylesheets>
+                     <URL value="@../styles/editor-main-tab-pane-style.css"/>
+                 </stylesheets>
+             </TabPane>
          </items>
       </SplitPane>
       <ToolBar id="main-editor-tool-bar" fx:id="mainEditorToolBar" layoutX="48.0" layoutY="6.0" prefHeight="47.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="10.0">

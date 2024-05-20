@@ -1,43 +1,49 @@
 package com.itiscaleb.cpcompound.editor;
 
 import com.itiscaleb.cpcompound.langServer.Language;
+import com.itiscaleb.cpcompound.utils.FileManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.eclipse.lsp4j.Diagnostic;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EditorContext {
-    private String fileURI;
+    private Path path;
     private String code;
     private Language lang;
     private int version;
     private int lastVersion;
+    private boolean hasChanged;
+    private boolean isTemp;
     private List<Diagnostic> diagnostics = new ArrayList<>();
-    EditorContext(String fileURI, Language lang, String code) {
-        this.fileURI = fileURI;
+    EditorContext(Path path, Language lang, String code, boolean isTemp) {
+        this.path = path.normalize();
         this.code = code;
         this.lang = lang;
         this.version = 0;
         this.lastVersion = 0;
+        this.isTemp = isTemp;
     }
 
-    EditorContext(String fileURI, String code) {
-        this.fileURI = fileURI;
+    EditorContext(Path path, String code, boolean isTemp) {
+        this.path = path.normalize();
         this.code = code;
         this.version = 0;
         this.lastVersion = 0;
-        if(this.fileURI.endsWith(".cpp") || this.fileURI.endsWith(".cc")
-                || this.fileURI.endsWith(".c++")){
+        if(this.path.endsWith(".cpp") || this.path.endsWith(".cc")
+                || this.path.endsWith(".c++")){
             this.lang = Language.CPP;
-        }else if (this.fileURI.endsWith(".c")){
+        }else if (this.path.endsWith(".c")){
             this.lang = Language.C;
-        }else if (this.fileURI.endsWith(".py")){
+        }else if (this.path.endsWith(".py")){
             this.lang = Language.Python;
         }else
             this.lang = Language.None;
-
+        this.isTemp = isTemp;
     }
 
     public String getCode(){
@@ -45,7 +51,7 @@ public class EditorContext {
     }
 
     public String getFileURI() {
-        return fileURI;
+        return path.toUri().toString();
     }
 
     public int getVersion(){
@@ -64,6 +70,15 @@ public class EditorContext {
         this.code = code;
         this.lastVersion = this.version;
         this.version++;
+        this.hasChanged = true;
+    }
+
+    public void save(){
+        this.hasChanged = false;
+        FileManager.writeTextFile(this.path, code);
+    }
+    public void setPath(File file){
+        this.path = file.toPath().normalize();
     }
 
     public void setDiagnostics(List<Diagnostic> diagnostics){
@@ -74,5 +89,11 @@ public class EditorContext {
         return diagnostics;
     }
 
+    public boolean isTemp() {
+        return isTemp;
+    }
 
+    public void setTemp(boolean temp) {
+        isTemp = temp;
+    }
 }
