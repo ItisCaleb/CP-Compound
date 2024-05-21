@@ -15,14 +15,19 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
@@ -51,7 +56,7 @@ public class MainEditorController {
     }
     private final KeyCombination saveCombination =  new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN);
     @FXML
-    private TabPane funtionTabPane, editorTextTabPane;
+    private TabPane functionTabPane, editorTextTabPane;
     @FXML
     private SplitPane codeAreaSplitPane, codeAreaBase;
     @FXML
@@ -64,6 +69,11 @@ public class MainEditorController {
     ToggleButton adjustWindowBtn;
     @FXML
     Button homeBtn, fileBtn, checkerBtn, generatorBtn, noteSystemBtn, settingBtn;
+    @FXML
+    Button functionTabButton, terminalTabButton;
+    @FXML
+    StackPane functionPaneContentArea;
+
 
     CodeArea mainTextArea = new CodeArea();
     Tab currentTab;
@@ -110,6 +120,7 @@ public class MainEditorController {
     @FXML
     private void handleTabClosed(Event event, Tab closedTab){
         if(!tabManager.getTabSaveState(closedTab)){
+
         }
     }
     private void setHandleChangeTab(){
@@ -181,6 +192,39 @@ public class MainEditorController {
     // private void closeWindow() {
     // currentStage.close();
     // }
+    @FXML
+    private void handleTabSwitch(javafx.event.ActionEvent event) {
+        Button clickedButton = (Button) event.getSource();
+
+        if (clickedButton == functionTabButton) {
+            functionTabButton.setStyle("-fx-border-color: transparent transparent transparent white;-fx-opacity: 1");
+            terminalTabButton.setStyle("-fx-border-color: transparent transparent transparent transparent;-fx-opacity: 0.5");
+            loadContent("/com/itiscaleb/cpcompound/fxml/file-treeView.fxml", functionTabButton);
+        } else if (clickedButton == terminalTabButton) {
+            terminalTabButton.setStyle("-fx-border-color: transparent transparent transparent white;-fx-opacity: 1");
+            functionTabButton.setStyle("-fx-border-color: transparent transparent transparent transparent;-fx-opacity: 0.5");
+//            loadContent("TerminalContent.fxml", terminalTab);
+        }
+    }
+
+    private void loadContent(String fxmlFile, Button activeTab) {
+        try {
+            VBox content = FXMLLoader.load(getClass().getResource(fxmlFile));
+            System.out.println("functionPaneContentArea width: " + functionPaneContentArea.getWidth());
+            System.out.println("functionPaneContentArea height: " + functionPaneContentArea.getHeight());
+            content.prefWidthProperty().bind(functionPaneContentArea.widthProperty());
+            content.prefHeightProperty().bind(functionPaneContentArea.heightProperty());
+            functionPaneContentArea.getChildren().setAll(content);
+            System.out.println(content.getPrefWidth());
+            // 更新CSS样式
+//            functionTabButton.getStyleClass().remove("active-tab");
+//            terminalTabButton.getStyleClass().remove("active-tab");
+//            activeTab.getStyleClass().add("active-tab");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     public void initialize() {
         Platform.runLater(() -> {

@@ -57,6 +57,10 @@ dependencies {
     implementation 'org.kordamp.ikonli:ikonli-coreui-pack:12.3.1'
     implementation 'org.kordamp.ikonli:ikonli-lineawesome-pack:12.3.1'
     implementation 'org.kordamp.ikonli:ikonli-antdesignicons-pack:12.3.1'
+    implementation 'org.kordamp.ikonli:ikonli-fontawesome5-pack:12.3.1'
+    implementation 'org.kordamp.ikonli:ikonli-boxicons-pack:12.3.1'
+    implementation 'org.kordamp.ikonli:ikonli-evaicons-pack:12.3.1'
+    implementation 'org.kordamp.ikonli:ikonli-dashicons-pack:12.3.1'
 }
 
 test {

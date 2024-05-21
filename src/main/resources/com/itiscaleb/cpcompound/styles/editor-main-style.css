@@ -31,6 +31,6 @@ TextArea{
     -fx-background-color: transparent;
 }
 .split-pane-divider{
-    -fx-border-color: #1E1E1E;
-    -fx-background-color: #1E1E1E;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
 }
