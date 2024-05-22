@@ -1,16 +1,19 @@
-
 .tab-pane{
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-border-width: 0;
+    -fx-min-width: 280px;
+    -fx-padding: 0;
 }
 .tab-label{
     -fx-font-weight: bold;
-    -fx-pref-width: 200px;
     -fx-text-fill: white;
-    /*-fx-border-color: blue;*/
+    -fx-pref-width: 140;
+    -fx-border-color: transparent;
+    -fx-text-alignment: CENTER;
     -fx-padding: 0 0 0 0;
 }
+
 .tab-container{
     -fx-border-width: 0px;
 }
@@ -22,13 +25,12 @@
 }
 .tab{
     -fx-pref-height: 38px;
-    -fx-pref-width: 200px;
+    -fx-pref-width: 140.0;
     -fx-border-radius: 5px 5px 0 0;
     -fx-background-radius: 5px 5px 0 0;;
     -fx-background-color: #414141;
     -fx-border-width: 0px;
     -fx-padding: 0 0 0 0;
-    /*-fx-border-color: #414141;*/
     /*-fx-border-color: transparent;*/
 }
 .tab-pane .tab:selected {
@@ -36,12 +38,14 @@
     -fx-border-radius: 5px 5px 0 0;
     -fx-background-radius: 5px 5px 0 0;;
     -fx-border-width: 0px ;
+    /*-fx-translate-x: 5;*/
     /*-fx-border-color: #414141 #414141 #2C2C2C #414141;*/
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     /*-fx-background-insets: 0 0 0 0;*/
     /*-fx-background-radius: 5px 5px 0 0;*/
 }
+/*diable dropdown menu*/
 .tab-close-button {
     -fx-background-color: white;
     -fx-opacity: 0.7;
@@ -61,6 +65,15 @@
     -fx-background-color: #1E1E1E;
     -fx-border-color: transparent transparent #2C2C2C transparent;
 }
+
+.tab-down-button {
+    -fx-padding: 0;
+}
+
+.tab-down-button .arrow {
+    -fx-padding: 0;
+}
+
 
 .tab-pane > .tab-header-area > .control-buttons-tab > .container > .tab-down-button .context-menu {
     -fx-background-color: #414141;

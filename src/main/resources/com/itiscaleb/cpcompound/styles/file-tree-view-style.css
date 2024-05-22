@@ -1,0 +1,75 @@
+.tree-view-vbox{
+    -fx-background-color: transparent;
+}
+.tree-view-hbox{
+    -fx-padding: 0 20 0 20;
+    -fx-pref-height: 3px;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    /*-fx-alignment: BASELINE_RIGHT;*/
+    -fx-alignment: CENTER_RIGHT;
+    -fx-spacing: 10;
+}
+.tree-view{
+    -fx-padding: 0 0 0 20;
+    -fx-background-color: #2b2d30;
+}
+.tree-view .tree-cell {
+    -fx-background-color: #2b2d30;
+    -fx-text-fill: #dddfe3;
+    -fx-font-size: 15;
+}
+.open-folder-tooltip{
+    -fx-background-color: #2C2C2C;
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+}
+
+#Open-folder-button{
+    -fx-pref-width: 56;
+    -fx-pref-height: 22;
+    -fx-background-color: transparent;
+    /*-fx-background-color: #515357;*/
+    -fx-border-width:0;
+    -fx-border-color: #515357;
+    -fx-tooltip-visible: true;
+    -fx-text-fill: #dddfe3;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+}
+#Open-folder-button .ikonli-font-icon{
+    -fx-icon-code: "fltfal-folder-open-16";
+    -fx-icon-color: #7a7d80;
+    -fx-icon-size: 20;
+}
+
+.expand-collapse-tooltip{
+    -fx-background-color: #2C2C2C;
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+}
+
+#Expand-collapse-button{
+    -fx-pref-width: 66;
+    -fx-pref-height: 22;
+    -fx-background-color: transparent;
+    /*-fx-background-color: #515357;*/
+    -fx-border-width:0;
+    -fx-border-color: #515357;
+    -fx-tooltip-visible: true;
+    -fx-text-fill: #dddfe3;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-cursor: HAND;
+}
+#Expand-collapse-button .ikonli-font-icon{
+    -fx-icon-code: "ci-expand-all";
+    -fx-icon-color: #7a7d80;
+    -fx-icon-size: 17;
+}
+#Expand-collapse-button:selected .ikonli-font-icon{
+    -fx-icon-code: "ci-collapse-categories";
+    -fx-icon-color: #7a7d80;
+    -fx-icon-size: 17;
+}
+

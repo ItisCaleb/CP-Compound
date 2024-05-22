@@ -15,20 +15,24 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
-import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
+import javafx.stage.Stage;
+import org.eclipse.lsp4j.*;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -43,7 +47,7 @@ public class MainEditorController {
 
     private final KeyCombination saveCombination =  new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN);
     @FXML
-    private TabPane funtionTabPane, editorTextTabPane;
+    private TabPane functionTabPane, editorTextTabPane;
     @FXML
     private SplitPane codeAreaSplitPane, codeAreaBase;
     @FXML
@@ -56,7 +60,12 @@ public class MainEditorController {
     ToggleButton adjustWindowBtn;
     @FXML
     Button homeBtn, fileBtn, checkerBtn, generatorBtn, noteSystemBtn, settingBtn;
+    @FXML
+    Button functionTabButton, terminalTabButton,currentActiveMenuItem=null;
+    @FXML
+    StackPane functionPaneContentArea;
 
+    private VBox  currentFunctionContent;
     CodeArea mainTextArea = new CodeArea();
     Tab currentTab;
     List<Diagnostic> diagnostics;
@@ -194,12 +203,84 @@ public class MainEditorController {
     // private void closeWindow() {
     // currentStage.close();
     // }
+    private void assignFunctionTab(String itemId,Button sourceButton){
+        currentActiveMenuItem.setStyle("-fx-background-color: transparent;");
+        FontIcon itemIcon = (FontIcon) currentActiveMenuItem.getGraphic();
+        itemIcon.setStyle(itemIcon.getStyle()+"-fx-icon-color: #CCCCCC;");
+        currentActiveMenuItem = sourceButton;
+        currentActiveMenuItem.setStyle("-fx-background-color: #4a4b4e;");
+        itemIcon = (FontIcon) currentActiveMenuItem.getGraphic();
+        itemIcon.setStyle(itemIcon.getStyle()+"-fx-icon-color: #FFFFFF;");
+        currentActiveMenuItem.setGraphic(itemIcon);
+        switch(itemId){
+            case "Home-button":
+                loadContent("/com/itiscaleb/cpcompound/fxml/home.fxml");
+                functionTabButton.setText("Home");
+                break;
+            case "File-button":
+                loadContent("/com/itiscaleb/cpcompound/fxml/file-treeView.fxml");
+                functionTabButton.setText("File View");
+                break;
+            case "Checker-button":
+                loadContent("/com/itiscaleb/cpcompound/fxml/checker.fxml");
+                functionTabButton.setText("Checker");
+                break;
+            case "Generator-button":
+                loadContent("/com/itiscaleb/cpcompound/fxml/generator.fxml");
+                functionTabButton.setText("Generator");
+                break;
+            case "Note-system-button":
+                loadContent("/com/itiscaleb/cpcompound/fxml/note-system.fxml");
+                functionTabButton.setText("Note System");
+                break;
+            case "Setting-button":
+                loadContent("/com/itiscaleb/cpcompound/fxml/setting.fxml");
+                functionTabButton.setText("Setting");
+                break;
+            default:
+        }
+    }
+    @FXML
+    private void handleMenuSwitch(javafx.event.ActionEvent event){
+        Button clickedButton = (Button)event.getSource();
+        assignFunctionTab(clickedButton.getId(),clickedButton);
+    }
+    @FXML
+    private void handleTabSwitch(javafx.event.ActionEvent event) {
+        Button clickedButton = (Button) event.getSource();
+        if (clickedButton == functionTabButton) {
+            functionTabButton.setStyle("-fx-border-color: transparent transparent transparent white;-fx-opacity: 1");
+            terminalTabButton.setStyle("-fx-border-color: transparent transparent transparent transparent;-fx-opacity: 0.5");
+            functionPaneContentArea.getChildren().setAll(currentFunctionContent);
+        } else if (clickedButton == terminalTabButton) {
+            terminalTabButton.setStyle("-fx-border-color: transparent transparent transparent white;-fx-opacity: 1");
+            functionTabButton.setStyle("-fx-border-color: transparent transparent transparent transparent;-fx-opacity: 0.5");
+            loadContent("/com/itiscaleb/cpcompound/fxml/terminal.fxml");
+        }
+    }
+
+    private void loadContent(String fxmlFile) {
+        try {
+            VBox content = FXMLLoader.load(getClass().getResource(fxmlFile));
+            content.prefWidthProperty().bind(functionPaneContentArea.widthProperty());
+            content.prefHeightProperty().bind(functionPaneContentArea.heightProperty());
+            functionPaneContentArea.getChildren().setAll(content);
+            if(!content.getId().equals("terminal")){
+                currentFunctionContent = content;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     public void initialize() {
         Platform.runLater(() -> {
             initIcons();
             initEditorTextArea();
             setHandleChangeTab();
+            currentActiveMenuItem=fileBtn;
+            assignFunctionTab(fileBtn.getId(),fileBtn);
         });
         System.out.println("initialize");
     }

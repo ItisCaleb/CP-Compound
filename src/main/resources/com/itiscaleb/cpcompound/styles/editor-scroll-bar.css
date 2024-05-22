@@ -53,8 +53,8 @@
     -fx-background-radius : 2.0em;
 }
 .scroll-bar {
-    -fx-pref-width: 15px;
-    -fx-pref-height: 15px;
+    -fx-pref-width: 12px;
+    -fx-pref-height: 12px;
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-background-radius: 2em;
