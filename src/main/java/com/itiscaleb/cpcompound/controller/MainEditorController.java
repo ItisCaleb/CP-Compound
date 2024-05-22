@@ -121,7 +121,8 @@ public class MainEditorController {
                 switched = false;
                 return;
             }
-            EditorContext context = CPCompound.getEditor().getCurrentContext();
+            Editor editor = CPCompound.getEditor();
+            EditorContext context = editor.getCurrentContext();
             context.setCode(newValue);
             LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
             // request to change
@@ -138,6 +139,17 @@ public class MainEditorController {
             } else {
                 completionMenu.hide();
             }
+
+            var spans = editor.computeHighlighting(context)
+                    .overlay(mainTextArea.getStyleSpans(0, mainTextArea.getLength()),
+                            (a,b)->{
+                                var arr = new ArrayList<String>();
+                                arr.addAll(a);
+                                arr.addAll(b);
+                                return arr;
+                            });
+            // highlight
+            //mainTextArea.setStyleSpans(0, spans);
         });
         initEditorUtility();
         initDiagnosticTooltip();
@@ -293,8 +305,11 @@ public class MainEditorController {
                         "-fx-padding: 5;");
         mainTextArea.setMouseOverTextDelay(Duration.ofMillis(500));
         mainTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
+
             for (Diagnostic diagnostic : diagnostics) {
+                System.out.println(diagnostic.getMessage());
                 Range range = diagnostic.getRange();
+
                 int from = rangeToPosition(mainTextArea, range.getStart());
                 int to = rangeToPosition(mainTextArea, range.getEnd());
                 int chIdx = e.getCharacterIndex();
@@ -371,7 +386,14 @@ public class MainEditorController {
             mainTextArea.setStyleSpans(0,
                     computeDiagnostic(
                             this.diagnostics,
-                            CPCompound.getEditor().getCurrentContext().getCode().length()));
+                            mainTextArea.getLength()));
+//                            .overlay(mainTextArea.getStyleSpans(0, mainTextArea.getLength()),
+//                                    (a,b)->{
+//                                        var arr = new ArrayList<String>();
+//                                        arr.addAll(a);
+//                                        arr.addAll(b);
+//                                        return arr;
+//                                    }));
         });
 
         // listen for diagnostics change
