@@ -271,6 +271,7 @@ public class MainEditorController {
             content.prefHeightProperty().bind(functionPaneContentArea.heightProperty());
             if(!content.getId().equals("terminal")){
                 if(functionPaneCache.containsKey(content.getId())){
+                    currentFunctionContent = functionPaneCache.get(content.getId());
                     functionPaneContentArea.getChildren().setAll(functionPaneCache.get(content.getId()));
                 }else{
                     currentFunctionContent = content;
