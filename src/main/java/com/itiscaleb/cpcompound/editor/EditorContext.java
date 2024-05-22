@@ -9,7 +9,9 @@ import org.eclipse.lsp4j.Diagnostic;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Comparator;
 
 public class EditorContext {
     private Path path;
@@ -82,6 +84,9 @@ public class EditorContext {
     }
 
     public void setDiagnostics(List<Diagnostic> diagnostics){
+        diagnostics.sort(Comparator.comparing((Diagnostic d) -> d.getRange().getStart().getLine())
+                .thenComparing(d -> d.getSeverity().ordinal()));
+        // segment tree here
         this.diagnostics = diagnostics;
     }
 
