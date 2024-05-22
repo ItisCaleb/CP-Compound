@@ -68,9 +68,12 @@ public class MainEditorController {
     @FXML
     Button homeBtn, fileBtn, checkerBtn, generatorBtn, noteSystemBtn, settingBtn;
     @FXML
-    Button functionTabButton, terminalTabButton,currentActiveMenuItem=null;
+    Button functionTabButton, terminalTabButton;
     @FXML
     StackPane functionPaneContentArea;
+    Button currentActiveMenuItem = new Button();
+    //id,object
+    final private Map<String,VBox> functionPaneCache = new HashMap<>();
 
     private VBox  currentFunctionContent;
     CodeArea mainTextArea = new CodeArea();
@@ -95,6 +98,7 @@ public class MainEditorController {
         mainTextArea.replaceText(0, mainTextArea.getText().length(),
                 CPCompound.getEditor().getCurrentContext().getCode());
     }
+
     @FXML
     private void handleAddNewFile() {
         Editor editor = CPCompound.getEditor();
@@ -199,6 +203,7 @@ public class MainEditorController {
         itemIcon = (FontIcon) currentActiveMenuItem.getGraphic();
         itemIcon.setStyle(itemIcon.getStyle()+"-fx-icon-color: #FFFFFF;");
         currentActiveMenuItem.setGraphic(itemIcon);
+        currentActiveMenuItem = sourceButton;
         switch(itemId){
             case "Home-button":
                 loadContent("/com/itiscaleb/cpcompound/fxml/home.fxml");
@@ -251,23 +256,33 @@ public class MainEditorController {
             VBox content = FXMLLoader.load(getClass().getResource(fxmlFile));
             content.prefWidthProperty().bind(functionPaneContentArea.widthProperty());
             content.prefHeightProperty().bind(functionPaneContentArea.heightProperty());
-            functionPaneContentArea.getChildren().setAll(content);
             if(!content.getId().equals("terminal")){
-                currentFunctionContent = content;
+
+                if(functionPaneCache.containsKey(content.getId())){
+                    functionPaneContentArea.getChildren().setAll(functionPaneCache.get(content.getId()));
+                }else{
+                    currentFunctionContent = content;
+                    functionPaneContentArea.getChildren().setAll(content);
+                    functionPaneCache.put(content.getId(),content);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
+    private void initFunctonPane(Button menuButton,String fxmlFilePath){
+        loadContent(fxmlFilePath);
+        currentActiveMenuItem = menuButton;
+        System.out.println("menuButton: "+menuButton.getId());
+        assignFunctionTab(fxmlFilePath,menuButton);
+    }
     @FXML
     public void initialize() {
         Platform.runLater(() -> {
             initIcons();
             initEditorTextArea();
             setHandleChangeTab();
-            currentActiveMenuItem=fileBtn;
-            assignFunctionTab(fileBtn.getId(),fileBtn);
+            initFunctonPane(fileBtn,"/com/itiscaleb/cpcompound/fxml/file-treeView.fxml");
         });
         System.out.println("initialize");
     }

@@ -2,6 +2,9 @@
     -fx-background-color: transparent;
     -fx-border-width: 0;
     -fx-background-insets: 0;
+    -fx-border-radius: 0 0 5 5;
+    -fx-background-radius: 0 0 5 5;
+
 }
 .function-pane-content-area{
     -fx-background-color: #2b2d30;
