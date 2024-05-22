@@ -35,12 +35,9 @@ public class FileTreeViewController {
     }
     private TreeItem<String> createTreeItem(File file) {
         TreeItem<String> item = new TreeItem<>(file.getName());
-
         if (file.isDirectory()) {
-
             TreeItem<String> dummy = new TreeItem<>("Loading...");
             item.getChildren().add(dummy);
-
             item.expandedProperty().addListener((obs, wasExpanded, isNowExpanded) -> {
                 if (isNowExpanded && item.getChildren().contains(dummy)) {
                     item.getChildren().remove(dummy);
@@ -48,7 +45,6 @@ public class FileTreeViewController {
                 }
             });
         }
-
         return item;
     }
 
