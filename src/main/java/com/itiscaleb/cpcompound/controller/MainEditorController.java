@@ -238,10 +238,7 @@ public class MainEditorController {
         if (clickedButton == functionTabButton) {
             functionTabButton.setStyle("-fx-border-color: transparent transparent transparent white;-fx-opacity: 1");
             terminalTabButton.setStyle("-fx-border-color: transparent transparent transparent transparent;-fx-opacity: 0.5");
-            System.out.println("functionPaneContentArea.getChildren(): " + functionPaneContentArea.getChildren());
-            System.out.println(currentFunctionContent);
             functionPaneContentArea.getChildren().setAll(currentFunctionContent);
-            System.out.println("functionPaneContentArea.getChildren(): " + functionPaneContentArea.getChildren());
         } else if (clickedButton == terminalTabButton) {
             terminalTabButton.setStyle("-fx-border-color: transparent transparent transparent white;-fx-opacity: 1");
             functionTabButton.setStyle("-fx-border-color: transparent transparent transparent transparent;-fx-opacity: 0.5");
@@ -256,7 +253,6 @@ public class MainEditorController {
             content.prefHeightProperty().bind(functionPaneContentArea.heightProperty());
             functionPaneContentArea.getChildren().setAll(content);
             if(!content.getId().equals("terminal")){
-                System.out.println("ww");
                 currentFunctionContent = content;
             }
         } catch (Exception e) {
