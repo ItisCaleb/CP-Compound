@@ -6,7 +6,7 @@
 
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
-<VBox id="noteSystem" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="note-system" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Text layoutX="247.0" layoutY="173.0" text="This is note system" />
    </children>

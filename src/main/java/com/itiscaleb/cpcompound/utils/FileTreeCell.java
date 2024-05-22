@@ -30,8 +30,9 @@ public class FileTreeCell extends TreeCell<String> {
         FontIcon arrowIcon = new FontIcon(treeItem.isExpanded() ?Dashicons.ARROW_DOWN_ALT2 : Dashicons.ARROW_RIGHT_ALT2);
         arrowIcon.setIconColor(Color.valueOf("#b6aeae"));
         arrowIcon.setIconSize(10);
-        arrowIcon.setTranslateY(4);
-        arrowIcon.setTranslateX(-3);
+        arrowIcon.setTranslateY(5);
+        arrowIcon.setTranslateY(6);
+        arrowIcon.setTranslateX(8);
         setDisclosureNode(arrowIcon);
         if (treeItem.isLeaf()) {
             FontIcon icon = new FontIcon(BoxiconsSolid.FILE);

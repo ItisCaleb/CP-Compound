@@ -3,6 +3,7 @@ package com.itiscaleb.cpcompound.controller;
 import com.itiscaleb.cpcompound.utils.FileTreeCell;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Callback;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -120,10 +121,22 @@ public class FileTreeViewController {
         expandCollapseTooltip.setHideDelay(javafx.util.Duration.seconds(0));
         expandCollapseTooltip.setShowDuration(javafx.util.Duration.seconds(10));
     }
+    private void setTreeItemListener(){
+        fileTreeView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            handleTreeItemClick(event);
+        });
+    }
+    private void handleTreeItemClick(MouseEvent event) {
+        TreeItem<String> selectedItem = fileTreeView.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            System.out.println("click item: "+selectedItem.getValue());
+        }
+    }
     @FXML
     public void initialize() {
         initIcons();
         setTooltipsDelay();
+        setTreeItemListener();
         fileTreeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
             @Override
             public TreeCell<String> call(TreeView<String> tv) {
