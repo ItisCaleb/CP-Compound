@@ -27,14 +27,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
-import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.*;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -70,11 +68,11 @@ public class MainEditorController {
     @FXML
     Button homeBtn, fileBtn, checkerBtn, generatorBtn, noteSystemBtn, settingBtn;
     @FXML
-    Button functionTabButton, terminalTabButton;
+    Button functionTabButton, terminalTabButton,currentActiveMenuItem=null;
     @FXML
     StackPane functionPaneContentArea;
 
-
+    private VBox  currentFunctionContent;
     CodeArea mainTextArea = new CodeArea();
     Tab currentTab;
     List<Diagnostic> diagnostics;
@@ -192,34 +190,75 @@ public class MainEditorController {
     // private void closeWindow() {
     // currentStage.close();
     // }
+    private void assignFunctionTab(String itemId,Button sourceButton){
+        currentActiveMenuItem.setStyle("-fx-background-color: transparent;");
+        FontIcon itemIcon = (FontIcon) currentActiveMenuItem.getGraphic();
+        itemIcon.setStyle(itemIcon.getStyle()+"-fx-icon-color: #CCCCCC;");
+        currentActiveMenuItem = sourceButton;
+        currentActiveMenuItem.setStyle("-fx-background-color: #4a4b4e;");
+        itemIcon = (FontIcon) currentActiveMenuItem.getGraphic();
+        itemIcon.setStyle(itemIcon.getStyle()+"-fx-icon-color: #FFFFFF;");
+        currentActiveMenuItem.setGraphic(itemIcon);
+        switch(itemId){
+            case "Home-button":
+                loadContent("/com/itiscaleb/cpcompound/fxml/home.fxml");
+                functionTabButton.setText("Home");
+                break;
+            case "File-button":
+                loadContent("/com/itiscaleb/cpcompound/fxml/file-treeView.fxml");
+                functionTabButton.setText("File View");
+                break;
+            case "Checker-button":
+                loadContent("/com/itiscaleb/cpcompound/fxml/checker.fxml");
+                functionTabButton.setText("Checker");
+                break;
+            case "Generator-button":
+                loadContent("/com/itiscaleb/cpcompound/fxml/generator.fxml");
+                functionTabButton.setText("Generator");
+                break;
+            case "Note-system-button":
+                loadContent("/com/itiscaleb/cpcompound/fxml/note-system.fxml");
+                functionTabButton.setText("Note System");
+                break;
+            case "Setting-button":
+                loadContent("/com/itiscaleb/cpcompound/fxml/setting.fxml");
+                functionTabButton.setText("Setting");
+                break;
+            default:
+        }
+    }
+    @FXML
+    private void handleMenuSwitch(javafx.event.ActionEvent event){
+        Button clickedButton = (Button)event.getSource();
+        assignFunctionTab(clickedButton.getId(),clickedButton);
+    }
     @FXML
     private void handleTabSwitch(javafx.event.ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
-
         if (clickedButton == functionTabButton) {
             functionTabButton.setStyle("-fx-border-color: transparent transparent transparent white;-fx-opacity: 1");
             terminalTabButton.setStyle("-fx-border-color: transparent transparent transparent transparent;-fx-opacity: 0.5");
-            loadContent("/com/itiscaleb/cpcompound/fxml/file-treeView.fxml", functionTabButton);
+            System.out.println("functionPaneContentArea.getChildren(): " + functionPaneContentArea.getChildren());
+            System.out.println(currentFunctionContent);
+            functionPaneContentArea.getChildren().setAll(currentFunctionContent);
+            System.out.println("functionPaneContentArea.getChildren(): " + functionPaneContentArea.getChildren());
         } else if (clickedButton == terminalTabButton) {
             terminalTabButton.setStyle("-fx-border-color: transparent transparent transparent white;-fx-opacity: 1");
             functionTabButton.setStyle("-fx-border-color: transparent transparent transparent transparent;-fx-opacity: 0.5");
-//            loadContent("TerminalContent.fxml", terminalTab);
+            loadContent("/com/itiscaleb/cpcompound/fxml/terminal.fxml");
         }
     }
 
-    private void loadContent(String fxmlFile, Button activeTab) {
+    private void loadContent(String fxmlFile) {
         try {
             VBox content = FXMLLoader.load(getClass().getResource(fxmlFile));
-            System.out.println("functionPaneContentArea width: " + functionPaneContentArea.getWidth());
-            System.out.println("functionPaneContentArea height: " + functionPaneContentArea.getHeight());
             content.prefWidthProperty().bind(functionPaneContentArea.widthProperty());
             content.prefHeightProperty().bind(functionPaneContentArea.heightProperty());
             functionPaneContentArea.getChildren().setAll(content);
-            System.out.println(content.getPrefWidth());
-            // 更新CSS样式
-//            functionTabButton.getStyleClass().remove("active-tab");
-//            terminalTabButton.getStyleClass().remove("active-tab");
-//            activeTab.getStyleClass().add("active-tab");
+            if(!content.getId().equals("terminal")){
+                System.out.println("ww");
+                currentFunctionContent = content;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -231,6 +270,8 @@ public class MainEditorController {
             initIcons();
             initEditorTextArea();
             setHandleChangeTab();
+            currentActiveMenuItem=fileBtn;
+            assignFunctionTab(fileBtn.getId(),fileBtn);
         });
         System.out.println("initialize");
     }

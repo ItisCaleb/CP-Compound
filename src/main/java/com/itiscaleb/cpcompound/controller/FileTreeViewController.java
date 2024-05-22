@@ -17,7 +17,7 @@ public class FileTreeViewController {
     @FXML
     private Button openFolderButton;
     @FXML
-    private Tooltip openFolderTooltip;
+    private Tooltip openFolderTooltip,expandCollapseTooltip;
     @FXML
     private void handleOpenFolder() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -28,7 +28,7 @@ public class FileTreeViewController {
         }
     }
     private void loadDirectoryIntoTreeView(File dir) {
-        System.out.println("loadDirectoryIntoTreeView");
+//        System.out.println("loadDirectoryIntoTreeView");
         TreeItem<String> root = createTreeItem(dir);
         fileTreeView.setRoot(root);
     }
@@ -52,15 +52,13 @@ public class FileTreeViewController {
     }
 
     private void loadChildItems(TreeItem<String> item, File dir) {
-        System.out.println("loadChildITtems: dir = " + dir);
+//        System.out.println("loadChildITtems: dir = " + dir);
         File[] files = dir.listFiles();
         if (files != null) {
             for (File f : files) {
                 TreeItem<String> childItem = new TreeItem<>(f.getName());
                 if (f.isDirectory()) {
-                    // 添加占位子节点到目录项
                     childItem.getChildren().add(new TreeItem<>("Loading..."));
-                    // 为目录项设置监听器以进行懒加载
                     setupLazyLoad(childItem, f);
                 }
                 item.getChildren().add(childItem);
@@ -71,20 +69,25 @@ public class FileTreeViewController {
     private void setupLazyLoad(TreeItem<String> item, File dir) {
         item.expandedProperty().addListener((obs, wasExpanded, isNowExpanded) -> {
             if (isNowExpanded && item.getChildren().size() == 1 && "Loading...".equals(item.getChildren().get(0).getValue())) {
-                item.getChildren().clear(); // 清空"Loading..."节点
-                loadChildItems(item, dir); // 加载实际的子节点
+                item.getChildren().clear();
+                loadChildItems(item, dir);
             }
         });
     }
     @FXML
     private void handleToggleExpandCollapse() {
+        if (toggleExpandCollapseButton.isSelected()) {
+            expandCollapseTooltip.setText("Collapse All");
+        } else {
+            expandCollapseTooltip.setText("Expand All");
+        }
         if (fileTreeView.getRoot() != null) {
             if (toggleExpandCollapseButton.isSelected()) {
                 expandAll(fileTreeView.getRoot());
-                toggleExpandCollapseButton.setText("Collapse All");
+                expandCollapseTooltip.setText("Collapse All");
             } else {
                 collapseAll(fileTreeView.getRoot());
-                toggleExpandCollapseButton.setText("Expand All");
+                expandCollapseTooltip.setText("Expand All");
             }
         }
     }
@@ -113,8 +116,10 @@ public class FileTreeViewController {
         openFolderTooltip.setShowDelay(javafx.util.Duration.seconds(0));
         openFolderTooltip.setHideDelay(javafx.util.Duration.seconds(0));
         openFolderTooltip.setShowDuration(javafx.util.Duration.seconds(10));
+        expandCollapseTooltip.setShowDelay(javafx.util.Duration.seconds(0));
+        expandCollapseTooltip.setHideDelay(javafx.util.Duration.seconds(0));
+        expandCollapseTooltip.setShowDuration(javafx.util.Duration.seconds(10));
     }
-
     @FXML
     public void initialize() {
         initIcons();

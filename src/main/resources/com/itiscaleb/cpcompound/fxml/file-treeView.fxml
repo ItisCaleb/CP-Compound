@@ -7,14 +7,15 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.control.Tooltip?>
-<VBox minWidth="260.0" styleClass="tree-view-vbox" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.FileTreeViewController">
+<VBox id="fileTreeView" minWidth="240.0" styleClass="tree-view-vbox" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.FileTreeViewController">
     <HBox styleClass="tree-view-hbox">
         <Button fx:id="openFolderButton" id="Open-folder-button" onAction="#handleOpenFolder" text="" VBox.vgrow="ALWAYS" >
             <tooltip ><Tooltip fx:id="openFolderTooltip" styleClass="open-folder-tooltip" text="Open Folder" /></tooltip>
         </Button>
-        <ToggleButton fx:id="toggleExpandCollapseButton" id="Expand-collapse-button" onAction="#handleToggleExpandCollapse" text="Expand All" />
+        <ToggleButton fx:id="toggleExpandCollapseButton" id="Expand-collapse-button" onAction="#handleToggleExpandCollapse">
+            <tooltip ><Tooltip fx:id="expandCollapseTooltip" styleClass="expand-collapse-tooltip"  text="Expand All" /></tooltip>
+        </ToggleButton>
     </HBox>
     <TreeView fx:id="fileTreeView" layoutY="56.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0" VBox.vgrow="ALWAYS" />
     <stylesheets>
