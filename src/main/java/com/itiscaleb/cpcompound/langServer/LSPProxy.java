@@ -96,6 +96,19 @@ public class LSPProxy {
         });
     }
 
+    public void didClose(EditorContext context){
+        if(launcher == null){
+            return;
+        }
+        DidCloseTextDocumentParams params = new DidCloseTextDocumentParams();
+        params.setTextDocument(new VersionedTextDocumentIdentifier(
+                context.getFileURI(),
+                context.getLastVersion()));
+        launcher.getRemoteProxy()
+                .getTextDocumentService()
+                .didClose(params);
+    }
+
     public void stop() {
         if(launcher == null){
             return;
