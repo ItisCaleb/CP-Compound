@@ -21,6 +21,9 @@ module com.itiscaleb.cpcompound {
     requires org.kordamp.ikonli.runestroicons;
     requires org.kordamp.ikonli.coreui;
     requires org.kordamp.ikonli.lineawesome;
+    requires org.kordamp.ikonli.fontawesome5;
+    requires org.kordamp.ikonli.evaicons;
+    requires org.kordamp.ikonli.dashicons;
 
     exports com.itiscaleb.cpcompound;
     exports com.itiscaleb.cpcompound.utils;

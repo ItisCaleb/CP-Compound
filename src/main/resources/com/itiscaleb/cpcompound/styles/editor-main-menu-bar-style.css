@@ -3,6 +3,9 @@
     /*-fx-alignment: BASELINE_CENTER;*/
     -fx-spacing: 56;
 }
+.button{
+    -fx-background-radius: 5;
+}
 
 #Home-button{
     -fx-background-color: transparent;
