@@ -7,4 +7,9 @@ public enum Language {
         this.lang = s;
     }
     public final String lang;
+
+    @Override
+    public String toString() {
+        return this.lang;
+    }
 }

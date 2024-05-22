@@ -74,7 +74,13 @@ public class Editor {
     }
 
     public void removeContext(String name) {
-        contexts.remove(name);
+        EditorContext context = contexts.remove(name);
+        if(context != null){
+            LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
+            if(proxy != null){
+                proxy.didClose(context);
+            }
+        }
     }
 
     public void refreshDiagnostic(){
