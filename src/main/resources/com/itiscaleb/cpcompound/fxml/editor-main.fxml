@@ -26,28 +26,6 @@
                      <URL value="@../styles/editor-function-pane-style.css" />
                  </stylesheets>
              </VBox>
-             <TabPane id="editor-text-tab-pane" fx:id="editorTextTabPane" prefHeight="341.0" prefWidth="397.0" rotateGraphic="true">
-            <TabPane fx:id="functionTabPane" prefHeight="341.0" prefWidth="397.0" rotateGraphic="true" styleClass="function-tab-pane" tabClosingPolicy="UNAVAILABLE">
-              <tabs>
-                <Tab fx:id="functionTab" text="Checker">
-                     <content>
-                        <AnchorPane fx:id="functionPane" prefHeight="200.0" prefWidth="200.0" />
-                     </content>
-                  </Tab>
-                  <Tab fx:id="terminalTab" text="Terminal">
-                     <content>
-                        <AnchorPane fx:id="terminalPane" prefHeight="200.0" prefWidth="200.0" />
-                     </content>
-                  </Tab>
-              </tabs>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-                <stylesheets>
-                    <URL value="@../styles/editor-function-area-tab-pane-style.css" />
-                    <URL value="@../styles/editor-function-pane-style.css" />
-                </stylesheets>
-            </TabPane>
              <TabPane id="editor-text-tab-pane" fx:id="editorTextTabPane" prefHeight="341.0" prefWidth="397.0"
                       rotateGraphic="true">
                  <cursor>
