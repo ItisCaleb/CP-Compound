@@ -7,20 +7,27 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Diagnostic;
+import org.fxmisc.richtext.model.StyleSpans;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 public class Editor {
     EditorContext currentContext;
     HashMap<String, EditorContext> contexts = new HashMap<>();
+    HashMap<Language, Highlighter> highlighters = new HashMap<>();
 
     private final ObservableList<Diagnostic> diagnostics = FXCollections.observableArrayList();
     private final ObservableList<CompletionItem> completionItems = FXCollections.observableArrayList();
     private int lastUnnamed = 0;
+
+    public Editor() {
+        highlighters.put(Language.CPP, new CppHighlighter());
+    }
 
     public void switchContext(String key){
         EditorContext context = contexts.get(key);
@@ -74,7 +81,13 @@ public class Editor {
     }
 
     public void removeContext(String name) {
-        contexts.remove(name);
+        EditorContext context = contexts.remove(name);
+        if(context != null){
+            LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
+            if(proxy != null){
+                proxy.didClose(context);
+            }
+        }
     }
 
     public void refreshDiagnostic(){
@@ -98,5 +111,14 @@ public class Editor {
 
     public ObservableList<Diagnostic> getDiagnostics() {
         return this.diagnostics;
+    }
+
+    public StyleSpans<Collection<String>> computeHighlighting(String key) {
+        EditorContext context = contexts.get(key);
+        return computeHighlighting(context);
+    }
+
+    public StyleSpans<Collection<String>> computeHighlighting(EditorContext context) {
+        return highlighters.get(context.getLang()).computeHighlighting(context.getCode());
     }
 }

@@ -43,15 +43,8 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class MainEditorController {
-    public MainEditorController() {
-    }
 
-    public MainEditorController(Stage stage) {
-        setCurrentStage(stage);
-    }
 
-    public void setCurrentStage(Stage currentStage) {
-    }
     private final KeyCombination saveCombination =  new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN);
     @FXML
     private TabPane functionTabPane, editorTextTabPane;
@@ -122,7 +115,8 @@ public class MainEditorController {
     @FXML
     private void handleTabClosed(Event event, Tab closedTab){
         if(!tabManager.getTabSaveState(closedTab)){
-
+            saveContext(closedTab);
+            CPCompound.getEditor().removeContext((String) closedTab.getUserData());
         }
     }
     private void setHandleChangeTab(){
@@ -140,7 +134,8 @@ public class MainEditorController {
                 switched = false;
                 return;
             }
-            EditorContext context = CPCompound.getEditor().getCurrentContext();
+            Editor editor = CPCompound.getEditor();
+            EditorContext context = editor.getCurrentContext();
             context.setCode(newValue);
             LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
             // request to change
@@ -149,7 +144,25 @@ public class MainEditorController {
             // request for completion request
             int paragraph = mainTextArea.getCurrentParagraph();
             int column = mainTextArea.getCaretColumn();
-            proxy.requestCompletion(context, new Position(paragraph, column));
+            int index = mainTextArea.getCaretPosition() - 1;
+            if (!newValue.isEmpty()
+                    && newValue.charAt(index) != '\n'
+                    && newValue.charAt(index) != ' '){
+                proxy.requestCompletion(context, new Position(paragraph, column));
+            } else {
+                completionMenu.hide();
+            }
+
+            var spans = editor.computeHighlighting(context)
+                    .overlay(mainTextArea.getStyleSpans(0, mainTextArea.getLength()),
+                            (a,b)->{
+                                var arr = new ArrayList<String>();
+                                arr.addAll(a);
+                                arr.addAll(b);
+                                return arr;
+                            });
+            // highlight
+            //mainTextArea.setStyleSpans(0, spans);
         });
         initEditorUtility();
         initDiagnosticTooltip();
@@ -297,42 +310,84 @@ public class MainEditorController {
         final Pattern whiteSpace = Pattern.compile("^\\s+");
         mainTextArea.addEventHandler(KeyEvent.KEY_PRESSED, KE -> {
             // auto-indent
-            if (KE.getCode() == KeyCode.ENTER && !KE.isShiftDown()) {
+            if (KE.getCode() == KeyCode.ENTER) {
                 int caretPosition = mainTextArea.getCaretPosition();
+                // allow shift-enter
+                if(KE.isShiftDown()){
+                    mainTextArea.insertText(caretPosition, "\n");
+                }
                 int currentParagraph = mainTextArea.getCurrentParagraph();
                 Matcher m0 = whiteSpace.matcher(mainTextArea.getParagraph(currentParagraph - 1).getSegments().get(0));
                 if (m0.find())
                     Platform.runLater(() -> mainTextArea.insertText(caretPosition, m0.group()));
             }
+
             // replace tab to four space
             if (KE.getCode() == KeyCode.TAB) {
                 int caretPosition = mainTextArea.getCaretPosition();
                 mainTextArea.replaceText(caretPosition - 1, caretPosition, "    ");
+            }
+
+            // auto complete bracket
+            int caretPosition = mainTextArea.getCaretPosition();
+            String right = "";
+            switch (KE.getText()) {
+                case "[" -> right = "]";
+                case "(" -> right = ")";
+                case "{" -> right = "}";
+            }
+            if(!right.isEmpty()){
+                String finalRight = right;
+                Platform.runLater(()->{
+                    mainTextArea.insertText(caretPosition + 1, finalRight);
+                });
+            }
+        });
+
+        // hide completion menu when caret moved
+        mainTextArea.caretPositionProperty().addListener((obs, oldPosition, newPosition) -> {
+            if(newPosition < oldPosition){
+                completionMenu.hide();
             }
         });
 
         // save code
         mainTextArea.setOnKeyPressed(event -> {
             if (saveCombination.match(event)) {
-                tabManager.saveTab(currentTab);
-                EditorContext context = CPCompound.getEditor().getCurrentContext();
-                if(context.isTemp()){
-                    FileChooser fileChooser = new FileChooser();
-                    fileChooser.setTitle("Save File");
-                    fileChooser.getExtensionFilters().addAll(
-                            new FileChooser.ExtensionFilter("C File", "*.c"),
-                            new FileChooser.ExtensionFilter("C++ File", "*.cc", "*.cpp"),
-                            new FileChooser.ExtensionFilter("Python File","*.py"),
-                            new FileChooser.ExtensionFilter("All file", "*.*"));
-                    File file = fileChooser.showSaveDialog(mainTextArea.getScene().getWindow());
-                    if(file != null){
-                        context.setPath(file);
-                        context.setTemp(false);
-                    }
-                }
-                context.save();
+                saveContext(currentTab);
             }
         });
+    }
+
+    private void saveContext(Tab tab){
+        EditorContext context = CPCompound.getEditor().getContext((String) tab.getUserData());
+        if(context.isTemp()){
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save File");
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("C File", "*.c"),
+                    new FileChooser.ExtensionFilter("C++ File", "*.cc", "*.cpp"),
+                    new FileChooser.ExtensionFilter("Python File","*.py"),
+                    new FileChooser.ExtensionFilter("All file", "*.*"));
+            File file = fileChooser.showSaveDialog(editorTextTabPane.getScene().getWindow());
+
+            // Reference:
+            // https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_didRename
+            // to rename a file, we need to close it an open it
+            if(file != null){
+                tabManager.saveTab(tab);
+                LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
+                proxy.didClose(context);
+                context.setPath(file);
+                context.setTemp(false);
+                context.save();
+                proxy = CPCompound.getLSPProxy(context.getLang());
+                proxy.didOpen(context);
+            }
+        }else{
+            tabManager.saveTab(tab);
+            context.save();
+        }
     }
 
     private void initDiagnosticTooltip() {
@@ -346,8 +401,11 @@ public class MainEditorController {
                         "-fx-padding: 5;");
         mainTextArea.setMouseOverTextDelay(Duration.ofMillis(500));
         mainTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
+
             for (Diagnostic diagnostic : diagnostics) {
+                System.out.println(diagnostic.getMessage());
                 Range range = diagnostic.getRange();
+
                 int from = rangeToPosition(mainTextArea, range.getStart());
                 int to = rangeToPosition(mainTextArea, range.getEnd());
                 int chIdx = e.getCharacterIndex();
@@ -376,8 +434,9 @@ public class MainEditorController {
         });
 
         completionMenu.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-            if (e.getCode() == KeyCode.SPACE) {
+            if (e.getCode() == KeyCode.SPACE || (e.getCode() == KeyCode.ENTER && e.isShiftDown())) {
                 e.consume();
+                completionMenu.hide();
             }
         });
         completionMenu.getStyleClass().add("completion-menu");
@@ -423,7 +482,14 @@ public class MainEditorController {
             mainTextArea.setStyleSpans(0,
                     computeDiagnostic(
                             this.diagnostics,
-                            CPCompound.getEditor().getCurrentContext().getCode().length()));
+                            mainTextArea.getLength()));
+//                            .overlay(mainTextArea.getStyleSpans(0, mainTextArea.getLength()),
+//                                    (a,b)->{
+//                                        var arr = new ArrayList<String>();
+//                                        arr.addAll(a);
+//                                        arr.addAll(b);
+//                                        return arr;
+//                                    }));
         });
 
         // listen for diagnostics change
@@ -439,14 +505,8 @@ public class MainEditorController {
         for (Diagnostic diagnostic : diagnostics) {
             // convert line and character to index
             Range range = diagnostic.getRange();
-            int from = mainTextArea
-                    .getAbsolutePosition(
-                            range.getStart().getLine(),
-                            range.getStart().getCharacter());
-            int to = mainTextArea
-                    .getAbsolutePosition(
-                            range.getEnd().getLine(),
-                            range.getEnd().getCharacter());
+            int from = rangeToPosition(mainTextArea, range.getStart());
+            int to = rangeToPosition(mainTextArea, range.getEnd());
             spansBuilder.add(Collections.emptyList(), from - last);
             last = to;
             switch (diagnostic.getSeverity()) {

@@ -30,19 +30,10 @@ public class EditorContext {
     }
 
     EditorContext(Path path, String code, boolean isTemp) {
-        this.path = path.normalize();
+        setPath(path);
         this.code = code;
         this.version = 0;
         this.lastVersion = 0;
-        if(this.path.endsWith(".cpp") || this.path.endsWith(".cc")
-                || this.path.endsWith(".c++")){
-            this.lang = Language.CPP;
-        }else if (this.path.endsWith(".c")){
-            this.lang = Language.C;
-        }else if (this.path.endsWith(".py")){
-            this.lang = Language.Python;
-        }else
-            this.lang = Language.None;
         this.isTemp = isTemp;
     }
 
@@ -77,8 +68,21 @@ public class EditorContext {
         this.hasChanged = false;
         FileManager.writeTextFile(this.path, code);
     }
+
     public void setPath(File file){
-        this.path = file.toPath().normalize();
+        this.setPath(file.toPath());
+    }
+    public void setPath(Path path){
+        this.path = path.normalize();
+        String p = this.path.toString();
+        if(p.endsWith(".cpp") || p.endsWith(".cc")
+                || p.endsWith(".c++")){
+            this.lang = Language.CPP;
+        }else if (p.endsWith(".c")){
+            this.lang = Language.C;
+        }else if (p.endsWith(".py")){
+            this.lang = Language.Python;
+        }else this.lang = Language.None;
     }
 
     public void setDiagnostics(List<Diagnostic> diagnostics){
