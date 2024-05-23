@@ -55,10 +55,13 @@ public class CPCompound extends Application {
             System.out.println("GCC installation test failed! GCC directory not found.");
         }
     }
+
+
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        GCCChecker.checkAndDownloadGCC();
+        GCCChecker gccChecker = new GCCChecker();
+        gccChecker.checkAndDownloadGCC();
 
         //testDownload();
 
