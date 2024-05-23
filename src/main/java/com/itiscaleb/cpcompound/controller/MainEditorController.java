@@ -270,15 +270,18 @@ public class MainEditorController {
             content.prefWidthProperty().bind(functionPaneContentArea.widthProperty());
             content.prefHeightProperty().bind(functionPaneContentArea.heightProperty());
             if(!content.getId().equals("terminal")){
-
                 if(functionPaneCache.containsKey(content.getId())){
+                    currentFunctionContent = functionPaneCache.get(content.getId());
                     functionPaneContentArea.getChildren().setAll(functionPaneCache.get(content.getId()));
                 }else{
                     currentFunctionContent = content;
                     functionPaneContentArea.getChildren().setAll(content);
                     functionPaneCache.put(content.getId(),content);
                 }
+            }else{
+                functionPaneContentArea.getChildren().setAll(content);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -286,7 +289,6 @@ public class MainEditorController {
     private void initFunctonPane(Button menuButton,String fxmlFilePath){
         loadContent(fxmlFilePath);
         currentActiveMenuItem = menuButton;
-        System.out.println("menuButton: "+menuButton.getId());
         assignFunctionTab(fxmlFilePath,menuButton);
     }
     @FXML
