@@ -6,6 +6,8 @@ import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.langServer.Language;
 import com.itiscaleb.cpcompound.utils.Config;
+import com.itiscaleb.cpcompound.utils.GCCChecker;
+import com.itiscaleb.cpcompound.utils.GCCDownloader;
 import io.github.palexdev.materialfx.theming.JavaFXThemes;
 import io.github.palexdev.materialfx.theming.MaterialFXStylesheets;
 import io.github.palexdev.materialfx.theming.UserAgentBuilder;
@@ -17,6 +19,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -26,8 +30,41 @@ public class CPCompound extends Application {
     static HashMap<Language, LSPProxy> proxies = new HashMap<>();
     static Logger logger = LogManager.getLogger(CPCompound.class);
     static Editor editor;
+
+    private void testDownload() {
+        // 測試下載過程
+        System.out.println("Initiating GCC download test...");
+        GCCDownloader downloader = new GCCDownloader();
+        downloader.download();
+
+        // 檢查下載是否成功
+        // 這裡假設下載後的文件會存放在預期的目錄下，你可以根據實際情況修改路徑
+        File downloadedFile = new File("./installed/gcc-download.zip");
+        if (downloadedFile.exists()) {
+            System.out.println("GCC download test successful!");
+        } else {
+            System.out.println("GCC download test failed! Downloaded file not found.");
+        }
+
+        // 檢查安裝位置是否正確
+        // 這裡假設下載的 GCC 文件會解壓並安裝到指定目錄下，你可以根據實際情況修改路徑
+        File installedGCC = new File("./installed/gcc");
+        if (installedGCC.exists()) {
+            System.out.println("GCC installed at: " + installedGCC.getAbsolutePath());
+        } else {
+            System.out.println("GCC installation test failed! GCC directory not found.");
+        }
+    }
+
+
     @Override
     public void start(Stage primaryStage) throws IOException {
+
+        GCCChecker gccChecker = new GCCChecker();
+        gccChecker.checkAndDownloadGCC();
+
+        //testDownload();
+
         config = Config.load("./config.json");
         config.save();
 

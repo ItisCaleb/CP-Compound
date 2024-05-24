@@ -29,6 +29,7 @@ public class Utils {
             ZipEntry zipEntry = zis.getNextEntry();
             root = Paths.get(zipEntry.getName()).getName(0).toString();
             System.out.println(root);
+
             while (zipEntry != null) {
                 Path path = dest.resolve(zipEntry.getName());
                 if (zipEntry.isDirectory()) {
