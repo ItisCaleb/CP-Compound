@@ -18,7 +18,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -27,11 +26,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
-import javafx.stage.Stage;
 import org.eclipse.lsp4j.*;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
@@ -266,7 +262,7 @@ public class MainEditorController {
 
     private void loadContent(String fxmlFile) {
         try {
-            VBox content = FXMLLoader.load(getClass().getResource(fxmlFile));
+            VBox content = FXMLLoader.load(CPCompound.class.getResource(fxmlFile));
             content.prefWidthProperty().bind(functionPaneContentArea.widthProperty());
             content.prefHeightProperty().bind(functionPaneContentArea.heightProperty());
             if(!content.getId().equals("terminal")){
@@ -297,7 +293,7 @@ public class MainEditorController {
             initIcons();
             initEditorTextArea();
             setHandleChangeTab();
-            initFunctonPane(fileBtn,"/com/itiscaleb/cpcompound/fxml/file-treeView.fxml");
+            initFunctonPane(fileBtn,"fxml/file-treeView.fxml");
         });
         System.out.println("initialize");
     }

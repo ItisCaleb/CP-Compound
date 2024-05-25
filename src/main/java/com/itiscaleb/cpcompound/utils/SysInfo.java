@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 public class SysInfo {
+    static OS os = null;
     public enum OS{
         WIN("windows"),
         LINUX("linux"),
@@ -17,11 +18,15 @@ public class SysInfo {
         }
     }
     public static OS getOS() throws RuntimeException{
-        String os = System.getProperty("os.name").toLowerCase();
-        if(os.contains("win")) return OS.WIN;
-        else if(os.contains("darwin") || os.contains("mac")) return OS.MAC;
-        else if(os.contains("linux")) return OS.LINUX;
+        if(os != null){
+            return os;
+        }
+        String name = System.getProperty("os.name").toLowerCase();
+        if(name.contains("win")) os = OS.WIN;
+        else if(name.contains("darwin") || name.contains("mac")) os = OS.MAC;
+        else if(name.contains("linux")) os = OS.LINUX;
         else throw new RuntimeException("Unsupported OS: " + os);
+        return os;
     }
 
     public static String getArch() throws IOException, InterruptedException {{
