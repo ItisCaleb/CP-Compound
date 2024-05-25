@@ -1,6 +1,6 @@
 package com.itiscaleb.cpcompound.controller;
 
-import com.itiscaleb.cpcompound.utils.FileTreeCell;
+import com.itiscaleb.cpcompound.fileSystem.FileTreeCell;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;

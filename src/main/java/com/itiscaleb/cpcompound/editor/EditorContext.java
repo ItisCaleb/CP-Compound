@@ -1,15 +1,12 @@
 package com.itiscaleb.cpcompound.editor;
 
 import com.itiscaleb.cpcompound.langServer.Language;
-import com.itiscaleb.cpcompound.utils.FileManager;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import com.itiscaleb.cpcompound.fileSystem.FileManager;
 import org.eclipse.lsp4j.Diagnostic;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Comparator;
 
