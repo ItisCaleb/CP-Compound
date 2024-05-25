@@ -1,16 +1,18 @@
-package com.itiscaleb.cpcompound.utils;
+package com.itiscaleb.cpcompound.langServer;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.itiscaleb.cpcompound.CPCompound;
+import com.itiscaleb.cpcompound.utils.Config;
+import com.itiscaleb.cpcompound.utils.Downloader;
+import com.itiscaleb.cpcompound.utils.SysInfo;
+import com.itiscaleb.cpcompound.utils.Utils;
 import javafx.beans.property.FloatProperty;
-import javafx.beans.value.ObservableFloatValue;
 
 import java.io.*;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
