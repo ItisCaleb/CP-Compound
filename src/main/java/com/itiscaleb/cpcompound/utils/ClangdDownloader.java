@@ -5,16 +5,21 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.itiscaleb.cpcompound.CPCompound;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.value.ObservableFloatValue;
 
+import java.io.*;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 
 public class ClangdDownloader extends Downloader {
-    @Override
-    public void download() {
+
+    String getClangdURL(){
         try{
             HttpRequest req = HttpRequest.newBuilder()
                     .uri(new URI("https://api.github.com/repos/clangd/clangd/releases/latest"))
@@ -30,19 +35,48 @@ public class ClangdDownloader extends Downloader {
                 JsonArray arr = json.get("assets").getAsJsonArray();
                 for (JsonElement elem : arr) {
                     if(elem.getAsJsonObject().get("name").getAsString().contains(substr)){
-                        String url = elem.getAsJsonObject().get("browser_download_url").getAsString();
-                        Path path = Downloader.downloadFromHTTP(url);
-                        CPCompound.getConfig().cpp_lang_server_path = "./installed/"+ Utils.unzipFolder(path, "./installed");
-                        CPCompound.getConfig().save();
-                        CPCompound.getLogger().info(path);
-                        break;
+                        return elem.getAsJsonObject().get("browser_download_url").getAsString();
                     }
                 }
             }
-
+            return null;
 
         }catch (Exception e){
             e.printStackTrace();
+            return null;
         }
+    }
+    @Override
+    public void download() {
+        try{
+            Path path = Downloader.downloadFromHTTP(getClangdURL());
+            CPCompound.getConfig().cpp_lang_server_path = "./installed/"+ Utils.unzipFolder(path, "./installed");
+            CPCompound.getConfig().save();
+            CPCompound.getLogger().info(path);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public CompletableFuture<Void> downloadAsync(FloatProperty progress) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                Path path = Downloader.progressDownloadFromHTTP(getClangdURL(),progress);
+                Config config = CPCompound.getConfig();
+                config.cpp_lang_server_path = "./installed/"+ Utils.unzipFolder(path, "./installed");
+                config.lang_server_downloaded = true;
+                config.save();
+                if(SysInfo.getOS() != SysInfo.OS.WIN){
+                    File f= new File(config.cpp_lang_server_path + "/bin/clangd");
+                    f.setExecutable(true);
+                }
+
+                CPCompound.getLogger().info(path);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
