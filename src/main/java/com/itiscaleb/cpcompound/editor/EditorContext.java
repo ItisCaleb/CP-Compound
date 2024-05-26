@@ -24,6 +24,7 @@ public class EditorContext {
     private int version;
     private int lastVersion;
     private boolean isTemp;
+    private boolean changed = true;
     private Path exePath;
 
     private List<Diagnostic> diagnostics = new ArrayList<>();
@@ -68,10 +69,14 @@ public class EditorContext {
         this.code = code;
         this.lastVersion = this.version;
         this.version++;
+        changed = true;
     }
 
     public void save(){
-        FileManager.writeTextFile(this.path, code);
+        if(this.changed){
+            FileManager.writeTextFile(this.path, code);
+            this.changed = false;
+        }
     }
 
     public void setPath(File file){

@@ -32,6 +32,7 @@ module com.itiscaleb.cpcompound {
     exports com.itiscaleb.cpcompound.controller to javafx.fxml;
     opens com.itiscaleb.cpcompound;
     opens com.itiscaleb.cpcompound.controller;
-    exports com.itiscaleb.cpcompound.compiler;
+    exports com.itiscaleb.cpcompound.downloader;
     exports com.itiscaleb.cpcompound.fileSystem;
+    exports com.itiscaleb.cpcompound.component;
 }

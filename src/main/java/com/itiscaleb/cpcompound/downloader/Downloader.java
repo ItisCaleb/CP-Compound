@@ -1,13 +1,10 @@
-package com.itiscaleb.cpcompound.utils;
+package com.itiscaleb.cpcompound.downloader;
 
 import com.itiscaleb.cpcompound.CPCompound;
 import javafx.beans.property.FloatProperty;
-import javafx.beans.property.LongProperty;
-import javafx.beans.value.ObservableFloatValue;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;

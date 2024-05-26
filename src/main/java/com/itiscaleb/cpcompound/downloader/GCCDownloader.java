@@ -1,8 +1,7 @@
-package com.itiscaleb.cpcompound.compiler;
+package com.itiscaleb.cpcompound.downloader;
 
 import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.utils.Config;
-import com.itiscaleb.cpcompound.utils.Downloader;
 import com.itiscaleb.cpcompound.utils.SysInfo;
 import com.itiscaleb.cpcompound.utils.Utils;
 import javafx.beans.property.FloatProperty;

@@ -1,9 +1,9 @@
 package com.itiscaleb.cpcompound.controller;
 
 import com.itiscaleb.cpcompound.CPCompound;
-import com.itiscaleb.cpcompound.langServer.ClangdDownloader;
+import com.itiscaleb.cpcompound.downloader.ClangdDownloader;
 import com.itiscaleb.cpcompound.utils.Config;
-import com.itiscaleb.cpcompound.compiler.GCCDownloader;
+import com.itiscaleb.cpcompound.downloader.GCCDownloader;
 import com.itiscaleb.cpcompound.utils.SysInfo;
 import javafx.application.Platform;
 import javafx.beans.property.FloatProperty;
