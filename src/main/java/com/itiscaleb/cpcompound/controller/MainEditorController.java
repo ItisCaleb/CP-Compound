@@ -1,8 +1,10 @@
 package com.itiscaleb.cpcompound.controller;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.itiscaleb.cpcompound.CPCompound;
@@ -28,6 +30,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
+import javafx.util.Pair;
 import org.eclipse.lsp4j.*;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
@@ -73,11 +76,9 @@ public class MainEditorController {
     Label diagPopupLabel;
     final TabManager tabManager = new TabManager();
     ContextMenu completionMenu;
-
-    boolean switched = false;
+    EditorContext lastContext = null;
 
     private void switchCodeArea(Tab setUpTab){
-        switched = true;
         VirtualizedScrollPane<CodeArea> vsPane = new VirtualizedScrollPane<>(mainTextArea);
         setUpTab.setContent(vsPane);
         setUpTab.setOnClosed(event -> handleTabClosed(event, setUpTab));
@@ -86,6 +87,23 @@ public class MainEditorController {
         // switch text area content
         mainTextArea.replaceText(0, mainTextArea.getText().length(),
                 CPCompound.getEditor().getCurrentContext().getCode());
+    }
+
+    @FXML
+    private CompletableFuture<Pair<EditorContext, Boolean>> doCompile(){
+        saveContext(currentTab);
+        EditorContext context = CPCompound.getEditor().getCurrentContext();
+        if (context == null) return CompletableFuture.completedFuture(new Pair<>(null,false));
+        return context.compile(System.out, System.err);
+    }
+
+    @FXML
+    private void doExecute(){
+        doCompile().whenComplete((result, throwable) -> {
+            if(!result.getValue()) return;
+            EditorContext context = result.getKey();
+            context.execute(System.in, System.out, System.err);
+        });
     }
 
     @FXML
@@ -120,18 +138,19 @@ public class MainEditorController {
             if(newTab != null){
                 String key = (String)newTab.getUserData();
                 CPCompound.getEditor().switchContext(key);
+
                 switchCodeArea(newTab);
             }
         });
     }
     private void initEditorTextArea() {
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            if(switched){
-                switched = false;
-                return;
-            }
             Editor editor = CPCompound.getEditor();
             EditorContext context = editor.getCurrentContext();
+            if(lastContext != context){
+                lastContext = context;
+                return;
+            }
             context.setCode(newValue);
             LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
             // request to change
@@ -149,14 +168,14 @@ public class MainEditorController {
                 completionMenu.hide();
             }
 
-            var spans = editor.computeHighlighting(context)
+            /*var spans = editor.computeHighlighting(context)
                     .overlay(mainTextArea.getStyleSpans(0, mainTextArea.getLength()),
                             (a,b)->{
                                 var arr = new ArrayList<String>();
                                 arr.addAll(a);
                                 arr.addAll(b);
                                 return arr;
-                            });
+                            });*/
             // highlight
             //mainTextArea.setStyleSpans(0, spans);
         });
@@ -215,27 +234,27 @@ public class MainEditorController {
         currentActiveMenuItem = sourceButton;
         switch(itemId){
             case "Home-button":
-                loadContent("/com/itiscaleb/cpcompound/fxml/home.fxml");
+                loadContent("fxml/home.fxml");
                 functionTabButton.setText("Home");
                 break;
             case "File-button":
-                loadContent("/com/itiscaleb/cpcompound/fxml/file-treeView.fxml");
+                loadContent("fxml/file-treeView.fxml");
                 functionTabButton.setText("File View");
                 break;
             case "Checker-button":
-                loadContent("/com/itiscaleb/cpcompound/fxml/checker.fxml");
+                loadContent("fxml/checker.fxml");
                 functionTabButton.setText("Checker");
                 break;
             case "Generator-button":
-                loadContent("/com/itiscaleb/cpcompound/fxml/generator.fxml");
+                loadContent("fxml/generator.fxml");
                 functionTabButton.setText("Generator");
                 break;
             case "Note-system-button":
-                loadContent("/com/itiscaleb/cpcompound/fxml/note-system.fxml");
+                loadContent("fxml/note-system.fxml");
                 functionTabButton.setText("Note System");
                 break;
             case "Setting-button":
-                loadContent("/com/itiscaleb/cpcompound/fxml/setting.fxml");
+                loadContent("fxml/setting.fxml");
                 functionTabButton.setText("Setting");
                 break;
             default:
@@ -256,7 +275,7 @@ public class MainEditorController {
         } else if (clickedButton == terminalTabButton) {
             terminalTabButton.setStyle("-fx-border-color: transparent transparent transparent white;-fx-opacity: 1");
             functionTabButton.setStyle("-fx-border-color: transparent transparent transparent transparent;-fx-opacity: 0.5");
-            loadContent("/com/itiscaleb/cpcompound/fxml/terminal.fxml");
+            loadContent("fxml/terminal.fxml");
         }
     }
 
@@ -358,13 +377,16 @@ public class MainEditorController {
     }
 
     private void saveContext(Tab tab){
+        if(tab == null) return;
         EditorContext context = CPCompound.getEditor().getContext((String) tab.getUserData());
+        if(context == null) return;
         if(context.isTemp()){
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save File");
+            fileChooser.setInitialFileName(context.getFileName());
             fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("C File", "*.c"),
                     new FileChooser.ExtensionFilter("C++ File", "*.cc", "*.cpp"),
+                    new FileChooser.ExtensionFilter("C File", "*.c"),
                     new FileChooser.ExtensionFilter("Python File","*.py"),
                     new FileChooser.ExtensionFilter("All file", "*.*"));
             File file = fileChooser.showSaveDialog(editorTextTabPane.getScene().getWindow());

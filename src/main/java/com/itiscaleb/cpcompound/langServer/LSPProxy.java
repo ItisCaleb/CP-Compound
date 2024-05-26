@@ -9,10 +9,8 @@ import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class LSPProxy {
-    HashMap<String, String> langToServer = new HashMap<>();
     String remotePath;
     Process process;
     Launcher<LanguageServer> launcher = null;

@@ -41,8 +41,8 @@
         <items>
             <MFXButton id="Add-file-button" fx:id="addFileBtn" onAction="#handleAddNewFile" text="" textAlignment="RIGHT" />
             <MFXButton id="Template-button" fx:id="templateBtn" text="Template" textAlignment="RIGHT" />
-            <MFXButton id="Compile-button" fx:id="compileBtn" text="Compile" textAlignment="RIGHT" />
-            <MFXButton id="Run-button" fx:id="runBtn" text="Run" textAlignment="RIGHT" />
+            <MFXButton id="Compile-button" fx:id="compileBtn" onAction="#doCompile" text="Compile" textAlignment="RIGHT" />
+            <MFXButton id="Run-button" fx:id="runBtn" text="Run" onAction="#doExecute" textAlignment="RIGHT" />
             <MFXButton id="Search-icon-button" fx:id="searchIconBtn" text="" textAlignment="RIGHT" />
             <MFXButton id="Replace-icon-button" fx:id="replaceIconBtn" rippleBackgroundOpacity="0.02" rippleRadius="150.0" text="" textAlignment="RIGHT" />
             <MFXButton id="Help-icon-button" fx:id="helpIconBtn" text="" textAlignment="RIGHT" />
