@@ -1,15 +1,15 @@
 package com.itiscaleb.cpcompound.controller;
 
 import com.itiscaleb.cpcompound.CPCompound;
-import com.itiscaleb.cpcompound.fileSystem.FileTreeCell;
+import com.itiscaleb.cpcompound.component.FileTreeCell;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
-import javafx.util.Callback;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
+import java.nio.file.Path;
 
 public class FileTreeViewController {
 

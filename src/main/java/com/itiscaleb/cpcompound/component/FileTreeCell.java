@@ -1,4 +1,4 @@
-package com.itiscaleb.cpcompound.fileSystem;
+package com.itiscaleb.cpcompound.component;
 
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
