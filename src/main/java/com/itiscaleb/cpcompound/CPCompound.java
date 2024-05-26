@@ -67,8 +67,8 @@ public class CPCompound extends Application {
             primaryStage.setMinWidth(1098);
             primaryStage.setMinHeight(700);
             FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/editor-main.fxml"));
-            mainEditorController = fxmlLoader.getController();
             Parent editorRoot = fxmlLoader.load();
+            mainEditorController = fxmlLoader.getController();
             Scene scene = new Scene(editorRoot);
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -109,9 +109,9 @@ public class CPCompound extends Application {
         return primaryStage;
     }
 
-//    public static MainController getMainController(){
-//        return mainController;
-//    }
+    public static MainEditorController getMainController(){
+        return mainEditorController;
+    }
 
     public static void main(String[] args) {
         launch();

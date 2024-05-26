@@ -113,6 +113,16 @@ public class MainEditorController {
         newTab(key);
     }
 
+    public void addNewFile(File file){
+        try {
+            Editor editor = CPCompound.getEditor();
+            String key = editor.addContext(Path.of(file.getCanonicalPath()));
+            newTab(key);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     private void newTab(String key) {
 
         Tab newTab = new Tab(key);

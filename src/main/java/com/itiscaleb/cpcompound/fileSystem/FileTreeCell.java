@@ -7,22 +7,25 @@ import org.kordamp.ikonli.boxicons.BoxiconsSolid;
 import org.kordamp.ikonli.dashicons.Dashicons;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import org.kordamp.ikonli.javafx.FontIcon;
-public class FileTreeCell extends TreeCell<String> {
+
+import java.io.File;
+
+public class FileTreeCell extends TreeCell<File> {
     @Override
-    protected void updateItem(String item, boolean empty) {
+    protected void updateItem(File item, boolean empty) {
         super.updateItem(item, empty);
         if (empty || item == null) {
             setText(null);
             setGraphic(null);
         } else {
-            setText(item);
-            TreeItem<String> treeItem = getTreeItem();
+            setText(item.getName());
+            TreeItem<File> treeItem = getTreeItem();
             updateGraphic(treeItem);
             treeItem.expandedProperty().addListener((obs, wasExpanded, isNowExpanded) -> updateGraphic(treeItem));
         }
     }
 
-    private void updateGraphic(TreeItem<String> treeItem) {
+    private void updateGraphic(TreeItem<File> treeItem) {
         FontIcon arrowIcon = new FontIcon(treeItem.isExpanded() ?Dashicons.ARROW_DOWN_ALT2 : Dashicons.ARROW_RIGHT_ALT2);
         arrowIcon.setIconColor(Color.valueOf("#b6aeae"));
         arrowIcon.setIconSize(10);

@@ -71,7 +71,7 @@ public class Editor {
         if(contexts.containsKey(key)){
             return key;
         }
-        EditorContext context = new EditorContext(path, Language.CPP, Files.readString(path), false);
+        EditorContext context = new EditorContext(path, Files.readString(path), false);
         contexts.put(key, context);
         LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
         if(proxy != null){
