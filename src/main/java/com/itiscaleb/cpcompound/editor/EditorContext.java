@@ -1,14 +1,21 @@
 package com.itiscaleb.cpcompound.editor;
 
+import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.langServer.Language;
 import com.itiscaleb.cpcompound.fileSystem.FileManager;
+import com.itiscaleb.cpcompound.utils.Config;
+import com.itiscaleb.cpcompound.utils.SysInfo;
+import javafx.util.Pair;
 import org.eclipse.lsp4j.Diagnostic;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;
+import java.util.concurrent.CompletableFuture;
 
 public class EditorContext {
     private Path path;
@@ -16,8 +23,9 @@ public class EditorContext {
     private Language lang;
     private int version;
     private int lastVersion;
-    private boolean hasChanged;
     private boolean isTemp;
+    private Path exePath;
+
     private List<Diagnostic> diagnostics = new ArrayList<>();
     EditorContext(Path path, Language lang, String code, boolean isTemp) {
         this.path = path.normalize();
@@ -60,11 +68,9 @@ public class EditorContext {
         this.code = code;
         this.lastVersion = this.version;
         this.version++;
-        this.hasChanged = true;
     }
 
     public void save(){
-        this.hasChanged = false;
         FileManager.writeTextFile(this.path, code);
     }
 
@@ -102,4 +108,70 @@ public class EditorContext {
     public void setTemp(boolean temp) {
         isTemp = temp;
     }
+
+    public Path getExePath(){
+        return exePath;
+    }
+
+    // will return success or not
+    public CompletableFuture<Pair<EditorContext, Boolean>> compile(OutputStream oStream, OutputStream errStream){
+        return CompletableFuture.supplyAsync(()->{
+            try {
+                Config config = CPCompound.getConfig();
+                String compiler = (this.lang == Language.C)   ? "/gcc" :
+                                  (this.lang == Language.CPP) ? "/g++" : "";
+                switch (this.lang){
+                    case Python -> this.exePath = this.path;
+                    case CPP, C -> {
+                        this.exePath = makeExePath();
+                        Process p = new ProcessBuilder(config.gcc_path+compiler, path.toString(), "-o", this.exePath.toString()).start();
+                        p.getInputStream().transferTo(oStream);
+                        p.getErrorStream().transferTo(errStream);
+                        return new Pair<>(this, p.waitFor() == 0);
+                    }
+                }
+                return new Pair<>(this, true);
+            }catch (Exception e){
+                return new Pair<>(this, false);
+            }
+        });
+    }
+    public CompletableFuture<Void> execute(InputStream iStream, OutputStream oStream, OutputStream errStream){
+        return CompletableFuture.runAsync(()->{
+            try {
+                String cmd = "";
+                switch (this.lang){
+                    case Python -> {
+                        if(SysInfo.getOS() == SysInfo.OS.WIN) cmd = "python ";
+                        else cmd = "python3 ";
+                    }
+                    case CPP, C -> cmd = "";
+                }
+                cmd += this.exePath;
+                Process p = new ProcessBuilder(cmd, this.exePath.toString()).start();
+                p.getInputStream().transferTo(oStream);
+                p.getErrorStream().transferTo(errStream);
+                iStream.transferTo(p.getOutputStream());
+                p.waitFor();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        });
+    }
+
+
+    Path makeExePath(){
+        int dot = this.path.toString().lastIndexOf(".");
+        String exe = this.path.toString().substring(0, dot);
+        if (SysInfo.getOS() == SysInfo.OS.WIN){
+            exe += ".exe";
+        }
+        return Path.of(exe);
+    }
+
+    public String getFileName(){
+        int slash = this.path.toString().lastIndexOf("/");
+        return this.path.toString().substring(slash + 1);
+    }
+
 }

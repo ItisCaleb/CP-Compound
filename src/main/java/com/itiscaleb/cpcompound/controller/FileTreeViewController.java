@@ -1,5 +1,6 @@
 package com.itiscaleb.cpcompound.controller;
 
+import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.fileSystem.FileTreeCell;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -11,8 +12,9 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.io.File;
 
 public class FileTreeViewController {
+
     @FXML
-    private TreeView<String> fileTreeView;
+    private TreeView<File> fileTreeView;
     @FXML
     private ToggleButton toggleExpandCollapseButton;
     @FXML
@@ -30,13 +32,13 @@ public class FileTreeViewController {
     }
     private void loadDirectoryIntoTreeView(File dir) {
 //        System.out.println("loadDirectoryIntoTreeView");
-        TreeItem<String> root = createTreeItem(dir);
+        TreeItem<File> root = createTreeItem(dir);
         fileTreeView.setRoot(root);
     }
-    private TreeItem<String> createTreeItem(File file) {
-        TreeItem<String> item = new TreeItem<>(file.getName());
+    private TreeItem<File> createTreeItem(File file) {
+        TreeItem<File> item = new TreeItem<>(file);
         if (file.isDirectory()) {
-            TreeItem<String> dummy = new TreeItem<>("Loading...");
+            TreeItem<File> dummy = new TreeItem<>(new File("Loading..."));
             item.getChildren().add(dummy);
             item.expandedProperty().addListener((obs, wasExpanded, isNowExpanded) -> {
                 if (isNowExpanded && item.getChildren().contains(dummy)) {
@@ -48,14 +50,14 @@ public class FileTreeViewController {
         return item;
     }
 
-    private void loadChildItems(TreeItem<String> item, File dir) {
+    private void loadChildItems(TreeItem<File> item, File dir) {
 //        System.out.println("loadChildITtems: dir = " + dir);
         File[] files = dir.listFiles();
         if (files != null) {
             for (File f : files) {
-                TreeItem<String> childItem = new TreeItem<>(f.getName());
+                TreeItem<File> childItem = new TreeItem<>(f);
                 if (f.isDirectory()) {
-                    childItem.getChildren().add(new TreeItem<>("Loading..."));
+                    childItem.getChildren().add(new TreeItem<>(new File("Loading...")));
                     setupLazyLoad(childItem, f);
                 }
                 item.getChildren().add(childItem);
@@ -63,9 +65,9 @@ public class FileTreeViewController {
         }
     }
 
-    private void setupLazyLoad(TreeItem<String> item, File dir) {
+    private void setupLazyLoad(TreeItem<File> item, File dir) {
         item.expandedProperty().addListener((obs, wasExpanded, isNowExpanded) -> {
-            if (isNowExpanded && item.getChildren().size() == 1 && "Loading...".equals(item.getChildren().get(0).getValue())) {
+            if (isNowExpanded && item.getChildren().size() == 1 && "Loading...".equals(item.getChildren().get(0).getValue().getPath())) {
                 item.getChildren().clear();
                 loadChildItems(item, dir);
             }
@@ -88,20 +90,20 @@ public class FileTreeViewController {
             }
         }
     }
-    private void expandAll(TreeItem<String> item) {
+    private void expandAll(TreeItem<File> item) {
         if(item.isLeaf()){
             return;
         }
         if (!item.isLeaf() && !item.isExpanded()) {
             item.setExpanded(true);
         }
-        for (TreeItem<String> child : item.getChildren()) {
+        for (TreeItem<File> child : item.getChildren()) {
             expandAll(child);
         }
     }
-    private void collapseAll(TreeItem<String> item) {
+    private void collapseAll(TreeItem<File> item) {
         item.setExpanded(false);
-        for (TreeItem<String> child : item.getChildren()) {
+        for (TreeItem<File> child : item.getChildren()) {
             collapseAll(child);
         }
     }
@@ -123,9 +125,13 @@ public class FileTreeViewController {
         });
     }
     private void handleTreeItemClick(MouseEvent event) {
-        TreeItem<String> selectedItem = fileTreeView.getSelectionModel().getSelectedItem();
-        if (selectedItem != null) {
-            System.out.println("click item: "+selectedItem.getValue());
+        if(event.getClickCount() == 2){
+            TreeItem<File> selectedItem = fileTreeView.getSelectionModel().getSelectedItem();
+            File file = selectedItem.getValue();
+            if(file.isDirectory()) return;
+            if (selectedItem != null) {
+                CPCompound.getMainController().addNewFile(selectedItem.getValue());
+            }
         }
     }
     @FXML
@@ -133,12 +139,7 @@ public class FileTreeViewController {
         initIcons();
         setTooltipsDelay();
         setTreeItemListener();
-        fileTreeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
-            @Override
-            public TreeCell<String> call(TreeView<String> tv) {
-                return new FileTreeCell();
-            }
-        });
+        fileTreeView.setCellFactory(tv -> new FileTreeCell());
         System.out.println("FileTreeViewController initialize");
     }
 }
