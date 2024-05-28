@@ -8,6 +8,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.itiscaleb.cpcompound.CPCompound;
+import com.itiscaleb.cpcompound.component.EditorStyler;
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
@@ -77,6 +78,10 @@ public class MainEditorController {
     final TabManager tabManager = new TabManager();
     ContextMenu completionMenu;
     EditorContext lastContext = null;
+
+    StyleSpans<Collection<String>> diagnosticSpans = null;
+    StyleSpans<Collection<String>> highlightSpans = null;
+
 
     private void switchCodeArea(Tab setUpTab){
         VirtualizedScrollPane<CodeArea> vsPane = new VirtualizedScrollPane<>(mainTextArea);
@@ -178,16 +183,9 @@ public class MainEditorController {
                 completionMenu.hide();
             }
 
-            /*var spans = editor.computeHighlighting(context)
-                    .overlay(mainTextArea.getStyleSpans(0, mainTextArea.getLength()),
-                            (a,b)->{
-                                var arr = new ArrayList<String>();
-                                arr.addAll(a);
-                                arr.addAll(b);
-                                return arr;
-                            });*/
             // highlight
-            //mainTextArea.setStyleSpans(0, spans);
+            this.highlightSpans = editor.computeHighlighting(context);
+            EditorStyler.asyncSetSpans(mainTextArea, highlightSpans, diagnosticSpans);
         });
         initEditorUtility();
         initDiagnosticTooltip();
@@ -509,17 +507,8 @@ public class MainEditorController {
         ListChangeListener<? super Diagnostic> listener = (list) -> Platform.runLater(() -> {
             // do your GUI stuff here
             this.diagnostics = (List<Diagnostic>) list.getList();
-            mainTextArea.setStyleSpans(0,
-                    computeDiagnostic(
-                            this.diagnostics,
-                            mainTextArea.getLength()));
-//                            .overlay(mainTextArea.getStyleSpans(0, mainTextArea.getLength()),
-//                                    (a,b)->{
-//                                        var arr = new ArrayList<String>();
-//                                        arr.addAll(a);
-//                                        arr.addAll(b);
-//                                        return arr;
-//                                    }));
+            this.diagnosticSpans = computeDiagnostic(this.diagnostics, mainTextArea.getLength());
+            EditorStyler.asyncSetSpans(mainTextArea, diagnosticSpans, highlightSpans);
         });
 
         // listen for diagnostics change
