@@ -1,5 +1,10 @@
 .cpp-keyword{
-    -fx-fill: #d2c2b2 !important;
+    -fx-fill: #cf9a42 !important;
+    -fx-font-weight: bold;
+}
+
+.cpp-preprocessor-keyword{
+    -fx-fill: #1687d1 !important;
     -fx-font-weight: bold;
 }
 
@@ -8,15 +13,15 @@
 }
 
 .cpp-paren {
-    -fx-fill: firebrick !important;
+    -fx-fill: #cdcbcb !important;
     -fx-font-weight: bold;
 }
 .cpp-bracket {
-    -fx-fill: darkgreen !important;
+    -fx-fill: #cdcbcb !important;
     -fx-font-weight: bold;
 }
 .cpp-brace {
-    -fx-fill: teal !important;
+    -fx-fill: #cdcbcb !important;
     -fx-font-weight: bold;
 }
 .cpp-string {

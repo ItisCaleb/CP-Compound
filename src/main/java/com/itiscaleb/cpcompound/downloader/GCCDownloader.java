@@ -6,6 +6,7 @@ import com.itiscaleb.cpcompound.utils.SysInfo;
 import com.itiscaleb.cpcompound.utils.Utils;
 import javafx.beans.property.FloatProperty;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -27,7 +28,7 @@ public class GCCDownloader extends Downloader {
                 Config config = CPCompound.getConfig();
                 config.gcc_downloaded = true;
                 String path = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-                config.gcc_path = path.substring(0, path.lastIndexOf("/"));
+                config.gcc_path = path.substring(0, path.lastIndexOf(File.separator));
                 config.save();
             }
             return p.exitValue() == 0;

@@ -27,6 +27,7 @@ public class Editor {
 
     public Editor() {
         highlighters.put(Language.CPP, new CppHighlighter());
+        highlighters.put(Language.C, new CHighlighter());
     }
 
     public void switchContext(String key){
