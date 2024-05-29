@@ -47,7 +47,7 @@ public class Editor {
     }
 
     public String addContext() {
-        return this.addContext("Untitled-"+(lastUnnamed++));
+        return this.addContext("Untitled-"+(lastUnnamed++)+".cc");
     }
 
     public String addContext(String name){

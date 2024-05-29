@@ -73,7 +73,7 @@ public class ClangdDownloader extends Downloader {
                     File f= new File(config.cpp_lang_server_path + "/bin/clangd");
                     f.setExecutable(true);
                 }
-
+                path.toFile().delete();
                 CPCompound.getLogger().info(path);
             } catch (Exception e) {
                 throw new RuntimeException(e);

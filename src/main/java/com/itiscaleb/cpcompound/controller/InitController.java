@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.text.Text;
+import net.sf.sevenzipjbinding.SevenZip;
 
 public class InitController {
 
@@ -56,6 +57,7 @@ public class InitController {
                     new GCCDownloader()
                         .downloadAsync(progressProperty)
                         .whenComplete((unused, throwable) -> {
+                            throwable.printStackTrace();
                             Platform.runLater(CPCompound::setIDEStage);
                         });
                 }
@@ -72,5 +74,6 @@ public class InitController {
             }
 
         }else Platform.runLater(CPCompound::setIDEStage);
+        downloadText.setText("Downloading GCC...");
     }
 }

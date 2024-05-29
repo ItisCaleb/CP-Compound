@@ -1,0 +1,11 @@
+If:
+    PathExclude: [.*\.cpp, .*\.cc, .*\.c\+\+]
+CompileFlags:
+    Add: [-std=c++17]
+    CompilationDatabase: c++
+---
+
+If:
+    PathExclude: [.*\.c]
+CompileFlags:
+    Add: [-std=c11]

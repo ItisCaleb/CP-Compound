@@ -24,6 +24,12 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+tasks.register('copyConfigs', Copy) {
+    from "${projectDir}/src/main/resources/configs"
+    into "${buildDir}"
+}
+compileJava.dependsOn(copyConfigs)
+
 application {
     mainModule = 'com.itiscaleb.cpcompound'
     mainClass = 'com.itiscaleb.cpcompound.CPCompound'
@@ -38,11 +44,13 @@ javafx {
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
-    implementation group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.11.2'
+    implementation 'org.fxmisc.richtext:richtextfx:0.11.2'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'org.apache.logging.log4j:log4j-api:2.23.1'
     runtimeOnly 'org.apache.logging.log4j:log4j-core:2.23.1'
-    implementation group: 'org.eclipse.lsp4j', name: 'org.eclipse.lsp4j', version: '0.22.0'
+    implementation 'org.eclipse.lsp4j:org.eclipse.lsp4j:0.22.0'
+    implementation 'net.sf.sevenzipjbinding:sevenzipjbinding:16.02-2.01'
+    implementation 'net.sf.sevenzipjbinding:sevenzipjbinding-all-windows:16.02-2.01'
     implementation 'io.github.palexdev:materialfx:11.17.0'
     implementation 'org.kordamp.ikonli:ikonli-javafx:12.3.1'
     implementation 'org.kordamp.ikonli:ikonli-whhg-pack:12.3.1'
@@ -78,3 +86,4 @@ jlink {
 jlinkZip {
     group = 'distribution'
 }
+
