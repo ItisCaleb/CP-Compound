@@ -13,7 +13,6 @@ import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.utils.TabManager;
-import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.Event;
@@ -26,8 +25,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
@@ -40,35 +38,30 @@ import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.kordamp.ikonli.javafx.FontIcon;
 
-public class MainEditorController {
-
-
+public class EditorController {
     private final KeyCombination saveCombination =  new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN);
     @FXML
     private TabPane functionTabPane, editorTextTabPane;
     @FXML
     private SplitPane codeAreaSplitPane, codeAreaBase;
-    @FXML
-    private AnchorPane editorTabPaneBase;
-    @FXML
-    ToolBar mainEditorToolBar;
-    @FXML
-    MFXButton addFileBtn,compileBtn, templateBtn, runBtn, searchIconBtn, replaceIconBtn, helpIconBtn, minimizeWindowBtn, closeWindowBtn;
-    @FXML
-    ToggleButton adjustWindowBtn;
-    @FXML
-    Button homeBtn, fileBtn, checkerBtn, generatorBtn, noteSystemBtn, settingBtn;
-    @FXML
-    Button functionTabButton, terminalTabButton;
-    @FXML
-    StackPane functionPaneContentArea;
-    Button currentActiveMenuItem = new Button();
-    //id,object
-    final private Map<String,VBox> functionPaneCache = new HashMap<>();
 
-    private VBox  currentFunctionContent;
+    static EditorMenuBarController editorMenuBarController;
+    static EditorToolBarController editorToolBarController;
+    static EditorFunctionPaneController editorFunctionPaneController;
+
+    public EditorMenuBarController getEditorMenuBarController() {
+        return editorMenuBarController;
+    }
+
+    public EditorToolBarController getEditorToolBarController() {
+        return editorToolBarController;
+    }
+
+    public EditorFunctionPaneController getEditorFunctionPaneController() {
+        return editorFunctionPaneController;
+    }
+
     CodeArea mainTextArea = new CodeArea();
     Tab currentTab;
     List<Diagnostic> diagnostics;
@@ -82,7 +75,6 @@ public class MainEditorController {
     StyleSpans<Collection<String>> diagnosticSpans = null;
     StyleSpans<Collection<String>> highlightSpans = null;
 
-
     private void switchCodeArea(Tab setUpTab){
         VirtualizedScrollPane<CodeArea> vsPane = new VirtualizedScrollPane<>(mainTextArea);
         setUpTab.setContent(vsPane);
@@ -95,7 +87,7 @@ public class MainEditorController {
     }
 
     @FXML
-    private CompletableFuture<Pair<EditorContext, Boolean>> doCompile(){
+    public CompletableFuture<Pair<EditorContext, Boolean>> doCompile(){
         saveContext(currentTab);
         EditorContext context = CPCompound.getEditor().getCurrentContext();
         if (context == null) return CompletableFuture.completedFuture(new Pair<>(null,false));
@@ -103,7 +95,7 @@ public class MainEditorController {
     }
 
     @FXML
-    private void doExecute(){
+    public void doExecute(){
         doCompile().whenComplete((result, throwable) -> {
             if(!result.getValue()) return;
             EditorContext context = result.getKey();
@@ -112,7 +104,7 @@ public class MainEditorController {
     }
 
     @FXML
-    private void handleAddNewFile() {
+    public void handleAddNewFile() {
         Editor editor = CPCompound.getEditor();
         String key = editor.addContext();
         newTab(key);
@@ -193,138 +185,50 @@ public class MainEditorController {
         initCompletionTooltip();
     }
 
-    private void initIcons() {
-        addFileBtn.setGraphic(new FontIcon());
-        compileBtn.setGraphic(new FontIcon());
-        templateBtn.setGraphic(new FontIcon());
-        runBtn.setGraphic(new FontIcon());
-        searchIconBtn.setGraphic(new FontIcon());
-        replaceIconBtn.setGraphic(new FontIcon());
-        helpIconBtn.setGraphic(new FontIcon());
-        homeBtn.setGraphic(new FontIcon());
-        fileBtn.setGraphic(new FontIcon());
-        checkerBtn.setGraphic(new FontIcon());
-        generatorBtn.setGraphic(new FontIcon());
-        noteSystemBtn.setGraphic(new FontIcon());
-        settingBtn.setGraphic(new FontIcon());
-        // for custom stage title bar's button
-        // minimizeWindowBtn.setGraphic(new FontIcon());
-        // adjustWindowBtn.setGraphic(new FontIcon());
-        // closeWindowBtn.setGraphic(new FontIcon());
-    }
-
-    // for custom stage title bar's button function
-    // @FXML
-    // private void minimizeWindow() {
-    // currentStage.setIconified(true);
-    // }
-    // @FXML
-    // private void adjustWindow() {
-    // if (currentStage.isMaximized()) {
-    // currentStage.setMaximized(false);
-    // } else {
-    // currentStage.setMaximized(true);
-    // }
-    // }
-    // @FXML
-    // private void closeWindow() {
-    // currentStage.close();
-    // }
-    private void assignFunctionTab(String itemId,Button sourceButton){
-        currentActiveMenuItem.setStyle("-fx-background-color: transparent;");
-        FontIcon itemIcon = (FontIcon) currentActiveMenuItem.getGraphic();
-        itemIcon.setStyle(itemIcon.getStyle()+"-fx-icon-color: #CCCCCC;");
-        currentActiveMenuItem = sourceButton;
-        currentActiveMenuItem.setStyle("-fx-background-color: #4a4b4e;");
-        itemIcon = (FontIcon) currentActiveMenuItem.getGraphic();
-        itemIcon.setStyle(itemIcon.getStyle()+"-fx-icon-color: #FFFFFF;");
-        currentActiveMenuItem.setGraphic(itemIcon);
-        currentActiveMenuItem = sourceButton;
-        switch(itemId){
-            case "Home-button":
-                loadContent("fxml/home.fxml");
-                functionTabButton.setText("Home");
-                break;
-            case "File-button":
-                loadContent("fxml/file-treeView.fxml");
-                functionTabButton.setText("File View");
-                break;
-            case "Checker-button":
-                loadContent("fxml/checker.fxml");
-                functionTabButton.setText("Checker");
-                break;
-            case "Generator-button":
-                loadContent("fxml/generator.fxml");
-                functionTabButton.setText("Generator");
-                break;
-            case "Note-system-button":
-                loadContent("fxml/note-system.fxml");
-                functionTabButton.setText("Note System");
-                break;
-            case "Setting-button":
-                loadContent("fxml/setting.fxml");
-                functionTabButton.setText("Setting");
-                break;
-            default:
-        }
-    }
-    @FXML
-    private void handleMenuSwitch(javafx.event.ActionEvent event){
-        Button clickedButton = (Button)event.getSource();
-        assignFunctionTab(clickedButton.getId(),clickedButton);
-    }
-    @FXML
-    private void handleTabSwitch(javafx.event.ActionEvent event) {
-        Button clickedButton = (Button) event.getSource();
-        if (clickedButton == functionTabButton) {
-            functionTabButton.setStyle("-fx-border-color: transparent transparent transparent white;-fx-opacity: 1");
-            terminalTabButton.setStyle("-fx-border-color: transparent transparent transparent transparent;-fx-opacity: 0.5");
-            functionPaneContentArea.getChildren().setAll(currentFunctionContent);
-        } else if (clickedButton == terminalTabButton) {
-            terminalTabButton.setStyle("-fx-border-color: transparent transparent transparent white;-fx-opacity: 1");
-            functionTabButton.setStyle("-fx-border-color: transparent transparent transparent transparent;-fx-opacity: 0.5");
-            loadContent("fxml/terminal.fxml");
-        }
-    }
-
-    private void loadContent(String fxmlFile) {
+    private void loadEditorToolBar(){
         try {
-            VBox content = FXMLLoader.load(CPCompound.class.getResource(fxmlFile));
-            content.prefWidthProperty().bind(functionPaneContentArea.widthProperty());
-            content.prefHeightProperty().bind(functionPaneContentArea.heightProperty());
-            if(!content.getId().equals("terminal")){
-                if(functionPaneCache.containsKey(content.getId())){
-                    currentFunctionContent = functionPaneCache.get(content.getId());
-                    functionPaneContentArea.getChildren().setAll(functionPaneCache.get(content.getId()));
-                }else{
-                    currentFunctionContent = content;
-                    functionPaneContentArea.getChildren().setAll(content);
-                    functionPaneCache.put(content.getId(),content);
-                }
-            }else{
-                functionPaneContentArea.getChildren().setAll(content);
-            }
+            FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/editor-tool-bar.fxml"));
+            HBox mainEditorToolBar = fxmlLoader.load();
+            CPCompound.getBaseController().appBase.getChildren().add(mainEditorToolBar);
+            editorToolBarController =fxmlLoader.getController();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void loadEditorMenuBar(){
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/editor-menu-bar.fxml"));
+            VBox mainEditorMenuBar = fxmlLoader.load();
+            CPCompound.getBaseController().appBase.getChildren().add(mainEditorMenuBar);
+            editorMenuBarController = fxmlLoader.getController();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    private void initFunctonPane(Button menuButton,String fxmlFilePath){
-        loadContent(fxmlFilePath);
-        currentActiveMenuItem = menuButton;
-        assignFunctionTab(fxmlFilePath,menuButton);
-    }
-    @FXML
-    public void initialize() {
-        Platform.runLater(() -> {
-            initIcons();
-            initEditorTextArea();
-            setHandleChangeTab();
-            initFunctonPane(fileBtn,"fxml/file-treeView.fxml");
-        });
-        System.out.println("initialize");
+    private void loadEditorFunctionPane(){
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/editor-function-pane.fxml"));
+            VBox editorFunctionPane = fxmlLoader.load();
+            codeAreaSplitPane.getItems().add(0,editorFunctionPane);
+            editorFunctionPaneController=fxmlLoader.getController();
+            editorFunctionPaneController.setCurrentActiveMenuItem(editorMenuBarController.getCurrentActiveMenuItem());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    @FXML
+    public void initialize() {
+        Platform.runLater(()->{
+            loadEditorMenuBar();
+            loadEditorFunctionPane();
+            loadEditorToolBar();
+            initEditorTextArea();
+            setHandleChangeTab();
+            System.out.println("initialize");
+        });
+    }
 
     int rangeToPosition(StyleClassedTextArea area, Position p) {
         return area.getAbsolutePosition(p.getLine(), p.getCharacter());
