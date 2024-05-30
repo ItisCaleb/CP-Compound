@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXToggleButton?>
+<?import java.net.URL?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.Button?>
+<HBox id="main-editor-tool-bar" layoutX="48.0" layoutY="6.0" prefHeight="47.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.EditorToolBarController">
+    <children>
+        <Button id="Add-file-button" fx:id="addFileBtn" onAction="#handleAddNewFile"/>
+        <Button id="Template-button" fx:id="templateBtn" text="Template" textAlignment="RIGHT"/>
+        <Button id="Compile-button" fx:id="compileBtn" onAction="#handleCompile" text="Compile"/>
+        <ToggleButton id="Run-button" fx:id="runToggleBtn"  onAction="#handleExecute" text="Run"/>
+        <Button id="Search-icon-button" fx:id="searchIconBtn" />
+        <Button id="Replace-icon-button" fx:id="replaceIconBtn"/>
+        <Button id="Help-icon-button" fx:id="helpIconBtn"/>
+        <!--            <MFXButton id="Minimize-window-icon-button" fx:id="minimizeWindowBtn" onAction="#minimizeWindow" rippleAnimateBackground="false" rippleColor="#bdbdbd00" stylesheets="@../styles/editor-tool-bar-style.css" text="" textAlignment="RIGHT" />-->
+        <!--            <ToggleButton id="Adjust-window-icon-button" fx:id="adjustWindowBtn" mnemonicParsing="false" onAction="#adjustWindow" />-->
+        <!--            <MFXButton id="Close-window-icon-button" fx:id="closeWindowBtn" onAction="#closeWindow" rippleAnimateBackground="false" rippleColor="#bdbdbd00" stylesheets="@../styles/editor-tool-bar-style.css" text="" textAlignment="RIGHT" />-->
+    </children>
+    <stylesheets>
+        <URL value="@../styles/editor-tool-bar-style.css" />
+    </stylesheets>
+</HBox>

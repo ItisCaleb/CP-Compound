@@ -25,6 +25,7 @@ module com.itiscaleb.cpcompound {
     requires org.kordamp.ikonli.evaicons;
     requires org.kordamp.ikonli.dashicons;
 
+
     exports com.itiscaleb.cpcompound;
     exports com.itiscaleb.cpcompound.utils;
     exports com.itiscaleb.cpcompound.langServer;
