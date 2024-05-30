@@ -2,6 +2,7 @@ package com.itiscaleb.cpcompound.downloader;
 
 import com.itiscaleb.cpcompound.CPCompound;
 import javafx.beans.property.FloatProperty;
+import javafx.scene.text.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +68,7 @@ public abstract class Downloader {
 
     abstract public void download();
 
-    abstract public CompletableFuture<Void> downloadAsync(FloatProperty progress);
+    abstract public CompletableFuture<Void> downloadAsync(FloatProperty progress, Text text);
 
     private static <T> HttpResponse.BodyHandler<T> progressBodyHandler(int interval, LongConsumer callback, HttpResponse.BodyHandler<T> h) {
         return info -> new HttpResponse.BodySubscriber<T>() {

@@ -9,6 +9,7 @@ import com.itiscaleb.cpcompound.utils.Config;
 import com.itiscaleb.cpcompound.utils.SysInfo;
 import com.itiscaleb.cpcompound.utils.Utils;
 import javafx.beans.property.FloatProperty;
+import javafx.scene.text.Text;
 
 import java.io.*;
 import java.net.URI;
@@ -61,12 +62,18 @@ public class ClangdDownloader extends Downloader {
 
 
     @Override
-    public CompletableFuture<Void> downloadAsync(FloatProperty progress) {
+    public CompletableFuture<Void> downloadAsync(FloatProperty progress, Text text) {
         return CompletableFuture.runAsync(() -> {
             try {
+                if(text != null){
+                    text.setText("Downloading Clangd...");
+                }
                 Path path = Downloader.progressDownloadFromHTTP(getClangdURL(),progress);
                 Config config = CPCompound.getConfig();
-                config.cpp_lang_server_path = "./installed/"+ Utils.unzipFolder(path, "./installed");
+                if(text != null){
+                    text.setText("Unzipping Clangd...");
+                }
+                config.cpp_lang_server_path = "./installed/"+ Utils.unzipFolder(path, "./installed")+"/bin";
                 config.lang_server_downloaded = true;
                 config.save();
                 if(SysInfo.getOS() != SysInfo.OS.WIN){

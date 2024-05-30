@@ -5,9 +5,11 @@ import com.itiscaleb.cpcompound.utils.Config;
 import com.itiscaleb.cpcompound.utils.SysInfo;
 import com.itiscaleb.cpcompound.utils.Utils;
 import javafx.beans.property.FloatProperty;
+import javafx.scene.text.Text;
 import net.sf.sevenzipjbinding.SevenZip;
 
 import java.io.File;
+import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -52,11 +54,23 @@ public class GCCDownloader extends Downloader {
     }
 
     @Override
-    public CompletableFuture<Void> downloadAsync(FloatProperty progress) {
+    public CompletableFuture<Void> downloadAsync(FloatProperty progress, Text text) {
         return CompletableFuture.runAsync(()->{
             try{
+                if(SysInfo.getArch().contains("x86")){
+                    System.load(CPCompound.class.getResource("/sevenzip/Windows-x86/lib7-Zip-JBinding.dll").getFile());
+                    SevenZip.initLoadedLibraries();
+                }else if(SysInfo.getArch().contains("amd64")) {
+                    System.load(CPCompound.class.getResource("/sevenzip/Windows-amd64/lib7-Zip-JBinding.dll").getFile());
+                    SevenZip.initLoadedLibraries();
+                }
+                if(text != null){
+                    text.setText("Downloading GCC...");
+                }
                 Path path = Downloader.progressDownloadFromHTTP(GCC_WIN_URL, progress);
-                SevenZip.initSevenZipFromPlatformJAR();
+                if(text != null){
+                    text.setText("Unzipping GCC...");
+                }
                 // unzip
                 String installPath = "./installed/" + Utils.unzip7z(path, "./installed");
 

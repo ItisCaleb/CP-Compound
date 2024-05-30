@@ -57,13 +57,17 @@ public class Utils {
         if(!Files.exists(source)) {
             Files.createDirectories(dest);
         }
-        String root = null;
+        String root;
         try(RandomAccessFile randomAccessFile = new RandomAccessFile(source.toFile(), "r")) {
             var archive = SevenZip.openInArchive(null,
                     new RandomAccessFileInStream(randomAccessFile));
-            archive.extract(new int[archive.getNumberOfItems()],
+            root = (String) archive.getProperty(0, PropID.PATH);
+            int[] items = new int[archive.getNumberOfItems()];
+            for (int i = 0; i < items.length; i++) {
+                items[i] = i;
+            }
+            archive.extract(items,
                     false, new SevenZipExtractCallback(archive, dest));
-
         }
         return root;
     }

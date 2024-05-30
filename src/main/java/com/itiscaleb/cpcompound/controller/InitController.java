@@ -12,7 +12,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.text.Text;
-import net.sf.sevenzipjbinding.SevenZip;
+
+import java.util.concurrent.CompletableFuture;
 
 public class InitController {
 
@@ -43,9 +44,8 @@ public class InitController {
     }
 
     protected void downloadClangd() {
-        downloadText.setText("Downloading Clangd...");
         new ClangdDownloader()
-                .downloadAsync(progressProperty)
+                .downloadAsync(progressProperty, downloadText)
                 .whenComplete((unused, throwable) -> downloadGCC());
     }
 
@@ -53,11 +53,11 @@ public class InitController {
         if(!GCCDownloader.isGCCInstalled()) {
             switch (SysInfo.getOS()) {
                 case WIN -> {
-                    downloadText.setText("Downloading GCC...");
-                    new GCCDownloader()
-                        .downloadAsync(progressProperty)
+                    new GCCDownloader().downloadAsync(progressProperty, downloadText)
                         .whenComplete((unused, throwable) -> {
-                            throwable.printStackTrace();
+                            if(throwable != null) {
+                                throwable.printStackTrace();
+                            }
                             Platform.runLater(CPCompound::setIDEStage);
                         });
                 }
@@ -74,6 +74,5 @@ public class InitController {
             }
 
         }else Platform.runLater(CPCompound::setIDEStage);
-        downloadText.setText("Downloading GCC...");
     }
 }
