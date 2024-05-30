@@ -1,8 +1,25 @@
-.tool-bar{
+#main-editor-tool-bar{
     -fx-background-color: transparent;
     -fx-alignment: BASELINE_RIGHT;
     -fx-spacing: 40;
 }
+.button{
+    /*-fx-border-color: white;*/
+    -fx-pref-height: 30;
+    /*-fx-padding: 5;*/
+    -fx-background-insets: 0;
+}
+.toggle-button{
+    /*-fx-pref-height: 35;*/
+    -fx-background-insets: 0;
+}
+/*.button:focused{*/
+/*    -fx-pref-height: 30;*/
+/*    -fx-padding: 5 5 5 5;*/
+/*    -fx-background-insets: 0;*/
+/*    !*-fx-translate-y: 10;*!*/
+/*}*/
+
 #Add-file-button{
     -fx-background-color: #b68b45;
     -fx-text-fill: #FFFFFF;
@@ -21,6 +38,7 @@
     -fx-icon-code: "anto-file-add";
     -fx-icon-color: #FFFFFF;
     -fx-icon-size: 20px;
+    -fx-background-insets: 0;
 }
 #Template-button{
     -fx-background-color: #ad3fa6;
@@ -40,6 +58,7 @@
     -fx-icon-code: "ci-template";
     -fx-icon-color: #FFFFFF;
     -fx-icon-size: 20px;
+    -fx-padding: 0;
 }
 #Compile-button{
     -fx-background-color: #406bbf;
@@ -66,6 +85,8 @@
     -fx-font-weight: bold;
     -fx-text-size: 30px;
     -fx-cursor: HAND;
+    -fx-translate-y: -2;
+    -fx-pref-height: 30;
 }
 #Run-button:hover{
     -fx-background-color: #5fdf73;
@@ -74,10 +95,30 @@
     -fx-text-size: 30px;
     -fx-cursor: HAND;
 }
+
+#Run-button:selected{
+    -fx-background-color: #b11919;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-text-size: 30px;
+    -fx-cursor: HAND;
+}
+#Run-button:hover:selected{
+    -fx-background-color: #e64444;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-text-size: 30px;
+    -fx-cursor: HAND;
+}
+#Run-button:selected .ikonli-font-icon{
+    -fx-icon-code: "ci-stop";
+}
+
 #Run-button .ikonli-font-icon{
     -fx-icon-code: "ci-play";
     -fx-icon-color: #FFFFFF;
-    -fx-icon-size: 20px;
+    -fx-icon-size: 16px;
+
 }
 
 #Search-icon-button{

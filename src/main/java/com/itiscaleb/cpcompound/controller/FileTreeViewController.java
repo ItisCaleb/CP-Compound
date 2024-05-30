@@ -9,10 +9,8 @@ import javafx.stage.DirectoryChooser;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
-import java.nio.file.Path;
 
 public class FileTreeViewController {
-
     @FXML
     private TreeView<File> fileTreeView;
     @FXML
@@ -130,7 +128,7 @@ public class FileTreeViewController {
             File file = selectedItem.getValue();
             if(file.isDirectory()) return;
             if (selectedItem != null) {
-                CPCompound.getMainController().addNewFile(selectedItem.getValue());
+                CPCompound.getBaseController().getEditorController().addNewFile(selectedItem.getValue());
             }
         }
     }
