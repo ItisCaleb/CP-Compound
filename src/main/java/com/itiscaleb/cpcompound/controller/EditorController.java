@@ -1,8 +1,9 @@
 package com.itiscaleb.cpcompound.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
@@ -101,33 +102,25 @@ public class EditorController {
         doCompile().whenComplete((result, throwable) -> {
             if(!result.getValue()) return;
             EditorContext context = result.getKey();
-            context.execute(System.in, System.out, System.err);
-        });
-    }
-
-    @FXML
-    public void doExecute(InputStream i){
-        System.out.println("input");
-
-        doCompile().whenComplete((result, throwable) -> {
-            if(!result.getValue()) return;
-            if(throwable!=null) throwable.printStackTrace();
-            EditorContext context = result.getKey();
-            context.execute(i,System.out, System.err);
+            context.execute(System.in, System.out, System.err, false);
         });
     }
 
     @FXML
     public void handleAddNewFile() {
-        Editor editor = CPCompound.getEditor();
-        String key = editor.addContext();
-        newTab(key);
+        try {
+            Editor editor = CPCompound.getEditor();
+            String key = editor.addContext();
+            newTab(key);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void addNewFile(File file){
         try {
             Editor editor = CPCompound.getEditor();
-            String key = editor.addContext(Path.of(file.getCanonicalPath()));
+            String key = editor.addContext(Path.of(file.getCanonicalPath()),false);
             newTab(key);
         }catch (Exception e){
             e.printStackTrace();
@@ -145,13 +138,12 @@ public class EditorController {
         tabManager.addTab(newTab, key.substring(key.lastIndexOf("/") + 1));
         editorTextTabPane.getTabs().add(newTab);
         editorTextTabPane.getSelectionModel().select(newTab);
-
     }
 
     @FXML
     private void handleTabClosed(Event event, Tab closedTab){
         if(!tabManager.getTabSaveState(closedTab)){
-            saveContext(closedTab);
+            //saveContext(closedTab);
             CPCompound.getEditor().removeContext((String) closedTab.getUserData());
         }
     }
@@ -160,8 +152,7 @@ public class EditorController {
             if(newTab != null){
                 String key = (String)newTab.getUserData();
                 CPCompound.getEditor().switchContext(key);
-                System.out.println("it's me mario");
-                CPCompound.getBaseController().getEditorController().getEditorFunctionPaneController().getCheckerController().updatePath();
+
                 switchCodeArea(newTab);
             }
         });
@@ -172,6 +163,8 @@ public class EditorController {
             EditorContext context = editor.getCurrentContext();
             if(lastContext != context){
                 lastContext = context;
+                this.highlightSpans = editor.computeHighlighting(context);
+                EditorStyler.asyncSetSpans(mainTextArea, highlightSpans, diagnosticSpans);
                 return;
             }
             context.setCode(newValue);
@@ -190,6 +183,7 @@ public class EditorController {
             } else {
                 completionMenu.hide();
             }
+            tabManager.changeTab(currentTab);
 
             // highlight
             this.highlightSpans = editor.computeHighlighting(context);
@@ -349,7 +343,7 @@ public class EditorController {
                         "-fx-padding: 5;");
         mainTextArea.setMouseOverTextDelay(Duration.ofMillis(500));
         mainTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
-
+            if(diagnostics == null || diagnostics.isEmpty()) return;{}
             for (Diagnostic diagnostic : diagnostics) {
                 System.out.println(diagnostic.getMessage());
                 Range range = diagnostic.getRange();

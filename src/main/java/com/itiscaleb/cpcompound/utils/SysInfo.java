@@ -29,38 +29,31 @@ public class SysInfo {
         return os;
     }
 
-    public static String getArch() throws IOException, InterruptedException {{
-            String name = null;
-
-            ProcessBuilder builder;
+    public static String getArch() throws IOException {{
             if (SysInfo.getOS() == OS.WIN) {
-                builder = new ProcessBuilder("wmic", "os", "get", "OSArchitecture");
+                return System.getProperty("os.arch");
             } else {
-                builder = new ProcessBuilder("uname", "-m");
-            }
-            builder.redirectError(ProcessBuilder.Redirect.INHERIT);
+                String name = null;
+                ProcessBuilder builder = new ProcessBuilder("uname", "-m");
+                builder.redirectError(ProcessBuilder.Redirect.INHERIT);
+                Process p = builder.start();
+                try (BufferedReader output = new BufferedReader(
+                        new InputStreamReader(p.getInputStream(), Charset.defaultCharset()))) {
 
-            Process process = builder.start();
-
-            try (BufferedReader output = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(), Charset.defaultCharset()))) {
-
-                String line;
-                while ((line = output.readLine()) != null) {
-                    line = line.trim();
-                    if (!line.isEmpty()) {
-                        name = line;
+                    String line;
+                    while ((line = output.readLine()) != null) {
+                        line = line.trim();
+                        if (!line.isEmpty()) {
+                            name = line;
+                        }
                     }
                 }
+                return name;
             }
 
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                throw new IOException(
-                        "Process " + builder.command() + " returned " + exitCode);
-            }
 
-            return name;
+
+
         }
     }
 }

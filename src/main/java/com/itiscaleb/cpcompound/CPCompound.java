@@ -4,7 +4,9 @@ import com.itiscaleb.cpcompound.controller.BaseController;
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.langServer.Language;
+import com.itiscaleb.cpcompound.utils.APPData;
 import com.itiscaleb.cpcompound.utils.Config;
+import com.itiscaleb.cpcompound.utils.SysInfo;
 import io.github.palexdev.materialfx.theming.JavaFXThemes;
 import io.github.palexdev.materialfx.theming.MaterialFXStylesheets;
 import io.github.palexdev.materialfx.theming.UserAgentBuilder;
@@ -17,6 +19,7 @@ import javafx.stage.StageStyle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -32,7 +35,7 @@ public class CPCompound extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        config = Config.load("./config.json");
+        config = Config.load(APPData.resolve("config.json"));
         config.save();
         CPCompound.primaryStage = primaryStage;
         CPCompound.primaryStage.initStyle(StageStyle.DECORATED);
@@ -80,9 +83,11 @@ public class CPCompound extends Application {
 
 
     public static void initIDE() {
-
+        String clangQueryDriver = "--query-driver="+config.getGCCExe()+","+config.getGPPExe();
+        String compileCommandsDir = "--compile-commands-dir="+APPData.getDataFolder();
         // init Language Server proxies
-        LSPProxy clang = new LSPProxy(config.cpp_lang_server_path+"/bin/clangd" );
+        LSPProxy clang = new LSPProxy(config.cpp_lang_server_path+"/bin/clangd"
+                , clangQueryDriver, compileCommandsDir);
         proxies.put(Language.CPP, clang);
         proxies.put(Language.C, clang);
         clang.start();

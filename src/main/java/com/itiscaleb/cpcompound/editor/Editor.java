@@ -1,17 +1,26 @@
 package com.itiscaleb.cpcompound.editor;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.itiscaleb.cpcompound.CPCompound;
+import com.itiscaleb.cpcompound.langServer.CompileCommand;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.langServer.Language;
+import com.itiscaleb.cpcompound.utils.APPData;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Diagnostic;
 import org.fxmisc.richtext.model.StyleSpans;
 
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -46,34 +55,25 @@ public class Editor {
         return contexts.get(key);
     }
 
-    public String addContext() {
-        return this.addContext("Untitled-"+(lastUnnamed++));
+    public String addContext() throws IOException {
+        return this.addContext("Untitled-"+(lastUnnamed++)+".cc");
     }
 
-    public String addContext(String name){
-        System.out.println(name);
-        Path path = Path.of("tmp", name);
-        String key = path.normalize().toUri().toString();
-        System.out.println(key);
-        if(contexts.containsKey(key)){
-            return key;
-        }
-        EditorContext context = new EditorContext(path, Language.CPP,"",true);
-        contexts.put(key, context);
-        LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
-        if(proxy != null){
-            proxy.didOpen(context);
-        }
-        return key;
+    public String addContext(String name) throws IOException {
+        Path path = APPData.resolve("tmp").resolve(name);
+        return addContext(path, true);
     }
 
-    public String addContext(Path path) throws IOException {
+    public String addContext(Path path, boolean isTmp) throws IOException {
         String key = path.normalize().toUri().toString();
         if(contexts.containsKey(key)){
             return key;
         }
-        EditorContext context = new EditorContext(path, Files.readString(path), false);
+        EditorContext context = new EditorContext(path, isTmp?"":Files.readString(path), isTmp);
         contexts.put(key, context);
+        generateCompileCommands();
+
+        // open to lsp
         LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
         if(proxy != null){
             proxy.didOpen(context);
@@ -83,6 +83,7 @@ public class Editor {
 
     public void removeContext(String name) {
         EditorContext context = contexts.remove(name);
+        generateCompileCommands();
         if(context != null){
             LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
             if(proxy != null){
@@ -99,6 +100,22 @@ public class Editor {
         System.out.println("Completion List");
         if(items != null){
             this.completionItems.setAll(items);
+        }
+    }
+
+    private void generateCompileCommands(){
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        List<CompileCommand> commands = new ArrayList<>();
+        for(EditorContext context : this.contexts.values()){
+            commands.add(CompileCommand.fromContext(context));
+        }
+        String s = gson.toJson(commands);
+        try {
+            Files.writeString(APPData.resolve("compile_commands.json")
+                    , s, StandardCharsets.UTF_8);
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

@@ -11,17 +11,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class LSPProxy {
-    String remotePath;
     Process process;
     Launcher<LanguageServer> launcher = null;
+    String[] args;
 
-    public LSPProxy(String remotePath){
-        this.remotePath = remotePath;
+    public LSPProxy(String remotePath, String... args){
+        this.args = new String[args.length + 1];
+        this.args[0] = remotePath;
+        System.arraycopy(args, 0, this.args, 1, args.length);
     }
 
     public void start() {
         try{
-            ProcessBuilder builder = new ProcessBuilder(remotePath);
+            ProcessBuilder builder = new ProcessBuilder(args);
             builder.redirectError(ProcessBuilder.Redirect.INHERIT);
             this.process = builder.start();
             LSPClient client = new LSPClient();

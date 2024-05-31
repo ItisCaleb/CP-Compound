@@ -8,13 +8,12 @@ import com.itiscaleb.cpcompound.utils.SysInfo;
 import javafx.util.Pair;
 import org.eclipse.lsp4j.Diagnostic;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;
+import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -49,6 +48,7 @@ public class EditorContext {
         this.version = 0;
         this.lastVersion = 0;
         this.isTemp = isTemp;
+        if(isTemp) this.lang = Language.CPP;
     }
 
     public String getCode(){
@@ -101,6 +101,10 @@ public class EditorContext {
         }else this.lang = Language.None;
     }
 
+    public Path getPath(){
+        return path;
+    }
+
     public void setDiagnostics(List<Diagnostic> diagnostics){
         diagnostics.sort(Comparator.comparing((Diagnostic d) -> d.getRange().getStart().getLine())
                 .thenComparing(d -> d.getSeverity().ordinal()));
@@ -124,18 +128,19 @@ public class EditorContext {
         return exePath;
     }
 
+
     // will return success or not
     public CompletableFuture<Pair<EditorContext, Boolean>> compile(OutputStream oStream, OutputStream errStream){
         return CompletableFuture.supplyAsync(()->{
             try {
                 Config config = CPCompound.getConfig();
-                String compiler = (this.lang == Language.C)   ? "/gcc" :
-                                  (this.lang == Language.CPP) ? "/g++" : "";
+                String compiler = (this.lang == Language.C)   ? config.getGCCExe() :
+                                  (this.lang == Language.CPP) ? config.getGPPExe() : "";
                 switch (this.lang){
                     case Python -> this.exePath = this.path;
                     case CPP, C -> {
                         this.exePath = makeExePath();
-                        Process p = new ProcessBuilder(config.gcc_path+compiler, path.toString(), "-o", this.exePath.toString()).start();
+                        Process p = new ProcessBuilder(compiler, path.toString(), "-o", this.exePath.toString()).start();
                         p.getInputStream().transferTo(oStream);
                         p.getErrorStream().transferTo(errStream);
                         return new Pair<>(this, p.waitFor() == 0);
@@ -143,11 +148,13 @@ public class EditorContext {
                 }
                 return new Pair<>(this, true);
             }catch (Exception e){
+                e.printStackTrace();
                 return new Pair<>(this, false);
             }
         });
     }
-    public CompletableFuture<Void> execute(InputStream iStream, OutputStream oStream, OutputStream errStream){
+    public CompletableFuture<Void> execute(InputStream iStream, OutputStream oStream,
+                                           OutputStream errStream, boolean writeOnce){
         return CompletableFuture.runAsync(()->{
             try {
                 String cmd = "";
@@ -159,10 +166,15 @@ public class EditorContext {
                     case CPP, C -> cmd = "";
                 }
                 cmd += this.exePath;
+
                 Process p = new ProcessBuilder(cmd, this.exePath.toString()).start();
+                do{
+                    iStream.transferTo(p.getOutputStream());
+                    p.getOutputStream().flush();
+                }while (p.isAlive() && !writeOnce);
+                p.getOutputStream().close();
                 p.getInputStream().transferTo(oStream);
                 p.getErrorStream().transferTo(errStream);
-                iStream.transferTo(p.getOutputStream());
                 p.waitFor();
             }catch (Exception e){
                 e.printStackTrace();
@@ -181,8 +193,7 @@ public class EditorContext {
     }
 
     public String getFileName(){
-        int slash = this.path.toString().lastIndexOf("/");
-        return this.path.toString().substring(slash + 1);
+        return this.path.getFileName().toString();
     }
 
 }

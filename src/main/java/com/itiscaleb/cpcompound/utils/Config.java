@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,15 +23,32 @@ public class Config {
         this.path = path;
     }
 
-    public static Config load(String path) throws IOException {
-        Path p = Paths.get(path);
-        if(!Files.exists(p)) {
-            Files.createFile(p);
-            return new Config(p);
+    public static Config load(Path path) throws IOException {
+        if(!Files.exists(path)) {
+            Files.createFile(path);
+            return new Config(path);
         }
-        Config c = gson.fromJson(Files.readString(p), Config.class);
-        c.path = p;
+        Config c = gson.fromJson(Files.readString(path), Config.class);
+        c.path = path;
         return c;
+    }
+
+    public String getGCCExe() {
+        if(SysInfo.getOS() == SysInfo.OS.WIN) {
+            return gcc_path + File.separator + "gcc.exe";
+
+        }else {
+            return gcc_path + "/gcc";
+        }
+    }
+
+    public String getGPPExe() {
+        if(SysInfo.getOS() == SysInfo.OS.WIN) {
+            return gcc_path + File.separator + "g++.exe";
+
+        }else {
+            return gcc_path + "/g++";
+        }
     }
 
     public void save() {
