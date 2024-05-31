@@ -22,14 +22,13 @@ public class Config {
         this.path = path;
     }
 
-    public static Config load(String path) throws IOException {
-        Path p = Paths.get(path);
-        if(!Files.exists(p)) {
-            Files.createFile(p);
-            return new Config(p);
+    public static Config load(Path path) throws IOException {
+        if(!Files.exists(path)) {
+            Files.createFile(path);
+            return new Config(path);
         }
-        Config c = gson.fromJson(Files.readString(p), Config.class);
-        c.path = p;
+        Config c = gson.fromJson(Files.readString(path), Config.class);
+        c.path = path;
         return c;
     }
 

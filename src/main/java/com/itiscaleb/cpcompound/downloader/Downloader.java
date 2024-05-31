@@ -1,6 +1,7 @@
 package com.itiscaleb.cpcompound.downloader;
 
 import com.itiscaleb.cpcompound.CPCompound;
+import com.itiscaleb.cpcompound.utils.APPData;
 import javafx.beans.property.FloatProperty;
 import javafx.scene.text.Text;
 
@@ -31,7 +32,7 @@ public abstract class Downloader {
         HttpRequest req = HttpRequest.newBuilder()
                 .uri(new URI(url))
                 .GET().build();
-        File downloadDir = new File("./downloads");
+        File downloadDir = APPData.resolve("downloads").toFile();
         downloadDir.mkdir();
         HttpResponse<Path> res = client.send(req,
                 HttpResponse.BodyHandlers
@@ -54,7 +55,7 @@ public abstract class Downloader {
         HttpRequest req = HttpRequest.newBuilder()
                 .uri(new URI(url))
                 .GET().build();
-        File downloadDir = new File("./downloads");
+        File downloadDir = APPData.resolve("downloads").toFile();
         downloadDir.mkdir();
         var handler = progressBodyHandler(1024*1024, (bytes)->{
                 progress.set((float)bytes/length);

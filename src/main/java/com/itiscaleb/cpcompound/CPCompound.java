@@ -4,6 +4,7 @@ import com.itiscaleb.cpcompound.controller.BaseController;
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.langServer.Language;
+import com.itiscaleb.cpcompound.utils.APPData;
 import com.itiscaleb.cpcompound.utils.Config;
 import io.github.palexdev.materialfx.theming.JavaFXThemes;
 import io.github.palexdev.materialfx.theming.MaterialFXStylesheets;
@@ -32,7 +33,7 @@ public class CPCompound extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        config = Config.load("./config.json");
+        config = Config.load(APPData.resolve("config.json"));
         config.save();
         CPCompound.primaryStage = primaryStage;
         CPCompound.primaryStage.initStyle(StageStyle.DECORATED);
@@ -82,7 +83,8 @@ public class CPCompound extends Application {
     public static void initIDE() {
 
         // init Language Server proxies
-        LSPProxy clang = new LSPProxy(config.cpp_lang_server_path+"/bin/clangd" );
+        LSPProxy clang = new LSPProxy(config.cpp_lang_server_path+"/bin/clangd"
+                , "--query-driver="+config.gcc_path+"/gcc");
         proxies.put(Language.CPP, clang);
         proxies.put(Language.C, clang);
         clang.start();

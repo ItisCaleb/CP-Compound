@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.itiscaleb.cpcompound.CPCompound;
+import com.itiscaleb.cpcompound.utils.APPData;
 import com.itiscaleb.cpcompound.utils.Config;
 import com.itiscaleb.cpcompound.utils.SysInfo;
 import com.itiscaleb.cpcompound.utils.Utils;
@@ -52,7 +53,10 @@ public class ClangdDownloader extends Downloader {
     public void download() {
         try{
             Path path = Downloader.downloadFromHTTP(getClangdURL());
-            CPCompound.getConfig().cpp_lang_server_path = "./installed/"+ Utils.unzipFolder(path, "./installed");
+            Path installDir = APPData.resolve("installed");
+            CPCompound.getConfig().cpp_lang_server_path = installDir
+                    .resolve(Utils.unzipFolder(path, String.valueOf(installDir)))
+                    .toString();
             CPCompound.getConfig().save();
             CPCompound.getLogger().info(path);
         } catch (Exception e) {
@@ -73,7 +77,10 @@ public class ClangdDownloader extends Downloader {
                 if(text != null){
                     text.setText("Unzipping Clangd...");
                 }
-                config.cpp_lang_server_path = "./installed/"+ Utils.unzipFolder(path, "./installed")+"/bin";
+                Path installDir = APPData.resolve("installed");
+                config.cpp_lang_server_path = installDir
+                        .resolve(Utils.unzipFolder(path, String.valueOf(installDir)))
+                        .toString();
                 config.lang_server_downloaded = true;
                 config.save();
                 if(SysInfo.getOS() != SysInfo.OS.WIN){

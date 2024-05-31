@@ -1,6 +1,7 @@
 package com.itiscaleb.cpcompound.downloader;
 
 import com.itiscaleb.cpcompound.CPCompound;
+import com.itiscaleb.cpcompound.utils.APPData;
 import com.itiscaleb.cpcompound.utils.Config;
 import com.itiscaleb.cpcompound.utils.SysInfo;
 import com.itiscaleb.cpcompound.utils.Utils;
@@ -72,7 +73,10 @@ public class GCCDownloader extends Downloader {
                     text.setText("Unzipping GCC...");
                 }
                 // unzip
-                String installPath = "./installed/" + Utils.unzip7z(path, "./installed");
+                Path installDir = APPData.resolve("installed");
+                String installPath = installDir
+                        .resolve(Utils.unzipFolder(path, String.valueOf(installDir)))
+                        .resolve("bin").toString();
 
                 Config config = CPCompound.getConfig();
                 config.gcc_path = installPath;

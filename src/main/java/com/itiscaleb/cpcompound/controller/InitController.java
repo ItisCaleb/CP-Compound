@@ -13,8 +13,6 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.text.Text;
 
-import java.util.concurrent.CompletableFuture;
-
 public class InitController {
 
     @FXML
