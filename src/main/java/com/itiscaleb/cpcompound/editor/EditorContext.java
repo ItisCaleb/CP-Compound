@@ -8,14 +8,12 @@ import com.itiscaleb.cpcompound.utils.SysInfo;
 import javafx.util.Pair;
 import org.eclipse.lsp4j.Diagnostic;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;
+import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 
 public class EditorContext {
@@ -149,7 +147,8 @@ public class EditorContext {
             }
         });
     }
-    public CompletableFuture<Void> execute(InputStream iStream, OutputStream oStream, OutputStream errStream){
+    public CompletableFuture<Void> execute(InputStream iStream, OutputStream oStream,
+                                           OutputStream errStream, boolean writeOnce){
         return CompletableFuture.runAsync(()->{
             try {
                 String cmd = "";
@@ -161,10 +160,15 @@ public class EditorContext {
                     case CPP, C -> cmd = "";
                 }
                 cmd += this.exePath;
+
                 Process p = new ProcessBuilder(cmd, this.exePath.toString()).start();
+                do{
+                    iStream.transferTo(p.getOutputStream());
+                    p.getOutputStream().flush();
+                }while (p.isAlive() && !writeOnce);
+                p.getOutputStream().close();
                 p.getInputStream().transferTo(oStream);
                 p.getErrorStream().transferTo(errStream);
-                iStream.transferTo(p.getOutputStream());
                 p.waitFor();
             }catch (Exception e){
                 e.printStackTrace();
