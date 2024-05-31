@@ -59,6 +59,8 @@ public class CheckerController {
 
     }
 
+
+
     public void initialize() throws URISyntaxException {
         editor = CPCompound.getEditor();
         editorContext = editor.getCurrentContext();
@@ -215,11 +217,11 @@ public class CheckerController {
                             String s = outputStream.toString(StandardCharsets.UTF_8);
                             testCase.setReceivedField(s);
                             testCase.runComparison(strictMatch);
+                            saveTestCasesToJson();
                         }
                     );
                 });
             }
-            saveTestCasesToJson();
         });
     }
 
@@ -298,7 +300,8 @@ public class CheckerController {
 
         public void setReceivedField(String s){
             System.out.println("why ?");
-            receivedField = new TextArea(s);
+            System.out.println(s);
+            receivedField.setText(s);
         }
 
         public VBox getPane() {

@@ -134,7 +134,9 @@ public class EditorController {
 
         CPCompound.getEditor().switchContext(key);
         switchCodeArea(newTab);
-
+        if(CPCompound.getBaseController().getEditorController().getEditorFunctionPaneController().getCheckerController()!=null){
+            CPCompound.getBaseController().getEditorController().getEditorFunctionPaneController().getCheckerController().updatePath();
+        }
         tabManager.addTab(newTab, key.substring(key.lastIndexOf("/") + 1));
         editorTextTabPane.getTabs().add(newTab);
         editorTextTabPane.getSelectionModel().select(newTab);
@@ -152,7 +154,9 @@ public class EditorController {
             if(newTab != null){
                 String key = (String)newTab.getUserData();
                 CPCompound.getEditor().switchContext(key);
-
+                if(CPCompound.getBaseController().getEditorController().getEditorFunctionPaneController().getCheckerController()!=null){
+                    CPCompound.getBaseController().getEditorController().getEditorFunctionPaneController().getCheckerController().updatePath();
+                }
                 switchCodeArea(newTab);
             }
         });
