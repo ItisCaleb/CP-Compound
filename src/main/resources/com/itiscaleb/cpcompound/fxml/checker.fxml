@@ -1,13 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import io.github.palexdev.mfxcore.controls.Label?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Text?>
-<VBox id="checker" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="checker" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.CheckerController">
    <children>
-      <Text layoutX="261.0" layoutY="174.0" text="this is checker" />
+      <BorderPane>
+         <top>
+            <VBox spacing="10" BorderPane.alignment="CENTER">
+               <padding>
+                  <Insets top="10" right="10" bottom="10" left="10"/>
+               </padding>
+               <HBox spacing="10" alignment="CENTER">
+                  <CheckBox text="strict?" fx:id="strictMatchCheckBox"/>
+                  <Label text="TestCase" fx:id="testCaseLabel"/>
+               </HBox>
+               <Button text="Add Test Case" onAction="#addTestCase"/>
+               <Button text="Run Comparisons" onAction="#runComparisons"/>
+            </VBox>
+         </top>
+         <center>
+            <ScrollPane fitToWidth="true">
+               <VBox fx:id="testCaseBox" spacing="10">
+                  <padding>
+                     <Insets top="10" right="10" bottom="10" left="10"/>
+                  </padding>
+               </VBox>
+            </ScrollPane>
+         </center>
+      </BorderPane>
    </children>
 </VBox>
