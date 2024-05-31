@@ -1,5 +1,6 @@
 package com.itiscaleb.cpcompound.controller;
 
+import com.google.gson.*;
 import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.utils.TestcaseCompare;
 import com.itiscaleb.cpcompound.editor.Editor;
@@ -8,10 +9,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 
 import java.io.File;
 import java.net.URI;
@@ -57,6 +54,49 @@ public class CheckerController {
             cph_path = editorContext.getFileURI();
             System.out.println(cph_path);
             createNewFolder(cph_path);
+            loadTestCasesFromJson(); // 调用加载JSON的方法
+        }
+    }
+
+    private void loadTestCasesFromJson() {
+        if (cph_path == null || cph_path.isEmpty()) {
+            System.out.println("No valid cph_path specified.");
+            return;
+        }
+
+        try {
+            URI uri = new URI(cph_path);
+            String ccFilePath = Paths.get(uri).toString();
+            String cphFolderPath = ccFilePath.substring(0, ccFilePath.lastIndexOf(File.separator) + 1) + "cph";
+            String jsonFileName = cphFolderPath + File.separator + ccFilePath.substring(ccFilePath.lastIndexOf(File.separator) + 1, ccFilePath.lastIndexOf('.')) + ".json";
+            Path jsonFilePath = Paths.get(jsonFileName);
+
+            if (Files.exists(jsonFilePath)) {
+                byte[] jsonData = Files.readAllBytes(jsonFilePath);
+                String jsonString = new String(jsonData, Charset.defaultCharset());
+
+                JsonArray testCaseArray = gson.fromJson(jsonString, JsonArray.class);
+                for (JsonElement jsonElement : testCaseArray) {
+                    JsonObject testCaseData = jsonElement.getAsJsonObject();
+                    String input = testCaseData.get("input").getAsString();
+                    String expectedOutput = testCaseData.get("expectedOutput").getAsString();
+                    String receivedOutput = testCaseData.get("receivedOutput").getAsString();
+
+                    // 创建测试用例对象并添加到列表中
+                    TestCase testCase = new TestCase(testCaseCount, input, expectedOutput, receivedOutput);
+                    testCases.add(testCase);
+                    testCaseBox.getChildren().add(testCase.getPane());
+                    testCaseCount++;
+                }
+
+                System.out.println("Loaded test cases from JSON file: " + jsonFileName);
+            } else {
+                System.out.println("JSON file does not exist: " + jsonFileName);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -152,6 +192,38 @@ public class CheckerController {
         private VBox pane;
         private boolean current;
 
+        public TestCase(int number, String input, String expectedOutput, String receivedOutput) {
+            this.number = number;
+            inputField = new TextArea(input);
+            expectedField = new TextArea(expectedOutput);
+            receivedField = new TextArea(receivedOutput);
+            resultLabel = new Label("Result: ");
+            current = false;
+
+            pane = new VBox(10);
+            pane.setPadding(new Insets(5));
+            pane.getChildren().addAll(
+                    new Label("Testcase " + number + ":"),
+                    new Label("Input:"),
+                    inputField,
+                    new Label("Expected Output:"),
+                    expectedField,
+                    new Label("Received Output:"),
+                    receivedField,
+                    resultLabel
+            );
+
+            Button recompareButton = new Button("Recompare");
+            recompareButton.setOnAction(e -> recompareTestCase());
+
+            Button deleteButton = new Button("Delete");
+            deleteButton.setOnAction(e -> deleteTestCase());
+
+            HBox buttonsBox = new HBox(10);
+            buttonsBox.getChildren().addAll(recompareButton, deleteButton);
+            pane.getChildren().add(0, buttonsBox);
+        }
+
         public TestCase(int number) {
             this.number = number;
             inputField = new TextArea();
@@ -183,6 +255,8 @@ public class CheckerController {
             buttonsBox.getChildren().addAll(recompareButton, deleteButton);
             pane.getChildren().add(0, buttonsBox);
         }
+
+
 
         public VBox getPane() {
             return pane;
