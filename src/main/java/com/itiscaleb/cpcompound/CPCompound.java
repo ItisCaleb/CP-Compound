@@ -1,6 +1,6 @@
 package com.itiscaleb.cpcompound;
 
-import com.itiscaleb.cpcompound.controller.MainEditorController;
+import com.itiscaleb.cpcompound.controller.BaseController;
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.langServer.Language;
@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class CPCompound extends Application {
-    static MainEditorController mainEditorController;
+    static BaseController baseController;
     static Config config;
     static HashMap<Language, LSPProxy> proxies = new HashMap<>();
     static Logger logger = LogManager.getLogger(CPCompound.class);
@@ -66,9 +66,9 @@ public class CPCompound extends Application {
 
             primaryStage.setMinWidth(1098);
             primaryStage.setMinHeight(700);
-            FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/editor-main.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/app-base.fxml"));
             Parent editorRoot = fxmlLoader.load();
-            mainEditorController = fxmlLoader.getController();
+            baseController = fxmlLoader.getController();
             Scene scene = new Scene(editorRoot);
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -109,8 +109,8 @@ public class CPCompound extends Application {
         return primaryStage;
     }
 
-    public static MainEditorController getMainController(){
-        return mainEditorController;
+    public static BaseController getBaseController(){
+        return baseController;
     }
 
     public static void main(String[] args) {
