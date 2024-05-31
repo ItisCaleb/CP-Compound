@@ -23,7 +23,7 @@ public class BaseController {
             FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/editor.fxml"));
             SplitPane  editorSplitPane = fxmlLoader.load();
             appBase.getChildren().add(editorSplitPane);
-            editorController =fxmlLoader.getController();
+            editorController = fxmlLoader.getController();
         } catch (Exception e) {
             e.printStackTrace();
         }

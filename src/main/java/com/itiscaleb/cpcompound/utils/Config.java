@@ -16,6 +16,7 @@ public class Config {
     public boolean lang_server_downloaded = false;
     public String gcc_path = "";
     public boolean gcc_downloaded = false;
+    public String last_open_directory = "";
     transient Path path;
     static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
