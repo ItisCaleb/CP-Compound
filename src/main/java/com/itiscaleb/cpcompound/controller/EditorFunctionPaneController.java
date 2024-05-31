@@ -17,6 +17,14 @@ public class EditorFunctionPaneController {
     @FXML
     StackPane functionPaneContentArea;
 
+    static CheckerController checkerController;
+
+    public CheckerController getCheckerController() {
+        return checkerController;
+    }
+
+
+
     public void setCurrentActiveMenuItem(Button currentActiveMenuItem) {
         this.currentActiveMenuItem = currentActiveMenuItem;
     }
@@ -63,6 +71,7 @@ public class EditorFunctionPaneController {
                 break;
             default:
         }
+
     }
 
     @FXML
@@ -81,10 +90,23 @@ public class EditorFunctionPaneController {
     //id,object
     final private Map<String,VBox> functionPaneCache = new HashMap<>();
     private void loadContent(String fxmlFile) {
+
         try {
-            VBox content = FXMLLoader.load(CPCompound.class.getResource(fxmlFile));
+            FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource(fxmlFile));
+            VBox content = fxmlLoader.load();
             content.prefWidthProperty().bind(functionPaneContentArea.widthProperty());
             content.prefHeightProperty().bind(functionPaneContentArea.heightProperty());
+            System.out.println("fxml : ");
+            System.out.println(fxmlFile);
+            switch (fxmlFile){
+                case "fxml/checker.fxml":
+                    checkerController = fxmlLoader.<CheckerController>getController();
+                    System.out.println("checkerinit");
+                    break;
+                default:
+            }
+
+
             if(!content.getId().equals("terminal")){
                 if(functionPaneCache.containsKey(content.getId())){
                     currentFunctionContent = functionPaneCache.get(content.getId());

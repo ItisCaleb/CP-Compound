@@ -131,6 +131,7 @@ public class EditorController {
         tabManager.addTab(newTab, key.substring(key.lastIndexOf("/") + 1));
         editorTextTabPane.getTabs().add(newTab);
         editorTextTabPane.getSelectionModel().select(newTab);
+
     }
 
     @FXML
@@ -145,7 +146,8 @@ public class EditorController {
             if(newTab != null){
                 String key = (String)newTab.getUserData();
                 CPCompound.getEditor().switchContext(key);
-
+                System.out.println("it's me mario");
+                CPCompound.getBaseController().getEditorController().getEditorFunctionPaneController().getCheckerController().updatePath();
                 switchCodeArea(newTab);
             }
         });

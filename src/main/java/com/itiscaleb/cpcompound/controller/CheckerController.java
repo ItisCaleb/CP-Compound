@@ -14,7 +14,6 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import java.nio.file.Files;
@@ -38,6 +37,20 @@ public class CheckerController {
     private EditorContext editorContext;
     public String cph_path;
     static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+    public void updatePath() {
+        System.out.println("update looking at");
+        editor = CPCompound.getEditor();
+        editorContext = editor.getCurrentContext();
+        cph_path = editorContext.getFileURI();
+
+
+        testCases.clear();
+        testCaseBox.getChildren().clear();
+        testCaseCount = 1;
+        loadTestCasesFromJson();
+
+    }
 
     public void initialize() throws URISyntaxException {
         editor = CPCompound.getEditor();
@@ -90,6 +103,10 @@ public class CheckerController {
                 }
 
                 System.out.println("Loaded test cases from JSON file: " + jsonFileName);
+                for (JsonElement jsonElement : testCaseArray) {
+//                    JsonObject testCaseData = jsonElement.getAsJsonObject();
+                    System.out.println(jsonElement);
+                }
             } else {
                 System.out.println("JSON file does not exist: " + jsonFileName);
             }
