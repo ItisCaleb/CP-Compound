@@ -24,12 +24,6 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-tasks.register('copyConfigs', Copy) {
-    from "${projectDir}/src/main/resources/configs"
-    into "${buildDir}"
-}
-compileJava.dependsOn(copyConfigs)
-
 application {
     mainModule = 'com.itiscaleb.cpcompound'
     mainClass = 'com.itiscaleb.cpcompound.CPCompound'

@@ -105,15 +105,19 @@ public class EditorController {
 
     @FXML
     public void handleAddNewFile() {
-        Editor editor = CPCompound.getEditor();
-        String key = editor.addContext();
-        newTab(key);
+        try {
+            Editor editor = CPCompound.getEditor();
+            String key = editor.addContext();
+            newTab(key);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void addNewFile(File file){
         try {
             Editor editor = CPCompound.getEditor();
-            String key = editor.addContext(Path.of(file.getCanonicalPath()));
+            String key = editor.addContext(Path.of(file.getCanonicalPath()),false);
             newTab(key);
         }catch (Exception e){
             e.printStackTrace();
