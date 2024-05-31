@@ -1,5 +1,6 @@
 package com.itiscaleb.cpcompound.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +18,7 @@ public class APPData {
             if(!dataFolder.toFile().exists()) {
                 try {
                     Files.createDirectory(dataFolder);
+                    Files.createDirectory(dataFolder.resolve("tmp"));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
