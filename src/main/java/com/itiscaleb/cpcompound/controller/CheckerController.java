@@ -5,6 +5,7 @@ import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.utils.TestcaseCompare;
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -14,6 +15,7 @@ import java.io.*;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -201,13 +203,24 @@ public class CheckerController {
         saveTestCasesToJson();
         boolean strictMatch = strictMatchCheckBox.isSelected();
         System.out.println("all compare");
-        for (TestCase testCase : testCases) {
-            InputStream inputStream = new ByteArrayInputStream(testCase.getInput().getBytes(Charset.defaultCharset()));
-            //CPCompound.getBaseController().getEditorController().doExecute(inputStream);
-            CPCompound.getBaseController().getEditorController().doExecute(inputStream);
-            testCase.runComparison(strictMatch);
-        }
-        saveTestCasesToJson();
+        editorContext.compile(System.out, System.err).whenComplete((result, throwable) -> {
+            if(!result.getValue()) return;
+            EditorContext context = result.getKey();
+            for (TestCase testCase : testCases) {
+                InputStream inputStream = new ByteArrayInputStream(testCase.getInput().getBytes(Charset.defaultCharset()));
+                //CPCompound.getBaseController().getEditorController().doExecute(inputStream);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                context.execute(inputStream, outputStream, System.err, true).whenComplete((_result, _throwable) ->{
+                    Platform.runLater(()->{
+                            String s = outputStream.toString(StandardCharsets.UTF_8);
+                            testCase.setReceivedField(s);
+                            testCase.runComparison(strictMatch);
+                        }
+                    );
+                });
+            }
+            saveTestCasesToJson();
+        });
     }
 
     private class TestCase {
@@ -284,7 +297,8 @@ public class CheckerController {
         }
 
         public void setReceivedField(String s){
-            this.receivedField = new TextArea(s);
+            System.out.println("why ?");
+            receivedField = new TextArea(s);
         }
 
         public VBox getPane() {
