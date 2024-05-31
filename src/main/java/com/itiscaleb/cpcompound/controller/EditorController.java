@@ -1,6 +1,8 @@
 package com.itiscaleb.cpcompound.controller;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
@@ -100,6 +102,18 @@ public class EditorController {
             if(!result.getValue()) return;
             EditorContext context = result.getKey();
             context.execute(System.in, System.out, System.err);
+        });
+    }
+
+    @FXML
+    public void doExecute(InputStream i){
+        System.out.println("input");
+
+        doCompile().whenComplete((result, throwable) -> {
+            if(!result.getValue()) return;
+            if(throwable!=null) throwable.printStackTrace();
+            EditorContext context = result.getKey();
+            context.execute(i,System.out, System.err);
         });
     }
 

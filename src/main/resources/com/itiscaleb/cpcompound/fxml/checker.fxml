@@ -17,7 +17,7 @@
                   <Label text="TestCase" fx:id="testCaseLabel"/>
                </HBox>
                <Button text="Add Test Case" onAction="#addTestCase"/>
-               <Button text="Run Comparisons" onAction="#runComparisons"/>
+               <Button text="Run Comparisons" onAction="#runAllTestCase"/>
             </VBox>
          </top>
          <center>

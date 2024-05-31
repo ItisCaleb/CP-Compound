@@ -44,7 +44,9 @@ public class EditorToolBarController {
     private void handleExecute(){
         if (runToggleBtn.isSelected()) {
             runToggleBtn.setText("Stop");
+
             CPCompound.getBaseController().getEditorController().doExecute();
+
         }else{
             runToggleBtn.setText("Run");
             //TODO stop code

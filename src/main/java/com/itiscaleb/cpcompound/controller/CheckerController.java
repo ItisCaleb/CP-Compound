@@ -10,6 +10,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
+import java.io.*;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -37,6 +38,10 @@ public class CheckerController {
     private EditorContext editorContext;
     public String cph_path;
     static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+//    public InputStream[] getInputStream(){
+//
+//    }
 
     public void updatePath() {
         System.out.println("update looking at");
@@ -67,7 +72,7 @@ public class CheckerController {
             cph_path = editorContext.getFileURI();
             System.out.println(cph_path);
             createNewFolder(cph_path);
-            loadTestCasesFromJson(); // 调用加载JSON的方法
+            loadTestCasesFromJson();
         }
     }
 
@@ -192,12 +197,17 @@ public class CheckerController {
     }
 
     @FXML
-    private void runComparisons() {
+    private void runAllTestCase() {
         saveTestCasesToJson();
         boolean strictMatch = strictMatchCheckBox.isSelected();
+        System.out.println("all compare");
         for (TestCase testCase : testCases) {
+            InputStream inputStream = new ByteArrayInputStream(testCase.getInput().getBytes(Charset.defaultCharset()));
+            //CPCompound.getBaseController().getEditorController().doExecute(inputStream);
+            CPCompound.getBaseController().getEditorController().doExecute(inputStream);
             testCase.runComparison(strictMatch);
         }
+        saveTestCasesToJson();
     }
 
     private class TestCase {
@@ -231,10 +241,10 @@ public class CheckerController {
             );
 
             Button recompareButton = new Button("Recompare");
-            recompareButton.setOnAction(e -> recompareTestCase());
+            recompareButton.setOnAction(e -> compareOneTestCase());
 
             Button deleteButton = new Button("Delete");
-            deleteButton.setOnAction(e -> deleteTestCase());
+            deleteButton.setOnAction(e -> deleteOneTestCase());
 
             HBox buttonsBox = new HBox(10);
             buttonsBox.getChildren().addAll(recompareButton, deleteButton);
@@ -263,17 +273,19 @@ public class CheckerController {
             );
 
             Button recompareButton = new Button("Recompare");
-            recompareButton.setOnAction(e -> recompareTestCase());
+            recompareButton.setOnAction(e -> compareOneTestCase());
 
             Button deleteButton = new Button("Delete");
-            deleteButton.setOnAction(e -> deleteTestCase());
+            deleteButton.setOnAction(e -> deleteOneTestCase());
 
             HBox buttonsBox = new HBox(10);
             buttonsBox.getChildren().addAll(recompareButton, deleteButton);
             pane.getChildren().add(0, buttonsBox);
         }
 
-
+        public void setReceivedField(String s){
+            this.receivedField = new TextArea(s);
+        }
 
         public VBox getPane() {
             return pane;
@@ -301,7 +313,8 @@ public class CheckerController {
             }
         }
 
-        public void recompareTestCase() {
+        public void compareOneTestCase() {
+            System.out.println("this one compare");
             String input = inputField.getText();
             String expected = expectedField.getText();
             String received = receivedField.getText();
@@ -313,7 +326,7 @@ public class CheckerController {
             runComparison(strictMatchCheckBox.isSelected());
         }
 
-        public void deleteTestCase() {
+        public void deleteOneTestCase() {
             testCases.remove(this);
             testCaseBox.getChildren().remove(pane);
         }
