@@ -136,7 +136,7 @@ public class EditorController {
     @FXML
     private void handleTabClosed(Event event, Tab closedTab){
         if(!tabManager.getTabSaveState(closedTab)){
-            saveContext(closedTab);
+            //saveContext(closedTab);
             CPCompound.getEditor().removeContext((String) closedTab.getUserData());
         }
     }
@@ -156,6 +156,8 @@ public class EditorController {
             EditorContext context = editor.getCurrentContext();
             if(lastContext != context){
                 lastContext = context;
+                this.highlightSpans = editor.computeHighlighting(context);
+                EditorStyler.asyncSetSpans(mainTextArea, highlightSpans, diagnosticSpans);
                 return;
             }
             context.setCode(newValue);
@@ -174,6 +176,7 @@ public class EditorController {
             } else {
                 completionMenu.hide();
             }
+            tabManager.changeTab(currentTab);
 
             // highlight
             this.highlightSpans = editor.computeHighlighting(context);
@@ -333,7 +336,7 @@ public class EditorController {
                         "-fx-padding: 5;");
         mainTextArea.setMouseOverTextDelay(Duration.ofMillis(500));
         mainTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
-
+            if(diagnostics == null || diagnostics.isEmpty()) return;{}
             for (Diagnostic diagnostic : diagnostics) {
                 System.out.println(diagnostic.getMessage());
                 Range range = diagnostic.getRange();

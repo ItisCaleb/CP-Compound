@@ -137,6 +137,7 @@ public class EditorContext {
                 }
                 return new Pair<>(this, true);
             }catch (Exception e){
+                e.printStackTrace();
                 return new Pair<>(this, false);
             }
         });

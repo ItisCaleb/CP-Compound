@@ -42,9 +42,8 @@ public class InitController {
     }
 
     protected void downloadClangd() {
-        downloadText.setText("Downloading Clangd...");
         new ClangdDownloader()
-                .downloadAsync(progressProperty)
+                .downloadAsync(progressProperty, downloadText)
                 .whenComplete((unused, throwable) -> downloadGCC());
     }
 
@@ -52,10 +51,11 @@ public class InitController {
         if(!GCCDownloader.isGCCInstalled()) {
             switch (SysInfo.getOS()) {
                 case WIN -> {
-                    downloadText.setText("Downloading GCC...");
-                    new GCCDownloader()
-                        .downloadAsync(progressProperty)
+                    new GCCDownloader().downloadAsync(progressProperty, downloadText)
                         .whenComplete((unused, throwable) -> {
+                            if(throwable != null) {
+                                throwable.printStackTrace();
+                            }
                             Platform.runLater(CPCompound::setIDEStage);
                         });
                 }
