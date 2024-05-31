@@ -1,14 +1,30 @@
 package com.itiscaleb.cpcompound.controller;
 
+import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.utils.TestcaseCompare;
+import com.itiscaleb.cpcompound.editor.Editor;
+import com.itiscaleb.cpcompound.editor.EditorContext;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.IOException;
+import java.nio.charset.Charset;
 
 public class CheckerController {
     @FXML
@@ -21,10 +37,93 @@ public class CheckerController {
     private List<TestCase> testCases;
     private int testCaseCount;
 
-    public void initialize() {
+    private Editor editor;
+    private EditorContext editorContext;
+    public String cph_path;
+    static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+    public void initialize() throws URISyntaxException {
+        editor = CPCompound.getEditor();
+        editorContext = editor.getCurrentContext();
+        System.out.println(editorContext);
+
         testCases = new ArrayList<>();
         testCaseCount = 1;
+
+        if (editorContext == null) {
+            System.out.println("Open a file");
+            // UI
+        } else {
+            cph_path = editorContext.getFileURI();
+            System.out.println(cph_path);
+            createNewFolder(cph_path);
+        }
     }
+
+    private void createNewFolder(String filePath) {
+        try {
+            URI uri = new URI(filePath);
+            String realPath = Paths.get(uri).toString();
+            Path parentDirectory = Paths.get(realPath).getParent();
+            if (parentDirectory != null) {
+                String newFolderName = "cph";
+                Path newFolderPath = parentDirectory.resolve(newFolderName);
+
+                if (!Files.exists(newFolderPath)) {
+                    Files.createDirectories(newFolderPath);
+                    System.out.println("New folder created: " + newFolderPath);
+                } else {
+                    System.out.println("Folder already exists: " + newFolderPath);
+                }
+            }
+        } catch (URISyntaxException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveTestCasesToJson() {
+        //System.out.println("what");
+        //System.out.println(cph_path);
+        if (cph_path == null || cph_path.isEmpty()) {
+            System.out.println("No valid cph_path specified.");
+            return;
+        }
+        try {
+            URI uri = new URI(cph_path);
+            String ccFilePath = Paths.get(uri).toString();
+            String cphFolderPath = ccFilePath.substring(0, ccFilePath.lastIndexOf(File.separator) + 1) + "cph";
+            Path cphFolder = Paths.get(cphFolderPath);
+            if (!Files.exists(cphFolder)) {
+                Files.createDirectories(cphFolder);
+                System.out.println("Created cph folder: " + cphFolder);
+            }
+            String jsonFileName = cphFolderPath + File.separator + ccFilePath.substring(ccFilePath.lastIndexOf(File.separator) + 1, ccFilePath.lastIndexOf('.')) + ".json";
+            Path jsonFilePath = Paths.get(jsonFileName);
+            if (!Files.exists(jsonFilePath)) {
+                Files.createFile(jsonFilePath);
+                System.out.println("Created JSON file: " + jsonFilePath);
+            }
+            List<JsonObject> testCaseDataList = new ArrayList<>();
+            for (TestCase testCase : testCases) {
+                System.out.println(testCase);
+            }
+            for (TestCase testCase : testCases) {
+                JsonObject testCaseData = new JsonObject();
+                testCaseData.addProperty("input", testCase.getInput());
+                testCaseData.addProperty("expectedOutput", testCase.getExpectedOutput());
+                testCaseData.addProperty("receivedOutput", testCase.getReceivedOutput());
+                testCaseDataList.add(testCaseData);
+            }
+            Files.write(jsonFilePath, gson.toJson(testCaseDataList).getBytes());
+            System.out.println("Test cases saved to JSON file: " + jsonFileName);
+        } catch (URISyntaxException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
 
     @FXML
     private void addTestCase() {
@@ -32,10 +131,12 @@ public class CheckerController {
         testCases.add(testCase);
         testCaseBox.getChildren().add(testCase.getPane());
         testCaseCount++;
+        saveTestCasesToJson();
     }
 
     @FXML
     private void runComparisons() {
+        saveTestCasesToJson();
         boolean strictMatch = strictMatchCheckBox.isSelected();
         for (TestCase testCase : testCases) {
             testCase.runComparison(strictMatch);
@@ -44,25 +145,25 @@ public class CheckerController {
 
     private class TestCase {
         private int number;
-        private TextField inputField;
-        private TextField expectedField;
-        private TextField receivedField;
+        private TextArea inputField;
+        private TextArea expectedField;
+        private TextArea receivedField;
         private Label resultLabel;
         private VBox pane;
         private boolean current;
 
         public TestCase(int number) {
             this.number = number;
-            inputField = new TextField();
-            expectedField = new TextField();
-            receivedField = new TextField();
+            inputField = new TextArea();
+            expectedField = new TextArea();
+            receivedField = new TextArea();
             resultLabel = new Label("Result: ");
             current = false;
 
             pane = new VBox(10);
             pane.setPadding(new Insets(5));
             pane.getChildren().addAll(
-                    new Label("Testcase" + number + ":"),
+                    new Label("Testcase " + number + ":"),
                     new Label("Input:"),
                     inputField,
                     new Label("Expected Output:"),
@@ -72,10 +173,10 @@ public class CheckerController {
                     resultLabel
             );
 
-            Button recompareButton = new Button("重新比对此测试用例");
+            Button recompareButton = new Button("Recompare");
             recompareButton.setOnAction(e -> recompareTestCase());
 
-            Button deleteButton = new Button("删除此测试用例");
+            Button deleteButton = new Button("Delete");
             deleteButton.setOnAction(e -> deleteTestCase());
 
             HBox buttonsBox = new HBox(10);
@@ -122,15 +223,8 @@ public class CheckerController {
         }
 
         public void deleteTestCase() {
-            Iterator<TestCase> iterator = testCases.iterator();
-            while (iterator.hasNext()) {
-                TestCase testCase = iterator.next();
-                if (testCase.isCurrent()) {
-                    iterator.remove();
-                    testCaseBox.getChildren().remove(testCase.getPane());
-                    break;
-                }
-            }
+            testCases.remove(this);
+            testCaseBox.getChildren().remove(pane);
         }
 
         public boolean isCurrent() {
