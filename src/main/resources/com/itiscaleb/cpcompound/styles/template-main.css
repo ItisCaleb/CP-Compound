@@ -1,0 +1,23 @@
+.editable-label .label {
+    -fx-font-size: 16px;   /* 设置字体大小 */
+    -fx-padding: 5px;      /* 设置内边距 */
+    /*-fx-border-color: blue;*/
+    /*-fx-alignment: LEFT;*/
+    -fx-pref-width: 660;
+}
+
+.editable-label .text-field {
+    -fx-font-size: 16px;
+    -fx-padding: 5px;
+    -fx-background-color: transparent;
+    /*-fx-border-color: transparent;     */
+    -fx-text-fill: black;
+    /*-fx-border-color: red;*/
+    -fx-pref-width: 660;
+}
+.editable-label{
+    -fx-cursor: TEXT;
+}
+#template-base{
+    -fx-background-color: #2d2d2d;
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox  xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.itiscaleb.cpcompound.controller.TemplateMainController">
+    <HBox fx:id="header">
+        <Button text="▼" fx:id="toggleButton"/>
+        <Label text="My Custom Panel" HBox.hgrow="ALWAYS"/>
+        <Button text="Add Item" onAction="#handleAddItem"/>
+    </HBox>
+    <VBox fx:id="contentArea" visible="false">
+        <!-- 示例内容项 -->
+        <HBox>
+            <Label text="Item 1" HBox.hgrow="ALWAYS"/>
+            <Button text="Remove" onAction="#handleRemoveItem"/>
+        </HBox>
+    </VBox>
+
+</VBox>

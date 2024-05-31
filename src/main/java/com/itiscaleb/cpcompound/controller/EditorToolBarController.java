@@ -6,11 +6,18 @@ import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 import org.kordamp.ikonli.carbonicons.CarbonIcons;
 import org.kordamp.ikonli.javafx.FontIcon;
+
+import java.io.IOException;
 
 public class EditorToolBarController {
 //    @FXML
@@ -51,6 +58,15 @@ public class EditorToolBarController {
             System.out.println("stop");
         }
     }
+    @FXML
+    private void handleOpenTemplateStage() throws IOException {
+        System.out.println("open template");
+        Stage templateStage = new Stage();
+        FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/template-main.fxml"));
+        templateStage.setScene(new Scene(fxmlLoader.load()));
+        templateStage.show();
+    }
+
     // for custom stage title bar's button function
     // @FXML
     // private void minimizeWindow() {
