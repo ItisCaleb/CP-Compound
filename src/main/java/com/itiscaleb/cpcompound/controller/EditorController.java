@@ -1,6 +1,9 @@
 package com.itiscaleb.cpcompound.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
@@ -99,7 +102,7 @@ public class EditorController {
         doCompile().whenComplete((result, throwable) -> {
             if(!result.getValue()) return;
             EditorContext context = result.getKey();
-            context.execute(System.in, System.out, System.err);
+            context.execute(System.in, System.out, System.err, false);
         });
     }
 
