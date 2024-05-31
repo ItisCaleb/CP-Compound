@@ -11,7 +11,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Diagnostic;
+import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +39,8 @@ public class Editor {
     public Editor() {
         highlighters.put(Language.CPP, new CppHighlighter());
         highlighters.put(Language.C, new CHighlighter());
+        highlighters.put(Language.Python, new PythonHighlighter());
+        highlighters.put(Language.None, new NoneHighlighter());
     }
 
     public void switchContext(String key){
