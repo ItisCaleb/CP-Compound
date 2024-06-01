@@ -66,6 +66,8 @@ public class EditableLabel extends StackPane {
     public String getText() {
         return label.getText();
     }
+    public Label getLabel() { return label; }
+    public TextField getTextField() { return textField;}
 
     @FXML
     public void setText(String text) {

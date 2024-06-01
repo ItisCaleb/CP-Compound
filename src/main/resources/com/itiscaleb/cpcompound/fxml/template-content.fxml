@@ -6,18 +6,29 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox  xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.itiscaleb.cpcompound.controller.TemplateMainController">
-    <HBox fx:id="header">
-        <Button text="▼" fx:id="toggleButton"/>
-        <Label text="My Custom Panel" HBox.hgrow="ALWAYS"/>
-        <Button text="Add Item" onAction="#handleAddItem"/>
+<?import com.itiscaleb.cpcompound.component.EditableLabel?>
+<?import javafx.scene.control.ToggleButton?>
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.itiscaleb.cpcompound.controller.TemplateContentController">
+    <HBox styleClass="header-hbox">
+        <ToggleButton  fx:id="collapseBtn" styleClass="collapse-btn" text="▼" onAction="#handleCollapse"/>
+        <EditableLabel styleClass="header-label" text="My Custom category" HBox.hgrow="ALWAYS"></EditableLabel>
+        <Button styleClass="add-item-btn" text="+" onAction="#handleAddItem"/>
+        <Button styleClass="delete-item-btn" text="x" onAction="#handleDeleteCategory"/>
     </HBox>
-    <VBox fx:id="contentArea" visible="false">
-        <!-- 示例内容项 -->
-        <HBox>
-            <Label text="Item 1" HBox.hgrow="ALWAYS"/>
-            <Button text="Remove" onAction="#handleRemoveItem"/>
+    <VBox  styleClass="contentArea" fx:id="contentArea">
+        <HBox styleClass="item-info">
+            <HBox styleClass="item-maininfo">
+                <EditableLabel styleClass="item-name" text="Item 1" HBox.hgrow="ALWAYS"></EditableLabel>
+                <Button styleClass="remove-item-btn" text="X" onAction="#handleRemoveItem"/>
+                <Button styleClass="open-item-btn" text="X" onAction="#handleOpenItem"/>
+            </HBox>
+            <HBox styleClass="item-subinfo">
+                <Label styleClass="item-line-count" HBox.hgrow="ALWAYS"/>
+                <Label styleClass="last-update-date" HBox.hgrow="ALWAYS"/>
+                <Label styleClass="file-extension" HBox.hgrow="ALWAYS"/>
+            </HBox>
         </HBox>
+
     </VBox>
 
 </VBox>

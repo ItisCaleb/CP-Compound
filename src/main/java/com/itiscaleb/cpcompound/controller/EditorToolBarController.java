@@ -63,7 +63,7 @@ public class EditorToolBarController {
         System.out.println("open template");
         Stage templateStage = new Stage();
         FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/template-main.fxml"));
-        templateStage.setScene(new Scene(fxmlLoader.load()));
+        templateStage.setScene(new Scene(fxmlLoader.load(),600,800));
         templateStage.show();
     }
 

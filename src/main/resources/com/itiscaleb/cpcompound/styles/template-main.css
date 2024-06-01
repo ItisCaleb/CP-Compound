@@ -1,23 +1,208 @@
-.editable-label .label {
-    -fx-font-size: 16px;   /* 设置字体大小 */
-    -fx-padding: 5px;      /* 设置内边距 */
+#template-title .label {
+    -fx-font-size: 18px;
+    -fx-padding: 5px;
     /*-fx-border-color: blue;*/
     /*-fx-alignment: LEFT;*/
-    -fx-pref-width: 660;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    /*-fx-pref-width: 660;*/
 }
 
-.editable-label .text-field {
-    -fx-font-size: 16px;
+#template-title .text-field {
+    -fx-font-size: 18px;
     -fx-padding: 5px;
     -fx-background-color: transparent;
     /*-fx-border-color: transparent;     */
-    -fx-text-fill: black;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
     /*-fx-border-color: red;*/
-    -fx-pref-width: 660;
+    /*-fx-pref-width: 660;*/
+}
+.editable-label .label {
+    -fx-padding: 5px;
+    -fx-background-color: transparent;
+}
+
+.editable-label .text-field {
+    -fx-padding: 5px;
+    -fx-background-color: transparent;
+}
+
+#add-category-btn{
+    -fx-padding: 0;
+    /*-fx-border-color: green;*/
+    -fx-background-color: transparent;
+    -fx-cursor: HAND;
+    -fx-alignment: CENTER_RIGHT;
+}
+#add-category-btn .ikonli-font-icon{
+    -fx-icon-code: "mdmz-playlist_add";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 24px;
+}
+#add-category-btn .ikonli-font-icon:hover{
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 24px;
 }
 .editable-label{
     -fx-cursor: TEXT;
+    -fx-alignment: CENTER_LEFT;
 }
 #template-base{
-    -fx-background-color: #2d2d2d;
+    /*-fx-background-color: #2d2d2d;*/
+    -fx-background-color: #1E1E1E;
+}
+#templateVBox{
+    /*-fx-border-color: red;*/
+    -fx-spacing: 6;
+}
+#template-navbar{
+    /*-fx-border-color: green;*/
+    -fx-alignment: CENTER_RIGHT;
+}
+.scroll-pane{
+    -fx-border-width: 0;
+    -fx-background-color: transparent;
+}
+.scroll-pane .viewport{
+    -fx-background-color: transparent;
+}
+
+.category-content{
+    /*-fx-border-color: blue;*/
+    -fx-background-color:#2C2C2C;
+    -fx-background-radius: 6;
+    -fx-border-width: 0;
+}
+.header-hbox{
+    -fx-border-color: transparent;
+    /*-fx-border-color: yellow;*/
+    -fx-background-radius: 6 6 0 0;
+    -fx-padding: 0;
+    -fx-pref-height: 56;
+    -fx-min-height: 56;
+}
+.header-label .label{
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-font-size: 20;
+}
+.header-label .text-field{
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-font-size: 20;
+}
+.collapse-btn{
+    /*-fx-border-color: green;*/
+    -fx-background-color: transparent;
+    -fx-cursor: HAND;
+}
+.collapse-btn .ikonli-font-icon{
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 18px;
+}
+.collapse-btn .ikonli-font-icon:hover{
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 18px;
+}
+
+.header-btn-area{
+    /*-fx-border-color: white;*/
+    -fx-padding: 0 10 0 0;
+}
+.add-item-btn{
+    -fx-padding: 0;
+    /*-fx-border-color: green;*/
+    -fx-background-color: transparent;
+    -fx-cursor: HAND;
+    -fx-alignment: CENTER_RIGHT;
+}
+.add-item-btn .ikonli-font-icon{
+    -fx-icon-code: "fltfmz-tab-new-20";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 24px;
+}
+.add-item-btn .ikonli-font-icon:hover{
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 24px;
+}
+.delete-item-btn{
+    -fx-padding: 0;
+    /*-fx-border-color: green;*/
+    -fx-background-color: transparent;
+    -fx-cursor: HAND;
+    -fx-alignment: CENTER_RIGHT;
+}
+.delete-item-btn .ikonli-font-icon{
+    -fx-icon-code: "gmi-delete-outline";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 24px;
+}
+.delete-item-btn .ikonli-font-icon:hover{
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 24px;
+}
+
+.info-btn-area{
+    /*-fx-border-color: white;*/
+    -fx-padding: 0 15 0 0;
+}
+.remove-item-btn{
+    -fx-padding: 0;
+    /*-fx-border-color: green;*/
+    -fx-background-color: transparent;
+    -fx-cursor: HAND;
+    -fx-alignment: CENTER_RIGHT;
+}
+.remove-item-btn .ikonli-font-icon{
+    -fx-icon-code: "gmi-delete-outline";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 22px;
+}
+.remove-item-btn .ikonli-font-icon:hover{
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 22px;
+}
+
+.open-item-btn{
+    -fx-padding: 0;
+    /*-fx-border-color: green;*/
+    -fx-background-color: transparent;
+    -fx-cursor: HAND;
+    -fx-alignment: CENTER_RIGHT;
+}
+.open-item-btn .ikonli-font-icon{
+    -fx-icon-code: "fltfmz-open-28";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 22px;
+}
+.open-item-btn .ikonli-font-icon:hover{
+    -fx-icon-color: #FFFFFF;
+    -fx-icon-size: 22px;
+}
+
+.item-name .label, .item-name .text-field{
+    -fx-text-fill: #A49F9F;
+    -fx-font-size: 14;
+}
+.item-main-info{
+    /*-fx-border-color: red;*/
+}
+.item-sub-info{
+    -fx-padding: 0 0 0 4;
+    -fx-min-height: 20;
+    /*-fx-border-color: blue;*/
+}
+.item-line-count , .last-update-date, .file-extension{
+    -fx-text-fill: #A49F9F;
+    -fx-font-size: 12;
+}
+.item-info{
+    -fx-border-width: 0;
+    -fx-background-radius: 5;
+    -fx-padding: 0 0 0 40;
+    -fx-border-color: yellow;
+}
+.item-info:hover{
+    -fx-background-color: #414141;
 }

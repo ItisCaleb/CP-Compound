@@ -6,54 +6,27 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import com.itiscaleb.cpcompound.component.EditableLabel?>
 
-<!--<?import com.itiscaleb.cpcompound.component.EditableLabel?>-->
-
+<?import javafx.scene.control.ScrollPane?>
 <AnchorPane id="template-base" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.TemplateMainController">
    <children>
-      <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="36.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="60.0">
+       <HBox id="template-navbar" prefHeight="48.0" prefWidth="100.0" AnchorPane.leftAnchor="36.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="10.0">
+           <EditableLabel  id="template-title"></EditableLabel>
+           <Button fx:id="addCategoryBtn" text="+" id="add-category-btn" onAction="#handleAddCategory"></Button>
+       </HBox>
+       <ScrollPane fitToWidth="true" fitToHeight="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="36.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="60.0">
+       <VBox fx:id="templateVBox" id="templateVBox" >
+<!--         <VBox fx:id="templateVBox" id="template-vbox"  AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="36.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="60.0">-->
          <children>
-             <HBox fx:id="header">
-                 <Button text="▼" fx:id="toggleButton"/>
-                 <Label text="My Custom Panel" HBox.hgrow="ALWAYS"/>
-                 <Button text="Add Item" onAction="#handleAddItem"/>
-             </HBox>
-             <VBox fx:id="contentArea" visible="false" managed="false">
-                 <!-- 示例内容项 -->
-                 <HBox>
-                     <Label text="Item 1" HBox.hgrow="ALWAYS"/>
-                     <Button text="Remove" onAction="#handleRemoveItem"/>
-                 </HBox>
-                 <HBox>
-                     <Label text="Item 1" HBox.hgrow="ALWAYS"/>
-                     <Button text="Remove" onAction="#handleRemoveItem"/>
-                 </HBox>
-                 <HBox>
-                     <Label text="Item 1" HBox.hgrow="ALWAYS"/>
-                     <Button text="Remove" onAction="#handleRemoveItem"/>
-                 </HBox>
-                 <HBox>
-                     <Label text="Item 1" HBox.hgrow="ALWAYS"/>
-                     <Button text="Remove" onAction="#handleRemoveItem"/>
-                 </HBox>
-             </VBox>
-             <HBox fx:id="header1">
-                 <Button text="▼" fx:id="toggleButton1"/>
-                 <Label text="My Custom Panel" HBox.hgrow="ALWAYS"/>
-                 <Button text="Add Item" onAction="#handleAddItem"/>
-             </HBox>
-             <VBox fx:id="contentArea1" visible="false" managed="false">
-                 <!-- 示例内容项 -->
-                 <HBox>
-                     <Label text="Item 1" HBox.hgrow="ALWAYS"/>
-                     <Button text="Remove" onAction="#handleRemoveItem"/>
-                 </HBox>
-             </VBox>
+
          </children>
       </VBox>
-
+       </ScrollPane>
    </children>
    <stylesheets>
       <URL value="@../styles/template-main.css" />
+      <URL value="@../styles/editor-scroll-bar.css" />
+
    </stylesheets>
 </AnchorPane>

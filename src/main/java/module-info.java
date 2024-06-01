@@ -24,7 +24,8 @@ module com.itiscaleb.cpcompound {
     requires org.kordamp.ikonli.fontawesome5;
     requires org.kordamp.ikonli.evaicons;
     requires org.kordamp.ikonli.dashicons;
-    requires sevenzipjbinding;
+    requires org.kordamp.ikonli.material;
+    requires org.kordamp.ikonli.material2;
 
 
     exports com.itiscaleb.cpcompound;
