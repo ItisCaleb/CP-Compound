@@ -30,7 +30,7 @@ public class EditorContext {
         this.path = path.normalize();
         this.code = code;
         this.lang = lang;
-        this.version = 0;
+        this.version = 1;
         this.lastVersion = 0;
         this.isTemp = isTemp;
     }
@@ -96,7 +96,7 @@ public class EditorContext {
 
     public void setDiagnostics(List<Diagnostic> diagnostics){
         diagnostics.sort(Comparator.comparing((Diagnostic d) -> d.getRange().getStart().getLine())
-                .thenComparing(d -> d.getSeverity().ordinal()));
+                .thenComparing(d -> d.getRange().getStart().getCharacter()));
         // segment tree here
         this.diagnostics = diagnostics;
     }

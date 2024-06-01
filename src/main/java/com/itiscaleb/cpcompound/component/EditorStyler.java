@@ -32,8 +32,12 @@ public class EditorStyler {
     @SafeVarargs
     public static void asyncSetSpans(StyleClassedTextArea area, StyleSpans<Collection<String>>... spans){
         CompletableFuture.runAsync(()->{
-            var result = merge(area.getLength(), spans);
-            Platform.runLater(()->area.setStyleSpans(0, result));
+            setSpans(area, spans);
         });
+    }
+
+    public static void setSpans(StyleClassedTextArea area, StyleSpans<Collection<String>>... spans){
+        var result = merge(area.getLength(), spans);
+        Platform.runLater(()->area.setStyleSpans(0, result));
     }
 }
