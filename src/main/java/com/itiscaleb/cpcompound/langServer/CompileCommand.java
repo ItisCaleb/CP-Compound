@@ -2,6 +2,7 @@ package com.itiscaleb.cpcompound.langServer;
 
 import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.editor.EditorContext;
+import com.itiscaleb.cpcompound.utils.SysInfo;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -19,8 +20,17 @@ public class CompileCommand {
         cmd.file = path.getFileName().toString();
         cmd.arguments = new ArrayList<>();
         switch (context.getLang()){
-            case C -> cmd.arguments.add(CPCompound.getConfig().getGCCExe());
-            case CPP -> cmd.arguments.add(CPCompound.getConfig().getGPPExe());
+            case C -> {
+                cmd.arguments.add(CPCompound.getConfig().getGCCExe());
+            }
+            case CPP -> {
+                cmd.arguments.add(CPCompound.getConfig().getGPPExe());
+                cmd.arguments.add("-std=c++17");
+                if(SysInfo.getOS() == SysInfo.OS.WIN){
+                    cmd.arguments.add("-target");
+                    cmd.arguments.add("x86_64-pc-windows-gnu");
+                }
+            }
         }
         cmd.arguments.add(path.toString());
         return cmd;

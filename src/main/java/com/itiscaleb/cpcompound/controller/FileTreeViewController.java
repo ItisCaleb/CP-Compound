@@ -28,9 +28,9 @@ public class FileTreeViewController {
         File selectedDirectory = directoryChooser.showDialog(fileTreeView.getScene().getWindow());
         if (selectedDirectory != null) {
             loadDirectoryIntoTreeView(selectedDirectory);
+            CPCompound.getConfig().last_open_directory = selectedDirectory.getCanonicalPath();
+            CPCompound.getConfig().save();
         }
-        CPCompound.getConfig().last_open_directory = selectedDirectory.getCanonicalPath();
-        CPCompound.getConfig().save();
     }
 
     public static FileTreeViewController getInstance() {

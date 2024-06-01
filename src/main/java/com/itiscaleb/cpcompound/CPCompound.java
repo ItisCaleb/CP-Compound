@@ -3,6 +3,7 @@ package com.itiscaleb.cpcompound;
 import com.itiscaleb.cpcompound.controller.BaseController;
 import com.itiscaleb.cpcompound.controller.FileTreeViewController;
 import com.itiscaleb.cpcompound.editor.Editor;
+import com.itiscaleb.cpcompound.editor.EditorContext;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.langServer.Language;
 import com.itiscaleb.cpcompound.utils.APPData;
@@ -52,6 +53,7 @@ public class CPCompound extends Application {
             for (var proxy: proxies.values()){
                 proxy.stop();
             }
+            editor.stopExecute();
             System.exit(0);
         });
         primaryStage.setTitle("CP Compound");
@@ -119,6 +121,10 @@ public class CPCompound extends Application {
 
     public static Logger getLogger(){
         return logger;
+    }
+
+    public static LSPProxy getLSPProxy(EditorContext context){
+        return proxies.get(context.getLang());
     }
 
     public static LSPProxy getLSPProxy(Language lang){
