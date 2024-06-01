@@ -13,11 +13,12 @@
                   <Insets top="10" right="10" bottom="10" left="10"/>
                </padding>
                <HBox spacing="10" alignment="CENTER">
+                  <Button text="strict compare?" fx:id="testCaseLabel"/>
                   <CheckBox text="strict?" fx:id="strictMatchCheckBox"/>
-                  <Label text="TestCase" fx:id="testCaseLabel"/>
                </HBox>
-               <Button text="Add Test Case" onAction="#addTestCase"/>
-               <Button text="Run Comparisons" onAction="#runAllTestCase"/>
+               <Button text="Add TestCase" onAction="#addTestCase"/>
+               <Button text="Run All TestCase" onAction="#runAllTestCase"/>
+               <Button text="Delete All TestCase" onAction="#deleteAllTestCase"/>
             </VBox>
          </top>
          <center>
