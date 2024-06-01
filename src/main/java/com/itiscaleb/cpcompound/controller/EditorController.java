@@ -89,22 +89,7 @@ public class EditorController {
                 CPCompound.getEditor().getCurrentContext().getCode());
     }
 
-    @FXML
-    public CompletableFuture<Pair<EditorContext, Boolean>> doCompile(){
-        saveContext(currentTab);
-        EditorContext context = CPCompound.getEditor().getCurrentContext();
-        if (context == null) return CompletableFuture.completedFuture(new Pair<>(null,false));
-        return context.compile(System.out, System.err);
-    }
 
-    @FXML
-    public void doExecute(){
-        doCompile().whenComplete((result, throwable) -> {
-            if(!result.getValue()) return;
-            EditorContext context = result.getKey();
-            context.execute(System.in, System.out, System.err, false);
-        });
-    }
 
     @FXML
     public void handleAddNewFile() {
@@ -298,7 +283,11 @@ public class EditorController {
         });
     }
 
-    private void saveContext(Tab tab){
+    public void saveContext(){
+        this.saveContext(currentTab);
+    }
+
+    public void saveContext(Tab tab){
         if(tab == null) return;
         EditorContext context = CPCompound.getEditor().getContext((String) tab.getUserData());
         if(context == null) return;
