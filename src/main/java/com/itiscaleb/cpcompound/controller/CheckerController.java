@@ -178,6 +178,7 @@ public class CheckerController {
         testCases.add(testCase);
         testCaseBox.getChildren().add(testCase.getPane());
         testCaseCount++;
+        renumberTestCases();
         saveTestCasesToJson();
     }
 
@@ -185,6 +186,7 @@ public class CheckerController {
     private void deleteAllTestCase() {
         testCases.clear();
         testCaseBox.getChildren().clear();
+        renumberTestCases();
         saveTestCasesToJson();
     }
 
@@ -214,6 +216,14 @@ public class CheckerController {
                 });
             }
         });
+    }
+
+    private void renumberTestCases() {
+        int number = 1;
+        for (TestCase testCase : testCases) {
+            testCase.setNumber(number);
+            number++;
+        }
     }
 
     private class TestCase {
@@ -265,6 +275,38 @@ public class CheckerController {
                         resultLabel
                 );
             }
+
+            Button recompareButton = new Button("Run this");
+            recompareButton.setOnAction(e -> compareOneTestCase());
+
+            Button deleteButton = new Button("Delete");
+            deleteButton.setOnAction(e -> deleteOneTestCase());
+
+            HBox buttonsBox = new HBox(10);
+            buttonsBox.getChildren().addAll(recompareButton, deleteButton);
+            pane.getChildren().add(0, buttonsBox);
+        }
+
+        public void setNumber(int number) {
+            this.number = number;
+            updatePane();
+        }
+
+        private void updatePane() {
+            pane.getChildren().clear();
+
+            pane.getChildren().addAll(
+                    new Label("Testcase " + number + ":"),
+                    new Label("Input:"),
+                    inputField,
+                    new Label("Expected Output:"),
+                    expectedField,
+                    new Label("Received Output:"),
+                    receivedField,
+                    errorLabel,
+                    errorField,
+                    resultLabel
+            );
 
             Button recompareButton = new Button("Run this");
             recompareButton.setOnAction(e -> compareOneTestCase());
@@ -354,6 +396,7 @@ public class CheckerController {
         public void deleteOneTestCase() {
             testCases.remove(this);
             testCaseBox.getChildren().remove(pane);
+            renumberTestCases();
             saveTestCasesToJson();
         }
 
