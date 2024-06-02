@@ -45,7 +45,7 @@ public class ClangdDownloader extends Downloader {
             return null;
 
         }catch (Exception e){
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
             return null;
         }
     }
@@ -60,7 +60,7 @@ public class ClangdDownloader extends Downloader {
             CPCompound.getConfig().save();
             CPCompound.getLogger().info(path);
         } catch (Exception e) {
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
     }
 

@@ -15,6 +15,7 @@ import com.itiscaleb.cpcompound.component.CompletionMenu;
 import com.itiscaleb.cpcompound.component.EditorStyler;
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
+import com.itiscaleb.cpcompound.editor.SemanticHighlighter;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.utils.TabManager;
 import javafx.application.Platform;
@@ -80,6 +81,7 @@ public class EditorController {
 
     StyleSpans<Collection<String>> diagnosticSpans = null;
     StyleSpans<Collection<String>> highlightSpans = null;
+    StyleSpans<Collection<String>> semanticSpans = null;
 
     private void switchCodeArea(Tab setUpTab){
         VirtualizedScrollPane<CodeArea> vsPane = new VirtualizedScrollPane<>(mainTextArea);
@@ -101,7 +103,7 @@ public class EditorController {
             String key = editor.addContext();
             newTab(key);
         }catch (Exception e){
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
     }
 
@@ -109,9 +111,15 @@ public class EditorController {
         try {
             Editor editor = CPCompound.getEditor();
             String key = editor.addContext(Path.of(file.getCanonicalPath()),false);
+            for (Tab tab: editorTextTabPane.getTabs()){
+                if(tab.getUserData().equals(key)){
+                    editorTextTabPane.getSelectionModel().select(tab);
+                    return;
+                }
+            }
             newTab(key);
         }catch (Exception e){
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
     }
 
@@ -149,14 +157,15 @@ public class EditorController {
             }
         });
     }
+    String ignoreChars = "!@#$%^&*()+{}[]:;'\">/?~` \t\n";
+
     private void initEditorTextArea() {
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             Editor editor = CPCompound.getEditor();
             EditorContext context = editor.getCurrentContext();
             if(lastContext != context){
                 lastContext = context;
-                this.highlightSpans = editor.computeHighlighting(context);
-                EditorStyler.setSpans(mainTextArea, highlightSpans, diagnosticSpans);
+                requestHighlight();
                 return;
             }
             context.setCode(newValue);
@@ -168,23 +177,34 @@ public class EditorController {
             int paragraph = mainTextArea.getCurrentParagraph();
             int column = mainTextArea.getCaretColumn();
             int index = mainTextArea.getCaretPosition() - 1;
+            char c = newValue.charAt(index);
             if (!newValue.isEmpty() && index > 0
-                    && newValue.charAt(index) != '\n'
-                    && newValue.charAt(index) != ' '){
+                    && ignoreChars.indexOf(c) == -1){
                 proxy.requestCompletion(context, new Position(paragraph, column));
             } else {
                 completionMenu.hide();
             }
             tabManager.changeTab(currentTab);
-
-            // highlight
-            this.highlightSpans = editor.computeHighlighting(context);
-            EditorStyler.setSpans(mainTextArea, highlightSpans, diagnosticSpans);
+            requestHighlight();
         });
         initEditorUtility();
         initDiagnosticTooltip();
         initDiagnosticRendering();
         initCompletionTooltip();
+    }
+
+    private void requestHighlight(){
+        Editor editor = CPCompound.getEditor();
+        EditorContext context = editor.getCurrentContext();
+        LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
+        this.semanticSpans = SemanticHighlighter.computeHighlighting(mainTextArea, proxy.semanticTokens(context));
+        // highlight
+        this.highlightSpans = editor.computeHighlighting(context);
+        refreshSpans();
+    }
+
+    private void refreshSpans(){
+        EditorStyler.setSpans(mainTextArea, highlightSpans, diagnosticSpans, semanticSpans);
     }
 
     private void loadEditorToolBar(){
@@ -194,7 +214,7 @@ public class EditorController {
             CPCompound.getBaseController().appBase.getChildren().add(mainEditorToolBar);
             editorToolBarController =fxmlLoader.getController();
         } catch (Exception e) {
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
     }
     private void loadEditorMenuBar(){
@@ -205,7 +225,7 @@ public class EditorController {
             editorMenuBarController = fxmlLoader.getController();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
     }
     private void loadEditorFunctionPane(){
@@ -216,7 +236,7 @@ public class EditorController {
             editorFunctionPaneController=fxmlLoader.getController();
             editorFunctionPaneController.setCurrentActiveMenuItem(editorMenuBarController.getCurrentActiveMenuItem());
         } catch (Exception e) {
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
     }
 
@@ -229,7 +249,7 @@ public class EditorController {
             initEditorTextArea();
             setHandleChangeTab();
 
-            System.out.println("initialize");
+            CPCompound.getLogger().info("initialize editor");
         });
     }
 
@@ -280,7 +300,6 @@ public class EditorController {
             switch (KE.getText()) {
                 case "[" -> right = "]";
                 case "(" -> right = ")";
-                case "{" -> right = "}";
             }
             if(!right.isEmpty()){
                 String finalRight = right;
@@ -336,6 +355,7 @@ public class EditorController {
                 context.save();
                 proxy = CPCompound.getLSPProxy(context.getLang());
                 proxy.didOpen(context);
+                requestHighlight();
             }
         }else{
             tabManager.saveTab(tab);
@@ -373,13 +393,12 @@ public class EditorController {
                     int from = rangeToPosition(mainTextArea, range.getStart());
                     int to = rangeToPosition(mainTextArea, range.getEnd());
                     if (chIdx >= from && chIdx <= to) {
-                        if (builder.length() > 0) builder.append("\n-----\n");
+                        if (!builder.isEmpty()) builder.append("\n-----\n");
                         builder.append(diagnostic.getMessage());
-                        break;
                     }
                 }
             }
-            if(builder.length() > 0){
+            if(!builder.isEmpty()){
                 diagPopupLabel.setText(builder.toString());
                 diagPopup.show(mainTextArea, screenPos.getX(), screenPos.getY() + 10);
             }
@@ -442,7 +461,7 @@ public class EditorController {
             // do your GUI stuff here
             this.diagnostics = (List<Diagnostic>) list.getList();
             this.diagnosticSpans = computeDiagnostic(this.diagnostics, mainTextArea.getLength());
-            EditorStyler.setSpans(mainTextArea, diagnosticSpans, highlightSpans);
+            refreshSpans();
         });
 
         // listen for diagnostics change
@@ -462,7 +481,7 @@ public class EditorController {
             int to = rangeToPosition(mainTextArea, range.getEnd());
             int len = from - last;
             if(len < 0) continue;
-            spansBuilder.add(Collections.emptyList(), from - last);
+            spansBuilder.add(Collections.emptyList(), len);
             last = to;
             switch (diagnostic.getSeverity()) {
                 case Error:

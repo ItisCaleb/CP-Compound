@@ -3,7 +3,7 @@ package com.itiscaleb.cpcompound.editor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.itiscaleb.cpcompound.CPCompound;
-import com.itiscaleb.cpcompound.langServer.CompileCommand;
+import com.itiscaleb.cpcompound.langServer.c.CompileCommand;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.langServer.Language;
 import com.itiscaleb.cpcompound.utils.APPData;
@@ -14,18 +14,13 @@ import javafx.collections.ObservableList;
 import javafx.util.Pair;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Diagnostic;
-import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -109,7 +104,7 @@ public class Editor {
     }
 
     public void setCompletionList(List<CompletionItem> items){
-        System.out.println("Completion List");
+        CPCompound.getLogger().info("Completion List");
         if(items != null){
             this.completionItems.setAll(items);
         }
@@ -140,7 +135,7 @@ public class Editor {
                 }
                 return new Pair<>(context, true);
             }catch (Exception e){
-                e.printStackTrace();
+                CPCompound.getLogger().error("Error occurred", e);
                 return new Pair<>(context, false);
             }
         });
@@ -177,7 +172,7 @@ public class Editor {
                 p.waitFor();
                 currentProcess = null;
             }catch (Exception e){
-                e.printStackTrace();
+                CPCompound.getLogger().error("Error occurred", e);
             }
         });
     }
@@ -200,7 +195,7 @@ public class Editor {
                     , s, StandardCharsets.UTF_8);
 
         }catch (Exception e){
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
     }
 

@@ -79,7 +79,7 @@ public class EditorToolBarController {
             editor.stopExecute();
             runToggleBtn.setSelected(true);
             //TODO stop code
-            System.out.println("stop");
+            CPCompound.getLogger().info("Stopping program");
         }
 
     }
@@ -104,6 +104,6 @@ public class EditorToolBarController {
     @FXML
     public void initialize() {
         initIcons();
-        System.out.println("initialize MainEditorToolBar");
+        CPCompound.getLogger().info("initialize MainEditorToolBar");
     }
 }

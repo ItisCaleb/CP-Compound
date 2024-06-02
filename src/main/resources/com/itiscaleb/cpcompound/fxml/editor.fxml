@@ -35,6 +35,7 @@
         <URL value="@../styles/editor-code-area-style.css" />
         <URL value="@../styles/cpp-highlight.css" />
         <URL value="@../styles/python-highlight.css" />
+        <URL value="@../styles/semantic-highlight.css" />
     </stylesheets>
 </SplitPane>
 

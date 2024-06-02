@@ -1,5 +1,7 @@
 package com.itiscaleb.cpcompound.utils;
 
+import com.itiscaleb.cpcompound.CPCompound;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,7 +22,7 @@ public class APPData {
                     Files.createDirectory(dataFolder);
                     Files.createDirectory(dataFolder.resolve("tmp"));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    CPCompound.getLogger().error("Error occurred", e);
                 }
             }
         }

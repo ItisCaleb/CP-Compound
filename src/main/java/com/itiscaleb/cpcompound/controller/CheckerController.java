@@ -43,7 +43,6 @@ public class CheckerController {
 
 
     public void updatePath() {
-        System.out.println("update looking at");
         editor = CPCompound.getEditor();
         editorContext = editor.getCurrentContext();
         cph_path = editorContext.getFileURI();
@@ -63,12 +62,10 @@ public class CheckerController {
         testCaseCount = 1;
 
         if (editorContext == null) {
-            System.out.println("Please Open a file");
             // UI please open cpp file
             // Yuankai ;)
         } else {
             cph_path = editorContext.getFileURI();
-            System.out.println(cph_path);
             createNewFolder(cph_path);
             loadTestCasesFromJson();
         }
@@ -76,7 +73,7 @@ public class CheckerController {
 
     private void loadTestCasesFromJson() {
         if (cph_path == null || cph_path.isEmpty()) {
-            System.out.println("No valid cph_path specified.");
+            CPCompound.getLogger().error("No valid cph_path specified.");
             return;
         }
         try {
@@ -100,16 +97,16 @@ public class CheckerController {
                     testCaseBox.getChildren().add(testCase.getPane());
                     testCaseCount++;
                 }
-                System.out.println("Loaded test cases from JSON file: " + jsonFileName);
+                CPCompound.getLogger().info("Loaded test cases from JSON file: {}", jsonFileName);
                 for (JsonElement jsonElement : testCaseArray) {
 //                    JsonObject testCaseData = jsonElement.getAsJsonObject();
-                    System.out.println(jsonElement);
+                    CPCompound.getLogger().info(jsonElement);
                 }
             } else {
-                System.out.println("JSON file does not exist: " + jsonFileName);
+                CPCompound.getLogger().error("JSON file does not exist: " + jsonFileName);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -126,19 +123,16 @@ public class CheckerController {
 
                 if (!Files.exists(newFolderPath)) {
                     Files.createDirectories(newFolderPath);
-                    System.out.println("New folder created: " + newFolderPath);
-                } else {
-                    System.out.println("Folder already exists: " + newFolderPath);
                 }
             }
         } catch (URISyntaxException | IOException e) {
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
     }
 
     public void saveTestCasesToJson() {
         if (cph_path == null || cph_path.isEmpty()) {
-            System.out.println("No valid cph_path specified.");
+            CPCompound.getLogger().error("No valid cph_path specified.");
             return;
         }
         try {
@@ -148,13 +142,13 @@ public class CheckerController {
             Path cphFolder = Paths.get(cphFolderPath);
             if (!Files.exists(cphFolder)) {
                 Files.createDirectories(cphFolder);
-                System.out.println("Created cph folder: " + cphFolder);
+                CPCompound.getLogger().info("Created cph folder: " + cphFolder);
             }
             String jsonFileName = cphFolderPath + File.separator + ccFilePath.substring(ccFilePath.lastIndexOf(File.separator) + 1, ccFilePath.lastIndexOf('.')) + ".json";
             Path jsonFilePath = Paths.get(jsonFileName);
             if (!Files.exists(jsonFilePath)) {
                 Files.createFile(jsonFilePath);
-                System.out.println("Created JSON file: " + jsonFilePath);
+                CPCompound.getLogger().info("Created JSON file: " + jsonFilePath);
             }
             List<JsonObject> testCaseDataList = new ArrayList<>();
             for (TestCase testCase : testCases) {
@@ -166,9 +160,9 @@ public class CheckerController {
                 testCaseDataList.add(testCaseData);
             }
             Files.write(jsonFilePath, gson.toJson(testCaseDataList).getBytes());
-            System.out.println("Test cases saved to JSON file: " + jsonFileName);
+            CPCompound.getLogger().info("Test cases saved to JSON file: {}", jsonFileName);
         } catch (URISyntaxException | IOException e) {
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
     }
 
@@ -194,7 +188,7 @@ public class CheckerController {
     private void runAllTestCase() {
         saveTestCasesToJson();
         boolean strictMatch = strictMatchCheckBox.isSelected();
-        System.out.println("run all testcase");
+        CPCompound.getLogger().info("run all testcase");
         Editor editor = CPCompound.getEditor();
         editor.compile(editorContext, System.out, System.err).whenComplete((result, throwable) -> {
             if(!result.getValue()) return;
@@ -251,7 +245,7 @@ public class CheckerController {
             pane = new VBox(10);
             pane.setPadding(new Insets(5));
 
-            if(expectedOutput ==  "") {
+            if(expectedOutput.isEmpty()) {
                 pane.getChildren().addAll(
                         new Label("Testcase " + number + ":"),
                         new Label("Input:"),
@@ -369,10 +363,8 @@ public class CheckerController {
         }
 
         public void compareOneTestCase() {
-            System.out.println("run one testcase");
+            CPCompound.getLogger().info("run one testcase");
             String input = inputField.getText();
-            String expected = expectedField.getText();
-            String received = receivedField.getText();
             Editor editor = CPCompound.getEditor();
             editor.compile(editorContext ,System.out, System.err).whenComplete((result, throwable) -> {
                 if(!result.getValue()) return;

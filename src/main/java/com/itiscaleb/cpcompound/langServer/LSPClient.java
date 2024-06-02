@@ -17,15 +17,11 @@ public class LSPClient implements LanguageClient {
 
     @Override
     public void publishDiagnostics(PublishDiagnosticsParams diagnostics) {
-        CPCompound.getLogger().info(diagnostics);
         Editor editor = CPCompound.getEditor();
         EditorContext context = editor.getContext(diagnostics.getUri());
         if (context == null) {
             CPCompound.getLogger().debug("Diagnostic: URI {} not found", diagnostics.getUri());
             return;
-        }
-        for (Diagnostic diagnostic: diagnostics.getDiagnostics()){
-            CPCompound.getLogger().info(diagnostic);
         }
         context.setDiagnostics(diagnostics.getDiagnostics());
         editor.refreshDiagnostic();
@@ -33,7 +29,7 @@ public class LSPClient implements LanguageClient {
 
     @Override
     public void showMessage(MessageParams messageParams) {
-        System.out.println(messageParams);
+        CPCompound.getLogger().info(messageParams.getMessage());
     }
 
     @Override
