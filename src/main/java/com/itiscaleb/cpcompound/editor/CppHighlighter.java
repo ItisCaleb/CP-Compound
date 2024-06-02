@@ -10,19 +10,26 @@ import java.util.regex.Pattern;
 public class CppHighlighter extends Highlighter {
     private static final String[] KEYWORDS = new String[] {
           "alignas", "alignof", "and", "and_eq", "asm",
-           "auto", "bitand", "bitor", "bool", "break", "case",
-            "catch", "char", "char16_t", "char32_t", "class", "compl",
-            "const", "constexpr", "const_cast", "continue", "decltype",
-            "default", "delete", "do", "double", "dynamic_cast", "else",
-            "enum", "explicit", "export", "extern", "false", "float",
-            "for", "friend", "goto", "if" ,"inline" ,"int", "long",
+           "bitand", "bitor", "break", "case",
+            "catch", "char16_t", "char32_t", "compl",
+            "constexpr", "const_cast", "continue", "decltype",
+            "default", "delete", "do", "dynamic_cast", "else",
+            "explicit", "export", "extern", "for", "goto", "if",
             "mutable", "namespace", "new", "noexcept", "not", "not_eq",
-            "nullptr", "operator", "or", "or_eq", "private", "protected",
-            "public", "register", "reinterpret_cast", "return", "short", "signed",
-            "sizeof", "static", "static_assert", "struct", "switch", "synchronized",
-            "template", "this", "thread_local", "throw", "true", "try", "typedef",
-            "typeid", "typename", "union", "unsigned", "using", "virtual", "void",
-            "volatile", "wchar_t", "while", "xor", "xor_eq"
+            "operator", "or", "or_eq", "private", "protected", "register", "reinterpret_cast", "return",
+            "sizeof", "static_assert", "switch", "synchronized",
+            "template", "this", "thread_local", "throw", "try", "typedef",
+            "typeid", "typename", "using", "volatile", "wchar_t", "while", "xor", "xor_eq"
+    };
+
+    private static final String[] TYPE_KEYWORDS = new String[] {
+            "int", "double", "float", "char", "short", "auto",
+            "unsigned", "signed", "long", "bool", "void", "union", "nullptr",
+            "struct", "class", "enum", "true", "false"
+    };
+
+    private static final String[] MODIFIER_KEYWORDS = new String[] {
+            "const", "inline", "static", "private", "public", "friend", "virtual"
     };
 
     private static final String[] PREPROCESSOR_KEYWORDS = new String[] {
@@ -32,6 +39,8 @@ public class CppHighlighter extends Highlighter {
     };
 
     private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
+    private static final String TYPE_KEYWORD_PATTERN = "\\b(" + String.join("|", TYPE_KEYWORDS) + ")\\b";
+    private static final String MODIFIER_KEYWORD_PATTERN = "\\b(" + String.join("|", MODIFIER_KEYWORDS) + ")\\b";
     private static final String PREPROCESSOR_KEYWORD_PATTERN = "#\\s*(" + String.join("|", PREPROCESSOR_KEYWORDS) + ")\\b";
     private static final String PAREN_PATTERN = "\\(|\\)";
     private static final String BRACE_PATTERN = "\\{|\\}";
@@ -43,6 +52,8 @@ public class CppHighlighter extends Highlighter {
 
     private static final Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
+                    + "|(?<TYPE>" + TYPE_KEYWORD_PATTERN + ")"
+                    + "|(?<MODIFIER>" + MODIFIER_KEYWORD_PATTERN + ")"
                     + "|(?<PREPROCESSOR>" + PREPROCESSOR_KEYWORD_PATTERN + ")"
                     + "|(?<PAREN>" + PAREN_PATTERN + ")"
                     + "|(?<BRACE>" + BRACE_PATTERN + ")"
@@ -54,6 +65,8 @@ public class CppHighlighter extends Highlighter {
     private static final List<Pair<String,String>> GROUP = new ArrayList<>(
             Arrays.asList(
                     new Pair<>("KEYWORD", "cpp-keyword"),
+                    new Pair<>("TYPE", "cpp-type-keyword"),
+                    new Pair<>("MODIFIER", "cpp-modifier-keyword"),
                     new Pair<>("PREPROCESSOR", "cpp-preprocessor-keyword"),
                     new Pair<>("PAREN", "cpp-paren"),
                     new Pair<>("BRACE", "cpp-brace"),

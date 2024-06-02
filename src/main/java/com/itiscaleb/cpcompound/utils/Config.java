@@ -3,6 +3,7 @@ package com.itiscaleb.cpcompound.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.itiscaleb.cpcompound.CPCompound;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,7 +58,7 @@ public class Config {
             String json = gson.toJson(this);
             Files.writeString(path, json);
         }catch(IOException e){
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
 
     }

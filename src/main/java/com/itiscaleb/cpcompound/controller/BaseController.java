@@ -25,12 +25,12 @@ public class BaseController {
             appBase.getChildren().add(editorSplitPane);
             editorController = fxmlLoader.getController();
         } catch (Exception e) {
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
     }
     @FXML
     public void initialize() {
             loadEditor();
-            System.out.println("initialize App Base");
+            CPCompound.getLogger().info("initialize App Base");
     }
 }

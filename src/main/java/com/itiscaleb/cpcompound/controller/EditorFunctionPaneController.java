@@ -96,12 +96,9 @@ public class EditorFunctionPaneController {
             VBox content = fxmlLoader.load();
             content.prefWidthProperty().bind(functionPaneContentArea.widthProperty());
             content.prefHeightProperty().bind(functionPaneContentArea.heightProperty());
-            System.out.println("fxml : ");
-            System.out.println(fxmlFile);
             switch (fxmlFile){
                 case "fxml/checker.fxml":
-                    checkerController = fxmlLoader.<CheckerController>getController();
-                    System.out.println("checkerinit");
+                    checkerController = fxmlLoader.getController();
                     break;
                 default:
             }
@@ -121,7 +118,7 @@ public class EditorFunctionPaneController {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
     }
     private void initFunctonPane(Button menuButton,String fxmlFilePath){
@@ -133,6 +130,6 @@ public class EditorFunctionPaneController {
     @FXML
     public void initialize() {
         initFunctonPane(CPCompound.getBaseController().getEditorController().getEditorMenuBarController().getCurrentActiveMenuItem(),"fxml/file-treeView.fxml");
-        System.out.println("initialize EditorFunctionPane");
+        CPCompound.getLogger().info("initialize EditorFunctionPane");
     }
 }

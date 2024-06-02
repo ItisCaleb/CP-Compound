@@ -25,7 +25,7 @@ import static java.nio.file.StandardOpenOption.WRITE;
 
 public abstract class Downloader {
     protected static Path downloadFromHTTP(String url) throws URISyntaxException, IOException, InterruptedException {
-        System.out.println("Downloading \"" + url + "\"");
+        CPCompound.getLogger().info("Downloading \"{}\"", url);
         HttpClient client = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();
@@ -42,7 +42,7 @@ public abstract class Downloader {
     }
 
     protected static Path progressDownloadFromHTTP(String url, FloatProperty progress) throws URISyntaxException, IOException, InterruptedException {
-        System.out.println("Downloading \"" + url + "\"");
+        CPCompound.getLogger().info("Downloading \"" + url + "\"");
         HttpClient client = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();

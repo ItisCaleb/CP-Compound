@@ -6,6 +6,7 @@ import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.langServer.Language;
+import com.itiscaleb.cpcompound.langServer.c.CPPSemanticTokenType;
 import com.itiscaleb.cpcompound.utils.APPData;
 import com.itiscaleb.cpcompound.utils.Config;
 import com.itiscaleb.cpcompound.utils.SysInfo;
@@ -21,6 +22,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.lsp4j.ServerCapabilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,15 +33,13 @@ public class CPCompound extends Application {
     static BaseController baseController;
     static Config config;
     static HashMap<Language, LSPProxy> proxies = new HashMap<>();
-    static Logger logger = LogManager.getLogger(CPCompound.class);
+    static Logger logger = LogManager.getLogger("CPCompound");
     static Editor editor;
     static Stage primaryStage;
 
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        System.out.println(123);
-        logger.info(456);
         config = Config.load(APPData.resolve("config.json"));
         config.save();
         CPCompound.primaryStage = primaryStage;
@@ -83,7 +83,7 @@ public class CPCompound extends Application {
             primaryStage.show();
             Platform.runLater(CPCompound::afterInit);
         }catch (IOException e){
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
 
     }
@@ -100,8 +100,8 @@ public class CPCompound extends Application {
         LSPProxy mock = new LSPProxy("");
         proxies.put(Language.Python, mock);
         proxies.put(Language.None, mock);
-        clang.start();
-
+        ServerCapabilities capabilities = clang.start();
+        CPPSemanticTokenType.init(capabilities.getSemanticTokensProvider().getLegend().getTokenTypes());
         editor = new Editor();
     }
 

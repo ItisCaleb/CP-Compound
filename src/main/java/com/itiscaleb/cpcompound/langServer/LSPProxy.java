@@ -2,6 +2,7 @@ package com.itiscaleb.cpcompound.langServer;
 
 import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.editor.EditorContext;
+import com.itiscaleb.cpcompound.langServer.c.CPPSemanticToken;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.eclipse.lsp4j.launch.LSPLauncher;
@@ -9,6 +10,7 @@ import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class LSPProxy {
@@ -16,13 +18,14 @@ public class LSPProxy {
     Launcher<LanguageServer> launcher = null;
     String[] args;
 
+
     public LSPProxy(String remotePath, String... args){
         this.args = new String[args.length + 1];
         this.args[0] = remotePath;
         System.arraycopy(args, 0, this.args, 1, args.length);
     }
 
-    public void start() {
+    public ServerCapabilities start() {
         try{
             ProcessBuilder builder = new ProcessBuilder(args);
             builder.redirectError(ProcessBuilder.Redirect.INHERIT);
@@ -31,17 +34,24 @@ public class LSPProxy {
             this.launcher = LSPLauncher.createClientLauncher(client,
                     process.getInputStream(), process.getOutputStream());
             launcher.startListening();
-            init();
+            return init();
         }catch (IOException e){
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
+            return null;
         }
-
     }
-    private void init(){
+    private ServerCapabilities init(){
         LanguageServer s = launcher.getRemoteProxy();
         var future = s.initialize(new InitializeParams());
-        future.join();
+        ServerCapabilities capabilities = null;
+        try {
+             capabilities = future.get().getCapabilities();
+        }catch (Exception e){
+            CPCompound.getLogger().error("Error occurred", e);
+        }
+
         s.initialized(new InitializedParams());
+        return capabilities;
     }
 
     public void restart() throws IOException {
@@ -88,7 +98,7 @@ public class LSPProxy {
         CompletionParams params = new CompletionParams();
         params.setTextDocument(new VersionedTextDocumentIdentifier(
                 context.getFileURI(),
-                context.getLastVersion()));
+                context.getVersion()));
         params.setPosition(position);
         var future = launcher.getRemoteProxy()
                 .getTextDocumentService()
@@ -105,7 +115,7 @@ public class LSPProxy {
         DidCloseTextDocumentParams params = new DidCloseTextDocumentParams();
         params.setTextDocument(new VersionedTextDocumentIdentifier(
                 context.getFileURI(),
-                context.getLastVersion()));
+                context.getVersion()));
         launcher.getRemoteProxy()
                 .getTextDocumentService()
                 .didClose(params);
@@ -118,7 +128,7 @@ public class LSPProxy {
         HoverParams params = new HoverParams();
         params.setTextDocument(new VersionedTextDocumentIdentifier(
                 context.getFileURI(),
-                context.getLastVersion()
+                context.getVersion()
         ));
         params.setPosition(position);
         var future = launcher.getRemoteProxy()
@@ -131,7 +141,7 @@ public class LSPProxy {
                 return hover.getContents().getRight().getValue();
             }
         }catch (InterruptedException | ExecutionException e){
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
 
         return null;
@@ -144,12 +154,43 @@ public class LSPProxy {
         DocumentSymbolParams params = new DocumentSymbolParams();
         params.setTextDocument(new VersionedTextDocumentIdentifier(
                 context.getFileURI(),
-                context.getLastVersion()
+                context.getVersion()
         ));
-        launcher.getRemoteProxy()
+        var future = launcher.getRemoteProxy()
                 .getTextDocumentService()
                 .documentSymbol(params);
+
+        try {
+            var symbols = future.get();
+
+            CPCompound.getLogger().info(symbols);
+        }catch (InterruptedException | ExecutionException e){
+            CPCompound.getLogger().error("Error occurred", e);
+        }
     }
+
+    public List<SemanticToken> semanticTokens(EditorContext context){
+        if(launcher == null){
+            return null;
+        }
+        SemanticTokensParams params = new SemanticTokensParams();
+        params.setTextDocument(new VersionedTextDocumentIdentifier(
+                context.getFileURI(),
+                context.getVersion()
+        ));
+        var future = launcher.getRemoteProxy()
+                .getTextDocumentService()
+                .semanticTokensFull(params);
+
+        try {
+            var tokens = future.get();
+            return CPPSemanticToken.fromIntList(tokens.getData());
+        }catch (InterruptedException | ExecutionException e){
+            CPCompound.getLogger().error("Error occurred", e);
+            return null;
+        }
+    }
+
 
     public void stop() {
         if(launcher == null){

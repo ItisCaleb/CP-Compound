@@ -70,6 +70,6 @@ public class EditorMenuBarController {
     public void initialize() {
         initIcons();
         currentActiveMenuItem = this.fileBtn;
-        System.out.println("initialize MainEditorMenuBar");
+        CPCompound.getLogger().info("initialize MainEditorMenuBar");
     }
 }

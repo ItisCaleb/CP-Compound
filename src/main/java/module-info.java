@@ -37,4 +37,5 @@ module com.itiscaleb.cpcompound {
     exports com.itiscaleb.cpcompound.downloader;
     exports com.itiscaleb.cpcompound.fileSystem;
     exports com.itiscaleb.cpcompound.component;
+    exports com.itiscaleb.cpcompound.langServer.c;
 }

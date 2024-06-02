@@ -1,4 +1,4 @@
-package com.itiscaleb.cpcompound.langServer;
+package com.itiscaleb.cpcompound.langServer.c;
 
 import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.editor.EditorContext;
@@ -22,6 +22,11 @@ public class CompileCommand {
         switch (context.getLang()){
             case C -> {
                 cmd.arguments.add(CPCompound.getConfig().getGCCExe());
+                cmd.arguments.add("-std=c11");
+                if(SysInfo.getOS() == SysInfo.OS.WIN){
+                    cmd.arguments.add("-target");
+                    cmd.arguments.add("x86_64-pc-windows-gnu");
+                }
             }
             case CPP -> {
                 cmd.arguments.add(CPCompound.getConfig().getGPPExe());

@@ -27,7 +27,6 @@ public class EditorContext {
     private String code;
     private Language lang;
     private int version;
-    private int lastVersion;
     private boolean isTemp;
     private boolean changed = true;
 
@@ -37,7 +36,6 @@ public class EditorContext {
         this.code = code;
         this.lang = lang;
         this.version = 1;
-        this.lastVersion = 0;
         this.isTemp = isTemp;
     }
 
@@ -62,13 +60,9 @@ public class EditorContext {
         return lang;
     }
 
-    public int getLastVersion(){
-        return lastVersion;
-    }
 
     public void setCode(String code){
         this.code = code;
-        this.lastVersion = this.version;
         this.version++;
         changed = true;
     }

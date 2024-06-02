@@ -38,7 +38,6 @@ public class FileTreeViewController {
     }
 
     public void loadDirectoryIntoTreeView(File dir) {
-//        System.out.println("loadDirectoryIntoTreeView");
         TreeItem<File> root = createTreeItem(dir);
         fileTreeView.setRoot(root);
     }
@@ -58,7 +57,6 @@ public class FileTreeViewController {
     }
 
     private void loadChildItems(TreeItem<File> item, File dir) {
-//        System.out.println("loadChildITtems: dir = " + dir);
         File[] files = dir.listFiles();
         if (files != null) {
             for (File f : files) {
@@ -148,6 +146,6 @@ public class FileTreeViewController {
         setTooltipsDelay();
         setTreeItemListener();
         fileTreeView.setCellFactory(tv -> new FileTreeCell());
-        System.out.println("FileTreeViewController initialize");
+        CPCompound.getLogger().info("FileTreeViewController initialize");
     }
 }
