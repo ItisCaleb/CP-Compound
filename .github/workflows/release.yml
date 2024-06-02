@@ -73,14 +73,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Switch portable flag (Linux)
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: sed -i 's/final boolean PORTABLE = false/final boolean PORTABLE = true/g' src/main/java/com/codedead/opal/utils/SharedVariables.java
-
-      - name: Switch portable flag (Windows)
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: (Get-Content src\main\java\com\codedead\opal\utils\SharedVariables.java).replace('final boolean PORTABLE = false', 'final boolean PORTABLE = true') | Set-Content src\main\java\com\codedead\opal\utils\SharedVariables.java
-
       - name: Build
         run: ./gradlew build
 
