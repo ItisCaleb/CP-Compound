@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.component.CompletionMenu;
+import com.itiscaleb.cpcompound.component.EditorPopup;
 import com.itiscaleb.cpcompound.component.EditorStyler;
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
@@ -73,8 +74,7 @@ public class EditorController {
     Tab currentTab;
     List<Diagnostic> diagnostics;
 
-    Popup diagPopup;
-    Label diagPopupLabel;
+    EditorPopup diagPopup;
     final TabManager tabManager = new TabManager();
     ContextMenu completionMenu;
     EditorContext lastContext = null;
@@ -365,13 +365,8 @@ public class EditorController {
 
     private void initDiagnosticTooltip() {
         // tooltip
-        diagPopup = new Popup();
-        diagPopupLabel = new Label();
-        diagPopup.getContent().add(diagPopupLabel);
-        diagPopupLabel.setStyle(
-                "-fx-background-color: black;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-padding: 5;");
+        diagPopup = new EditorPopup();
+
         mainTextArea.setMouseOverTextDelay(Duration.ofMillis(500));
         mainTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
             EditorContext context = CPCompound.getEditor().getCurrentContext();
@@ -399,13 +394,10 @@ public class EditorController {
                 }
             }
             if(!builder.isEmpty()){
-                diagPopupLabel.setText(builder.toString());
+                diagPopup.setText(builder.toString());
                 diagPopup.show(mainTextArea, screenPos.getX(), screenPos.getY() + 10);
             }
 
-        });
-        mainTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
-            diagPopup.hide();
         });
     }
 

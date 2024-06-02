@@ -1,11 +1,15 @@
 package com.itiscaleb.cpcompound.controller;
 
 import com.itiscaleb.cpcompound.CPCompound;
+import com.itiscaleb.cpcompound.component.EditorPopup;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Popup;
+import javafx.util.Duration;
 
 public class BaseController {
     public EditorController getEditorController() {
@@ -14,9 +18,11 @@ public class BaseController {
 
     static EditorController editorController;
 
-
     @FXML
     AnchorPane appBase;
+
+    @FXML
+    EditorPopup messagePopup = new EditorPopup();
 
     private void loadEditor(){
         try {
@@ -32,5 +38,10 @@ public class BaseController {
     public void initialize() {
             loadEditor();
             CPCompound.getLogger().info("initialize App Base");
+    }
+
+    public void showMessageToUser(String str){
+        messagePopup.setText(str);
+        messagePopup.show(appBase, appBase.getBoundsInLocal().getWidth() - 50, appBase.getHeight() - 30);
     }
 }
