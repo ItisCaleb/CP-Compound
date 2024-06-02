@@ -15,6 +15,10 @@ public class SemanticHighlighter {
         StyleSpansBuilder<Collection<String>> spansBuilder
                 = new StyleSpansBuilder<>();
         System.out.println(tokens);
+        if(tokens == null) {
+            spansBuilder.add(Collections.emptyList(), area.getLength());
+            return spansBuilder.create();
+        }
         for (SemanticToken token: tokens) {
             int from = area.getAbsolutePosition(token.getLine(), token.getStart());
             int to = area.getAbsolutePosition(token.getLine(), token.getEnd());
