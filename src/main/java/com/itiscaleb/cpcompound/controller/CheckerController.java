@@ -195,7 +195,8 @@ public class CheckerController {
         saveTestCasesToJson();
         boolean strictMatch = strictMatchCheckBox.isSelected();
         System.out.println("run all testcase");
-        editorContext.compile(System.out, System.err).whenComplete((result, throwable) -> {
+        Editor editor = CPCompound.getEditor();
+        editor.compile(editorContext, System.out, System.err).whenComplete((result, throwable) -> {
             if(!result.getValue()) return;
             EditorContext context = result.getKey();
             for (TestCase testCase : testCases) {
@@ -203,7 +204,7 @@ public class CheckerController {
                 //CPCompound.getBaseController().getEditorController().doExecute(inputStream);
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-                context.execute(inputStream, outputStream, errorStream, true).whenComplete((_result, _throwable) ->{
+                editor.execute(context, inputStream, outputStream, errorStream, true).whenComplete((_result, _throwable) ->{
                     Platform.runLater(()->{
                             String s = outputStream.toString(StandardCharsets.UTF_8);
                             testCase.setReceivedField(s);
@@ -372,14 +373,14 @@ public class CheckerController {
             String input = inputField.getText();
             String expected = expectedField.getText();
             String received = receivedField.getText();
-
-            editorContext.compile(System.out, System.err).whenComplete((result, throwable) -> {
+            Editor editor = CPCompound.getEditor();
+            editor.compile(editorContext ,System.out, System.err).whenComplete((result, throwable) -> {
                 if(!result.getValue()) return;
                 EditorContext context = result.getKey();
                 InputStream inputStream = new ByteArrayInputStream(input.getBytes(Charset.defaultCharset()));
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-                context.execute(inputStream, outputStream, errorStream, true).whenComplete((_result, _throwable) ->{
+                editor.execute(context, inputStream, outputStream, errorStream, true).whenComplete((_result, _throwable) ->{
                     Platform.runLater(()->{
                                 String s = outputStream.toString(StandardCharsets.UTF_8);
                                 receivedField.setText(s);

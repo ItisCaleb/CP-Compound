@@ -38,7 +38,8 @@ public class CPCompound extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-
+        System.out.println(123);
+        logger.info(456);
         config = Config.load(APPData.resolve("config.json"));
         config.save();
         CPCompound.primaryStage = primaryStage;
