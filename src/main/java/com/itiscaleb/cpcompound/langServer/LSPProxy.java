@@ -9,6 +9,7 @@ import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class LSPProxy {
     Process process;
@@ -56,7 +57,7 @@ public class LSPProxy {
         params.setTextDocument(new TextDocumentItem(
                 context.getFileURI(),
                 context.getLang().lang,
-                context.getVersion(), ""));
+                context.getVersion(), context.getCode()));
         launcher.getRemoteProxy()
                 .getTextDocumentService()
                 .didOpen(params);
@@ -67,10 +68,11 @@ public class LSPProxy {
             return;
         }
         DidChangeTextDocumentParams params = new DidChangeTextDocumentParams();
+
         params.setTextDocument(
                 new VersionedTextDocumentIdentifier(
                         context.getFileURI(),
-                        context.getLastVersion()));
+                        context.getVersion()));
         ArrayList<TextDocumentContentChangeEvent> list = new ArrayList<>();
         list.add(new TextDocumentContentChangeEvent(context.getCode()));
         params.setContentChanges(list);
@@ -107,6 +109,46 @@ public class LSPProxy {
         launcher.getRemoteProxy()
                 .getTextDocumentService()
                 .didClose(params);
+    }
+
+    public String hover(EditorContext context, Position position) {
+        if(launcher == null){
+            return null;
+        }
+        HoverParams params = new HoverParams();
+        params.setTextDocument(new VersionedTextDocumentIdentifier(
+                context.getFileURI(),
+                context.getLastVersion()
+        ));
+        params.setPosition(position);
+        var future = launcher.getRemoteProxy()
+                .getTextDocumentService()
+                .hover(params);
+        try {
+            Hover hover = future.get();
+
+            if(hover != null){
+                return hover.getContents().getRight().getValue();
+            }
+        }catch (InterruptedException | ExecutionException e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public void documentSymbols(EditorContext context){
+        if(launcher == null){
+            return;
+        }
+        DocumentSymbolParams params = new DocumentSymbolParams();
+        params.setTextDocument(new VersionedTextDocumentIdentifier(
+                context.getFileURI(),
+                context.getLastVersion()
+        ));
+        launcher.getRemoteProxy()
+                .getTextDocumentService()
+                .documentSymbol(params);
     }
 
     public void stop() {

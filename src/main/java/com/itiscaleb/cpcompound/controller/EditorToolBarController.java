@@ -1,16 +1,22 @@
 package com.itiscaleb.cpcompound.controller;
 
 import com.itiscaleb.cpcompound.CPCompound;
+import com.itiscaleb.cpcompound.editor.Editor;
+import com.itiscaleb.cpcompound.editor.EditorContext;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXToggleButton;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
+import javafx.util.Pair;
 import org.kordamp.ikonli.carbonicons.CarbonIcons;
 import org.kordamp.ikonli.javafx.FontIcon;
+
+import java.util.concurrent.CompletableFuture;
 
 public class EditorToolBarController {
 //    @FXML
@@ -36,23 +42,48 @@ public class EditorToolBarController {
     private void handleAddNewFile() {
         CPCompound.getBaseController().getEditorController().handleAddNewFile();
     }
+
     @FXML
-    private void handleCompile(){
-        CPCompound.getBaseController().getEditorController().doCompile();
+    public CompletableFuture<Pair<EditorContext, Boolean>> handleCompile(){
+        CPCompound.getBaseController()
+                .getEditorController()
+                .saveContext();
+        Editor editor = CPCompound.getEditor();
+        if (editor.getCurrentContext() == null) return CompletableFuture.completedFuture(new Pair<>(null,false));
+        return editor.compile(editor.getCurrentContext(), System.out, System.err);
     }
+
     @FXML
-    private void handleExecute(){
+    public void handleExecute(){
+        Editor editor = CPCompound.getEditor();
         if (runToggleBtn.isSelected()) {
             runToggleBtn.setText("Stop");
-
-            CPCompound.getBaseController().getEditorController().doExecute();
-
+            handleCompile().whenComplete((result, throwable) -> {
+                if(!result.getValue()) {
+                    Platform.runLater(()->{
+                        runToggleBtn.setText("Run");
+                        runToggleBtn.setSelected(false);
+                    });
+                    return;
+                }
+                EditorContext context = result.getKey();
+                editor.execute(context, System.in, System.out, System.err, false)
+                        .whenComplete((_r,_t)->{
+                            Platform.runLater(()->{
+                                runToggleBtn.setText("Run");
+                                runToggleBtn.setSelected(false);
+                            });
+                        });
+            });
         }else{
-            runToggleBtn.setText("Run");
+            editor.stopExecute();
+            runToggleBtn.setSelected(true);
             //TODO stop code
             System.out.println("stop");
         }
+
     }
+
     // for custom stage title bar's button function
     // @FXML
     // private void minimizeWindow() {

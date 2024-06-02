@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.itiscaleb.cpcompound.CPCompound;
+import com.itiscaleb.cpcompound.component.CompletionMenu;
 import com.itiscaleb.cpcompound.component.EditorStyler;
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
@@ -24,6 +25,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
+import javafx.scene.control.skin.ContextMenuSkin;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -41,6 +43,7 @@ import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.fxmisc.richtext.model.TwoDimensional;
 
 public class EditorController {
     private final KeyCombination saveCombination =  new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN);
@@ -89,22 +92,7 @@ public class EditorController {
                 CPCompound.getEditor().getCurrentContext().getCode());
     }
 
-    @FXML
-    public CompletableFuture<Pair<EditorContext, Boolean>> doCompile(){
-        saveContext(currentTab);
-        EditorContext context = CPCompound.getEditor().getCurrentContext();
-        if (context == null) return CompletableFuture.completedFuture(new Pair<>(null,false));
-        return context.compile(System.out, System.err);
-    }
 
-    @FXML
-    public void doExecute(){
-        doCompile().whenComplete((result, throwable) -> {
-            if(!result.getValue()) return;
-            EditorContext context = result.getKey();
-            context.execute(System.in, System.out, System.err, false);
-        });
-    }
 
     @FXML
     public void handleAddNewFile() {
@@ -168,7 +156,7 @@ public class EditorController {
             if(lastContext != context){
                 lastContext = context;
                 this.highlightSpans = editor.computeHighlighting(context);
-                EditorStyler.asyncSetSpans(mainTextArea, highlightSpans, diagnosticSpans);
+                EditorStyler.setSpans(mainTextArea, highlightSpans, diagnosticSpans);
                 return;
             }
             context.setCode(newValue);
@@ -180,7 +168,7 @@ public class EditorController {
             int paragraph = mainTextArea.getCurrentParagraph();
             int column = mainTextArea.getCaretColumn();
             int index = mainTextArea.getCaretPosition() - 1;
-            if (!newValue.isEmpty()
+            if (!newValue.isEmpty() && index > 0
                     && newValue.charAt(index) != '\n'
                     && newValue.charAt(index) != ' '){
                 proxy.requestCompletion(context, new Position(paragraph, column));
@@ -191,7 +179,7 @@ public class EditorController {
 
             // highlight
             this.highlightSpans = editor.computeHighlighting(context);
-            EditorStyler.asyncSetSpans(mainTextArea, highlightSpans, diagnosticSpans);
+            EditorStyler.setSpans(mainTextArea, highlightSpans, diagnosticSpans);
         });
         initEditorUtility();
         initDiagnosticTooltip();
@@ -240,6 +228,7 @@ public class EditorController {
             loadEditorToolBar();
             initEditorTextArea();
             setHandleChangeTab();
+
             System.out.println("initialize");
         });
     }
@@ -254,15 +243,29 @@ public class EditorController {
         mainTextArea.addEventHandler(KeyEvent.KEY_PRESSED, KE -> {
             // auto-indent
             if (KE.getCode() == KeyCode.ENTER) {
-                int caretPosition = mainTextArea.getCaretPosition();
-                // allow shift-enter
                 if(KE.isShiftDown()){
-                    mainTextArea.insertText(caretPosition, "\n");
+                    // we need to prepend \n ourself
+                    int caretPosition = mainTextArea.getAnchor();
+                    int currentParagraph = mainTextArea.getCurrentParagraph();
+                    Matcher m0 = whiteSpace.matcher(mainTextArea.getParagraph(currentParagraph).getSegments().get(0));
+                    if(m0.find()){
+                        Platform.runLater(() -> mainTextArea.insertText(caretPosition, "\n"+m0.group()));
+                    }else {
+                        mainTextArea.insertText(caretPosition, "\n");
+                    }
+                }else {
+                    // the editor will prepend \n for us first
+                    int caretPosition = mainTextArea.getAnchor();
+                    // allow shift-enter
+
+                    int currentParagraph = mainTextArea.getCurrentParagraph();
+                    Matcher m0 = whiteSpace.matcher(mainTextArea.getParagraph(currentParagraph - 1).getSegments().get(0));
+                    if (m0.find()) {
+                        Platform.runLater(() -> mainTextArea.insertText(caretPosition, m0.group()));
+                    }
                 }
-                int currentParagraph = mainTextArea.getCurrentParagraph();
-                Matcher m0 = whiteSpace.matcher(mainTextArea.getParagraph(currentParagraph - 1).getSegments().get(0));
-                if (m0.find())
-                    Platform.runLater(() -> mainTextArea.insertText(caretPosition, m0.group()));
+
+
             }
 
             // replace tab to four space
@@ -272,7 +275,7 @@ public class EditorController {
             }
 
             // auto complete bracket
-            int caretPosition = mainTextArea.getCaretPosition();
+            int caretPosition = mainTextArea.getAnchor() - 1;
             String right = "";
             switch (KE.getText()) {
                 case "[" -> right = "]";
@@ -302,7 +305,11 @@ public class EditorController {
         });
     }
 
-    private void saveContext(Tab tab){
+    public void saveContext(){
+        this.saveContext(currentTab);
+    }
+
+    public void saveContext(Tab tab){
         if(tab == null) return;
         EditorContext context = CPCompound.getEditor().getContext((String) tab.getUserData());
         if(context == null) return;
@@ -347,21 +354,36 @@ public class EditorController {
                         "-fx-padding: 5;");
         mainTextArea.setMouseOverTextDelay(Duration.ofMillis(500));
         mainTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN, e -> {
-            if(diagnostics == null || diagnostics.isEmpty()) return;{}
-            for (Diagnostic diagnostic : diagnostics) {
-                System.out.println(diagnostic.getMessage());
-                Range range = diagnostic.getRange();
+            EditorContext context = CPCompound.getEditor().getCurrentContext();
+            LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
+            Point2D screenPos = e.getScreenPosition();
+            int chIdx = e.getCharacterIndex();
 
-                int from = rangeToPosition(mainTextArea, range.getStart());
-                int to = rangeToPosition(mainTextArea, range.getEnd());
-                int chIdx = e.getCharacterIndex();
-                Point2D pos = e.getScreenPosition();
-                if (chIdx >= from && chIdx <= to) {
-                    diagPopupLabel.setText(diagnostic.getMessage());
-                    diagPopup.show(mainTextArea, pos.getX(), pos.getY() + 10);
-                    break;
+            var pos = mainTextArea.offsetToPosition(chIdx, TwoDimensional.Bias.Forward);
+            String hover = proxy.hover(context, new Position(pos.getMajor(), pos.getMinor()));
+            StringBuilder builder = new StringBuilder();
+
+            if(hover != null){
+                builder.append(hover);
+            }
+            if(diagnostics != null) {
+                for (Diagnostic diagnostic : diagnostics) {
+                    Range range = diagnostic.getRange();
+
+                    int from = rangeToPosition(mainTextArea, range.getStart());
+                    int to = rangeToPosition(mainTextArea, range.getEnd());
+                    if (chIdx >= from && chIdx <= to) {
+                        if (builder.length() > 0) builder.append("\n-----\n");
+                        builder.append(diagnostic.getMessage());
+                        break;
+                    }
                 }
             }
+            if(builder.length() > 0){
+                diagPopupLabel.setText(builder.toString());
+                diagPopup.show(mainTextArea, screenPos.getX(), screenPos.getY() + 10);
+            }
+
         });
         mainTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> {
             diagPopup.hide();
@@ -369,7 +391,7 @@ public class EditorController {
     }
 
     private void initCompletionTooltip() {
-        completionMenu = new ContextMenu();
+        completionMenu = new CompletionMenu();
         completionMenu.setOnAction((event) -> {
             MenuItem item = (MenuItem) event.getTarget();
             String text = item.getText();
@@ -379,12 +401,6 @@ public class EditorController {
             mainTextArea.replaceText(from, to, text);
         });
 
-        completionMenu.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-            if (e.getCode() == KeyCode.SPACE || (e.getCode() == KeyCode.ENTER && e.isShiftDown())) {
-                e.consume();
-                completionMenu.hide();
-            }
-        });
         completionMenu.getStyleClass().add("completion-menu");
 
         ListChangeListener<? super CompletionItem> listener = (list) -> Platform.runLater(() -> {
@@ -426,7 +442,7 @@ public class EditorController {
             // do your GUI stuff here
             this.diagnostics = (List<Diagnostic>) list.getList();
             this.diagnosticSpans = computeDiagnostic(this.diagnostics, mainTextArea.getLength());
-            EditorStyler.asyncSetSpans(mainTextArea, diagnosticSpans, highlightSpans);
+            EditorStyler.setSpans(mainTextArea, diagnosticSpans, highlightSpans);
         });
 
         // listen for diagnostics change
@@ -444,6 +460,8 @@ public class EditorController {
             Range range = diagnostic.getRange();
             int from = rangeToPosition(mainTextArea, range.getStart());
             int to = rangeToPosition(mainTextArea, range.getEnd());
+            int len = from - last;
+            if(len < 0) continue;
             spansBuilder.add(Collections.emptyList(), from - last);
             last = to;
             switch (diagnostic.getSeverity()) {

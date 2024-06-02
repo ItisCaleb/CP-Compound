@@ -1,7 +1,7 @@
 package com.itiscaleb.cpcompound.langServer;
 
 public enum Language {
-    CPP("c++"), C("c"), Python("python"), None("none");
+    CPP("cpp"), C("c"), Python("python"), None("none");
 
     Language(String s) {
         this.lang = s;

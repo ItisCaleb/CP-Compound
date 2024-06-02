@@ -30,25 +30,20 @@ public class EditorContext {
     private int lastVersion;
     private boolean isTemp;
     private boolean changed = true;
-    private Path exePath;
 
     private List<Diagnostic> diagnostics = new ArrayList<>();
     EditorContext(Path path, Language lang, String code, boolean isTemp) {
         this.path = path.normalize();
         this.code = code;
         this.lang = lang;
-        this.version = 0;
+        this.version = 1;
         this.lastVersion = 0;
         this.isTemp = isTemp;
     }
 
     EditorContext(Path path, String code, boolean isTemp) {
-        setPath(path);
-        this.code = code;
-        this.version = 0;
-        this.lastVersion = 0;
-        this.isTemp = isTemp;
-        if(isTemp) this.lang = Language.CPP;
+        this(path, Language.CPP, code, isTemp);
+        if(!isTemp) setPath(path);
     }
 
     public String getCode(){
@@ -107,7 +102,7 @@ public class EditorContext {
 
     public void setDiagnostics(List<Diagnostic> diagnostics){
         diagnostics.sort(Comparator.comparing((Diagnostic d) -> d.getRange().getStart().getLine())
-                .thenComparing(d -> d.getSeverity().ordinal()));
+                .thenComparing(d -> d.getRange().getStart().getCharacter()));
         // segment tree here
         this.diagnostics = diagnostics;
     }
@@ -125,65 +120,9 @@ public class EditorContext {
     }
 
     public Path getExePath(){
-        return exePath;
-    }
-
-
-    // will return success or not
-    public CompletableFuture<Pair<EditorContext, Boolean>> compile(OutputStream oStream, OutputStream errStream){
-        return CompletableFuture.supplyAsync(()->{
-            try {
-                Config config = CPCompound.getConfig();
-                String compiler = (this.lang == Language.C)   ? config.getGCCExe() :
-                                  (this.lang == Language.CPP) ? config.getGPPExe() : "";
-                switch (this.lang){
-                    case Python -> this.exePath = this.path;
-                    case CPP, C -> {
-                        this.exePath = makeExePath();
-                        Process p = new ProcessBuilder(compiler, path.toString(), "-o", this.exePath.toString()).start();
-                        p.getInputStream().transferTo(oStream);
-                        p.getErrorStream().transferTo(errStream);
-                        return new Pair<>(this, p.waitFor() == 0);
-                    }
-                }
-                return new Pair<>(this, true);
-            }catch (Exception e){
-                e.printStackTrace();
-                return new Pair<>(this, false);
-            }
-        });
-    }
-    public CompletableFuture<Void> execute(InputStream iStream, OutputStream oStream,
-                                           OutputStream errStream, boolean writeOnce){
-        return CompletableFuture.runAsync(()->{
-            try {
-                String cmd = "";
-                switch (this.lang){
-                    case Python -> {
-                        if(SysInfo.getOS() == SysInfo.OS.WIN) cmd = "python ";
-                        else cmd = "python3 ";
-                    }
-                    case CPP, C -> cmd = "";
-                }
-                cmd += this.exePath;
-
-                Process p = new ProcessBuilder(cmd, this.exePath.toString()).start();
-                do{
-                    iStream.transferTo(p.getOutputStream());
-                    p.getOutputStream().flush();
-                }while (p.isAlive() && !writeOnce);
-                p.getOutputStream().close();
-                p.getInputStream().transferTo(oStream);
-                p.getErrorStream().transferTo(errStream);
-                p.waitFor();
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        });
-    }
-
-
-    Path makeExePath(){
+        if(this.lang == Language.Python){
+            return this.path;
+        }
         int dot = this.path.toString().lastIndexOf(".");
         String exe = this.path.toString().substring(0, dot);
         if (SysInfo.getOS() == SysInfo.OS.WIN){
