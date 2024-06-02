@@ -35,15 +35,4 @@ public class EditorPopup extends Popup {
         timer.playFromStart();
     }
 
-    @Override
-    public void show(Window ownerWindow, double anchorX, double anchorY) {
-        super.show(ownerWindow, anchorX, anchorY);
-        timer.playFromStart();
-    }
-
-    @Override
-    public void show(Node ownerNode, double anchorX, double anchorY) {
-        super.show(ownerNode, anchorX, anchorY);
-        //timer.playFromStart();
-    }
 }

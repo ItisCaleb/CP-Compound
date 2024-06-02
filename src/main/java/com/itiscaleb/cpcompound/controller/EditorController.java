@@ -399,6 +399,7 @@ public class EditorController {
             }
 
         });
+        mainTextArea.addEventHandler(MouseOverTextEvent.MOUSE_OVER_TEXT_END, e -> diagPopup.hide());
     }
 
     private void initCompletionTooltip() {
