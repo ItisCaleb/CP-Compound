@@ -1,7 +1,6 @@
 package com.itiscaleb.cpcompound.component;
 
 import javafx.event.Event;
-import javafx.event.EventTarget;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -9,10 +8,10 @@ import javafx.scene.control.Skin;
 import javafx.scene.control.skin.ContextMenuSkin;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
 
-import java.beans.EventHandler;
+import java.lang.reflect.Method;
 
 public class CompletionMenu extends ContextMenu {
 
@@ -23,19 +22,27 @@ public class CompletionMenu extends ContextMenu {
 
     private static class CompletionMenuSkin extends ContextMenuSkin {
 
-        /**
-         * Creates a new ContextMenuSkin instance.
-         *
-         * @param control The control that this skin should be installed onto.
-         */
-        EventTarget lastFocusTarget;
-
         public CompletionMenuSkin(ContextMenu control) {
             super(control);
+
+            // limit height
+            ((Region)this.getNode()).setMaxHeight(300);
             control.addEventHandler(Menu.ON_SHOWN, (e)->{
-                this.getNode().lookup(".menu-item").requestFocus();
+                // use reflection to focus first item
+                // super evil hack
+                try {
+                    Method method = this.getNode().getClass().getMethod("requestFocusOnIndex", int.class);
+                    method.invoke(this.getNode(), 0);
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
             });
+
+            // make it won't focus on mouse move
             control.addEventFilter(MouseEvent.MOUSE_ENTERED_TARGET, Event::consume);
+
+            // only focus on mouse click
+            // if double click, then select
             control.addEventFilter(MouseEvent.ANY,(e -> {
                 if(e.getClickCount() == 1) {
                     if(e.getEventType() == MouseEvent.MOUSE_CLICKED) {
@@ -45,6 +52,8 @@ public class CompletionMenu extends ContextMenu {
                 }
 
             }));
+
+            // consume space and enter
             this.getNode().addEventFilter(KeyEvent.KEY_PRESSED, (ke) -> {
                 switch (ke.getCode()) {
                     case SPACE:{
@@ -60,6 +69,8 @@ public class CompletionMenu extends ContextMenu {
                     }
                 }
             });
+
+            // tab to auto complete
             this.getNode().addEventHandler(KeyEvent.KEY_PRESSED ,(ke) -> {
                 switch (ke.getCode()) {
                     case TAB:{
