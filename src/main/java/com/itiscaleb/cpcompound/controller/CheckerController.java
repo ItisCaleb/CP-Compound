@@ -251,7 +251,7 @@ public class CheckerController {
             pane = new VBox(10);
             pane.setPadding(new Insets(5));
 
-            if(expectedOutput ==  "") {
+            if(expectedOutput.isEmpty()) {
                 pane.getChildren().addAll(
                         new Label("Testcase " + number + ":"),
                         new Label("Input:"),
