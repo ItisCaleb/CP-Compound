@@ -38,7 +38,7 @@ public class GCCDownloader extends Downloader {
             return p.exitValue() == 0;
         } catch (Exception e) {
             // Handle exception if needed
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
             return false;
         }
     }
@@ -50,7 +50,7 @@ public class GCCDownloader extends Downloader {
 
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
     }
 
@@ -84,7 +84,7 @@ public class GCCDownloader extends Downloader {
                 config.save();
                 CPCompound.getLogger().info("GCC installed at: " + installPath);
             }catch (Exception e){
-                e.printStackTrace();
+                CPCompound.getLogger().error("Error occurred", e);
             }
         });
     }

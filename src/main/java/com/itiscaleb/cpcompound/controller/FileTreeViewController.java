@@ -9,8 +9,10 @@ import javafx.stage.DirectoryChooser;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
+import java.io.IOException;
 
 public class FileTreeViewController {
+    static FileTreeViewController instance;
     @FXML
     private TreeView<File> fileTreeView;
     @FXML
@@ -20,16 +22,22 @@ public class FileTreeViewController {
     @FXML
     private Tooltip openFolderTooltip,expandCollapseTooltip;
     @FXML
-    private void handleOpenFolder() {
+    private void handleOpenFolder() throws IOException {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Folder");
         File selectedDirectory = directoryChooser.showDialog(fileTreeView.getScene().getWindow());
         if (selectedDirectory != null) {
             loadDirectoryIntoTreeView(selectedDirectory);
+            CPCompound.getConfig().last_open_directory = selectedDirectory.getCanonicalPath();
+            CPCompound.getConfig().save();
         }
     }
-    private void loadDirectoryIntoTreeView(File dir) {
-//        System.out.println("loadDirectoryIntoTreeView");
+
+    public static FileTreeViewController getInstance() {
+        return instance;
+    }
+
+    public void loadDirectoryIntoTreeView(File dir) {
         TreeItem<File> root = createTreeItem(dir);
         fileTreeView.setRoot(root);
     }
@@ -49,7 +57,6 @@ public class FileTreeViewController {
     }
 
     private void loadChildItems(TreeItem<File> item, File dir) {
-//        System.out.println("loadChildITtems: dir = " + dir);
         File[] files = dir.listFiles();
         if (files != null) {
             for (File f : files) {
@@ -128,16 +135,17 @@ public class FileTreeViewController {
             File file = selectedItem.getValue();
             if(file.isDirectory()) return;
             if (selectedItem != null) {
-                CPCompound.getBaseController().getEditorController().addNewFile(selectedItem.getValue());
+                EditorController.getInstance().addNewFile(selectedItem.getValue());
             }
         }
     }
     @FXML
     public void initialize() {
+        instance = this;
         initIcons();
         setTooltipsDelay();
         setTreeItemListener();
         fileTreeView.setCellFactory(tv -> new FileTreeCell());
-        System.out.println("FileTreeViewController initialize");
+        CPCompound.getLogger().info("FileTreeViewController initialize");
     }
 }

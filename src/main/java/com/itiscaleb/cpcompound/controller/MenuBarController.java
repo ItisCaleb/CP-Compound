@@ -5,9 +5,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class EditorMenuBarController {
-    @FXML
-    Button homeBtn;
+public class MenuBarController {
+
+    static MenuBarController instance;
     @FXML
     Button fileBtn;
     @FXML
@@ -37,9 +37,6 @@ public class EditorMenuBarController {
         return fileBtn;
     }
 
-    public Button getHomeBtn() {
-        return homeBtn;
-    }
 
     @FXML
     Button settingBtn;
@@ -56,10 +53,9 @@ public class EditorMenuBarController {
     @FXML
     public void handleMenuSwitch(javafx.event.ActionEvent event){
         Button clickedButton = (Button)event.getSource();
-        CPCompound.getBaseController().getEditorController().getEditorFunctionPaneController().assignFunctionTab(clickedButton.getId(),clickedButton);
+        FunctionPaneController.getInstance().assignFunctionTab(clickedButton.getId(),clickedButton);
     }
     private void initIcons() {
-        homeBtn.setGraphic(new FontIcon());
         fileBtn.setGraphic(new FontIcon());
         checkerBtn.setGraphic(new FontIcon());
         generatorBtn.setGraphic(new FontIcon());
@@ -68,8 +64,13 @@ public class EditorMenuBarController {
     }
     @FXML
     public void initialize() {
+        instance = this;
         initIcons();
         currentActiveMenuItem = this.fileBtn;
-        System.out.println("initialize MainEditorMenuBar");
+        CPCompound.getLogger().info("initialize MainEditorMenuBar");
+    }
+
+    public static MenuBarController getInstance() {
+        return instance;
     }
 }

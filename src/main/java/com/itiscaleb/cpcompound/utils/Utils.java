@@ -25,7 +25,6 @@ public class Utils {
             // list files in zip
             ZipEntry zipEntry = zis.getNextEntry();
             root = Paths.get(zipEntry.getName()).getName(0).toString();
-            System.out.println(root);
 
             while (zipEntry != null) {
                 Path path = dest.resolve(zipEntry.getName());
@@ -122,7 +121,7 @@ public class Utils {
                     }
                 }
             }catch (IOException e) {
-                e.printStackTrace();
+                CPCompound.getLogger().error("Error occurred", e);
             }
             file = path.toFile();
 

@@ -3,27 +3,30 @@ package com.itiscaleb.cpcompound.editor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.itiscaleb.cpcompound.CPCompound;
-import com.itiscaleb.cpcompound.langServer.CompileCommand;
+import com.itiscaleb.cpcompound.langServer.c.CompileCommand;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.langServer.Language;
 import com.itiscaleb.cpcompound.utils.APPData;
+import com.itiscaleb.cpcompound.utils.Config;
+import com.itiscaleb.cpcompound.utils.SysInfo;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.util.Pair;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Diagnostic;
 import org.fxmisc.richtext.model.StyleSpans;
 
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class Editor {
     EditorContext currentContext;
@@ -34,9 +37,13 @@ public class Editor {
     private final ObservableList<CompletionItem> completionItems = FXCollections.observableArrayList();
     private int lastUnnamed = 0;
 
+    private Process currentProcess = null;
+
     public Editor() {
         highlighters.put(Language.CPP, new CppHighlighter());
         highlighters.put(Language.C, new CHighlighter());
+        highlighters.put(Language.Python, new PythonHighlighter());
+        highlighters.put(Language.None, new NoneHighlighter());
     }
 
     public void switchContext(String key){
@@ -97,9 +104,82 @@ public class Editor {
     }
 
     public void setCompletionList(List<CompletionItem> items){
-        System.out.println("Completion List");
+        CPCompound.getLogger().info("Completion List");
         if(items != null){
             this.completionItems.setAll(items);
+        }
+    }
+
+    // will return success or not
+    public CompletableFuture<Pair<EditorContext, Boolean>> compile(EditorContext context,
+                                                                   OutputStream oStream, OutputStream errStream){
+        return CompletableFuture.supplyAsync(()->{
+            try {
+                Language lang = context.getLang();
+                Config config = CPCompound.getConfig();
+                String compiler = (lang == Language.C)   ? config.getGCCExe() :
+                        (lang == Language.CPP) ? config.getGPPExe() : "";
+                switch (context.getLang()){
+                    case CPP, C -> {
+
+                        Process p = new ProcessBuilder(compiler,
+                                context.getPath().toString(),
+                                "-o", context.getExePath().toString()).start();
+                        p.getInputStream().transferTo(oStream);
+                        p.getErrorStream().transferTo(errStream);
+                        return new Pair<>(context, p.waitFor() == 0);
+                    }
+                    case None -> {
+                        return new Pair<>(context, false);
+                    }
+                }
+                return new Pair<>(context, true);
+            }catch (Exception e){
+                CPCompound.getLogger().error("Error occurred", e);
+                return new Pair<>(context, false);
+            }
+        });
+    }
+    public CompletableFuture<Void> execute(EditorContext context,
+                                           InputStream iStream, OutputStream oStream,
+                                           OutputStream errStream, boolean writeOnce){
+        return CompletableFuture.runAsync(()->{
+            try {
+                if(currentProcess != null) return;
+                Language lang = context.getLang();
+                String exe = context.getExePath().toString();
+                Process p;
+                switch (lang){
+                    case Python -> {
+                        if(SysInfo.getOS() == SysInfo.OS.WIN){
+                            p = new ProcessBuilder("python", exe).start();
+                        }
+                        else p = new ProcessBuilder("python3", exe).start();
+                    }
+                    case CPP, C -> p = new ProcessBuilder(exe).start();
+                    default -> {
+                        return;
+                    }
+                }
+                currentProcess = p;
+                do{
+                    iStream.transferTo(p.getOutputStream());
+                    p.getOutputStream().flush();
+                }while (p.isAlive() && !writeOnce);
+                p.getOutputStream().close();
+                p.getInputStream().transferTo(oStream);
+                p.getErrorStream().transferTo(errStream);
+                p.waitFor();
+                currentProcess = null;
+            }catch (Exception e){
+                CPCompound.getLogger().error("Error occurred", e);
+            }
+        });
+    }
+
+    public void stopExecute(){
+        if(currentProcess != null){
+            currentProcess.destroyForcibly();
         }
     }
 
@@ -115,7 +195,7 @@ public class Editor {
                     , s, StandardCharsets.UTF_8);
 
         }catch (Exception e){
-            e.printStackTrace();
+            CPCompound.getLogger().error("Error occurred", e);
         }
     }
 

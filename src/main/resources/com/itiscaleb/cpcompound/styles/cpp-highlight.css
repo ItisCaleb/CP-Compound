@@ -3,6 +3,16 @@
     -fx-font-weight: bold;
 }
 
+.cpp-type-keyword{
+    -fx-fill: #68c073 !important;
+    -fx-font-weight: bold;
+}
+
+.cpp-modifier-keyword{
+    -fx-fill: #9248c9 !important;
+    -fx-font-weight: bold;
+}
+
 .cpp-preprocessor-keyword{
     -fx-fill: #1687d1 !important;
     -fx-font-weight: bold;

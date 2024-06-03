@@ -54,7 +54,7 @@ public class InitController {
                     new GCCDownloader().downloadAsync(progressProperty, downloadText)
                         .whenComplete((unused, throwable) -> {
                             if(throwable != null) {
-                                throwable.printStackTrace();
+                                CPCompound.getLogger().error("Error occurred", throwable);
                             }
                             Platform.runLater(CPCompound::setIDEStage);
                         });

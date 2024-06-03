@@ -20,6 +20,12 @@ TextArea{
     -fx-background-color: #2C2C2C;
 }
 
+.editor-popup{
+    -fx-background-color: black;
+    -fx-text-fill: white;
+    -fx-padding: 5;
+}
+
 
 /*---------------------------------------------------SplitPane樣式------------------------------------------------------*/
 
