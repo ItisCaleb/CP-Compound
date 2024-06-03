@@ -108,6 +108,10 @@ public class TemplateManager {
         order.set(order.indexOf(oldName),newName );
         saveOrder();
     }
+    public void removeOrderByName(String Name){
+        order.remove(order.indexOf(Name));
+        saveOrder();
+    }
     public Map<String, ArrayList<TemplateItem>> getTemplatesByOrder() {
         LinkedHashMap<String, ArrayList<TemplateItem>> orderedTemplates = new LinkedHashMap<>();
         for (String key : order) {
@@ -118,7 +122,7 @@ public class TemplateManager {
         }
         return orderedTemplates;
     }
-    private String getFileExtension(Path path) {
+    public String getFileExtension(Path path) {
         String fileName = path.getFileName().toString();
         int dotIndex = fileName.lastIndexOf('.');
         return dotIndex == -1 ? "" : fileName.substring(dotIndex + 1);
@@ -127,7 +131,7 @@ public class TemplateManager {
     public Map<String, ArrayList<TemplateItem>> getTemplates() {
         return templates;
     }
-    private String formatRelativeTime(LocalDateTime dateTime) {
+    public String formatRelativeTime(LocalDateTime dateTime) {
         LocalDateTime now = LocalDateTime.now();
         long days = ChronoUnit.DAYS.between(dateTime, now);
         long hours = ChronoUnit.HOURS.between(dateTime, now);
