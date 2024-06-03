@@ -118,15 +118,20 @@ public class EditorController {
 
         Tab newTab = new Tab(key);
         newTab.setUserData(key);
-
         CPCompound.getEditor().switchContext(key);
         switchCodeArea(newTab);
         if(FunctionPaneController.getInstance().getCheckerController()!=null){
             FunctionPaneController.getInstance().getCheckerController().updatePath();
         }
+
+        if(editorTextTabPane.getTabs().isEmpty()){
+            lastContext = CPCompound.getEditor().getContext(key);
+        }
         tabManager.addTab(newTab, key.substring(key.lastIndexOf("/") + 1));
         editorTextTabPane.getTabs().add(newTab);
         editorTextTabPane.getSelectionModel().select(newTab);
+
+
     }
 
     @FXML
@@ -169,9 +174,11 @@ public class EditorController {
             int paragraph = mainTextArea.getCurrentParagraph();
             int column = mainTextArea.getCaretColumn();
             int index = mainTextArea.getCaretPosition() - 1;
-            char c = newValue.charAt(index);
-            if (!stopNextCompletion && index > 0 && ignoreChars.indexOf(c) == -1){
-                proxy.requestCompletion(context, new Position(paragraph, column));
+            if (!stopNextCompletion && index >= 0){
+                char c = newValue.charAt(index);
+                if(ignoreChars.indexOf(c) == -1){
+                    proxy.requestCompletion(context, new Position(paragraph, column));
+                }
             } else {
                 stopNextCompletion = false;
                 completionMenu.hide();
@@ -416,6 +423,7 @@ public class EditorController {
     public StyleSpans<Collection<String>> computeDiagnostic(StyleClassedTextArea area, List<Diagnostic> diagnostics) {
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
         int last = 0;
+        if(diagnostics == null) return null;
         for (Diagnostic diagnostic : diagnostics) {
             // convert line and character to index
             Range range = diagnostic.getRange();
