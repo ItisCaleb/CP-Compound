@@ -1,6 +1,7 @@
 package com.itiscaleb.cpcompound;
 
 import com.itiscaleb.cpcompound.controller.BaseController;
+import com.itiscaleb.cpcompound.controller.ConsoleController;
 import com.itiscaleb.cpcompound.controller.FileTreeViewController;
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
@@ -9,7 +10,6 @@ import com.itiscaleb.cpcompound.langServer.Language;
 import com.itiscaleb.cpcompound.langServer.c.CPPSemanticTokenType;
 import com.itiscaleb.cpcompound.utils.APPData;
 import com.itiscaleb.cpcompound.utils.Config;
-import com.itiscaleb.cpcompound.utils.SysInfo;
 import io.github.palexdev.materialfx.theming.JavaFXThemes;
 import io.github.palexdev.materialfx.theming.MaterialFXStylesheets;
 import io.github.palexdev.materialfx.theming.UserAgentBuilder;
@@ -26,7 +26,6 @@ import org.eclipse.lsp4j.ServerCapabilities;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.HashMap;
 
 public class CPCompound extends Application {
@@ -113,6 +112,7 @@ public class CPCompound extends Application {
                 FileTreeViewController.getInstance().loadDirectoryIntoTreeView(f);
             }
         }
+        ConsoleController.getInstance().logToUser("Welcome to CP Compound");
     }
 
 

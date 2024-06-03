@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 <?import java.net.URL?>
 <VBox id="main-editor-menu-bar" fx:id="mainEditorMenuBar" alignment="BASELINE_CENTER" layoutX="-1.0" layoutY="72.0" prefHeight="341.0" prefWidth="65.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="54.0"
       xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.itiscaleb.cpcompound.controller.EditorMenuBarController">
+      fx:controller="com.itiscaleb.cpcompound.controller.MenuBarController">
     <children>
-        <Button id="Home-button" fx:id="homeBtn" onAction="#handleMenuSwitch"/>
         <Button id="File-button" fx:id="fileBtn" mnemonicParsing="false" onAction="#handleMenuSwitch"/>
         <Button id="Checker-button" fx:id="checkerBtn" mnemonicParsing="false" onAction="#handleMenuSwitch"/>
         <Button id="Generator-button" fx:id="generatorBtn" mnemonicParsing="false" onAction="#handleMenuSwitch"/>
@@ -21,6 +17,6 @@
         <Button id="Setting-button" fx:id="settingBtn" mnemonicParsing="false" onAction="#handleMenuSwitch"/>
     </children>
     <stylesheets>
-        <URL value="@../styles/editor-menu-bar-style.css" />
+        <URL value="@../styles/menu-bar-style.css" />
     </stylesheets>
 </VBox>

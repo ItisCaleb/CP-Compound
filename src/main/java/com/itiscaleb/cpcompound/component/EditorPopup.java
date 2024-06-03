@@ -32,7 +32,7 @@ public class EditorPopup extends Popup {
 
     public void setText(String str){
         label.setText(str);
-        timer.playFromStart();
+        //timer.playFromStart();
     }
 
 }

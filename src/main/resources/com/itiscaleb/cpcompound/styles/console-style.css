@@ -1,0 +1,27 @@
+.styled-text-area {
+    -fx-background-color: #2C2C2C;
+    -fx-background-radius: 0px 0px 5px 5px;
+    -fx-border-radius: 0px 0px 5px 5px;
+    /*-rtfx-text-color: white;*/
+    -fx-font-size: 14;
+    /*-fx-display-caret: white;*/
+    /*-fx-padding: 0 300 0 0;*/
+}
+
+
+.styled-text-area .text {
+    -fx-fill: white;
+}
+
+.console-error {
+    -fx-fill: #c93939 !important;
+}
+
+Label{
+    -fx-font-size: 20;
+    -fx-text-fill: white;
+}
+.caret {
+    -fx-stroke: white;
+    -fx-stroke-width: 2;
+}
