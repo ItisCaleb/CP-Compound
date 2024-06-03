@@ -57,6 +57,8 @@ public class EditorController {
     StyleSpans<Collection<String>> highlightSpans = null;
     StyleSpans<Collection<String>> semanticSpans = null;
 
+    boolean stopNextCompletion = false;
+
     @FXML
     public void initialize() {
         instance = this;
@@ -168,10 +170,10 @@ public class EditorController {
             int column = mainTextArea.getCaretColumn();
             int index = mainTextArea.getCaretPosition() - 1;
             char c = newValue.charAt(index);
-            if (!newValue.isEmpty() && index > 0
-                    && ignoreChars.indexOf(c) == -1){
+            if (!stopNextCompletion && index > 0 && ignoreChars.indexOf(c) == -1){
                 proxy.requestCompletion(context, new Position(paragraph, column));
             } else {
+                stopNextCompletion = false;
                 completionMenu.hide();
             }
             tabManager.changeTab(currentTab);
@@ -240,19 +242,19 @@ public class EditorController {
                 mainTextArea.replaceText(caretPosition - 1, caretPosition, "    ");
             }
 
-            // auto complete bracket
-            int caretPosition = mainTextArea.getAnchor() - 1;
-            String right = "";
-            switch (KE.getText()) {
-                case "[" -> right = "]";
-                case "(" -> right = ")";
-            }
-            if(!right.isEmpty()){
-                String finalRight = right;
-                Platform.runLater(()->{
-                    mainTextArea.insertText(caretPosition + 1, finalRight);
-                });
-            }
+//            // auto complete bracket
+//            int caretPosition = mainTextArea.getAnchor() - 1;
+//            String right = "";
+//            switch (KE.getText()) {
+//                case "[" -> right = "]";
+//                case "(" -> right = ")";
+//            }
+//            if(!right.isEmpty()){
+//                String finalRight = right;
+//                Platform.runLater(()->{
+//                    mainTextArea.insertText(caretPosition + 1, finalRight);
+//                });
+//            }
         });
 
         // hide completion menu when caret moved
@@ -351,6 +353,7 @@ public class EditorController {
     private void initCompletionTooltip() {
         completionMenu = new CompletionMenu();
         completionMenu.setOnAction((event) -> {
+            stopNextCompletion = true;
             MenuItem item = (MenuItem) event.getTarget();
             String text = item.getText();
             Range range = (Range) item.getUserData();
