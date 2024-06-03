@@ -71,12 +71,14 @@ public class ToolBarController {
                 var console = ConsoleController.getInstance();
                 console.clear();
                 console.logToUser("Executing \""+context.getExePath()+"\" ...");
+                console.openInput();
                 editor.execute(context, console.getInputStream(), console.getOutputStream(),
                                 console.getErrorStream(), false)
                         .whenComplete((_r,_t)->{
                             Platform.runLater(()->{
                                 runToggleBtn.setText("Run");
                                 runToggleBtn.setSelected(false);
+                                console.closeInput();
                             });
                         });
             });

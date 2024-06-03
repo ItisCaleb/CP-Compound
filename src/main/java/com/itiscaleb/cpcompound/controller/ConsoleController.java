@@ -34,6 +34,7 @@ public class ConsoleController {
     void initialize(){
         instance = this;
         initInputArea();
+        closeInput();
         inputStream = new InputStream() {
             String currentLine;
             int i = 0;
@@ -50,6 +51,7 @@ public class ConsoleController {
                 }
                 return currentLine.charAt(i++);
             }
+
         };
         outputStream = new OutputStream() {
             byte[] buffer = new byte[8192];
@@ -151,6 +153,20 @@ public class ConsoleController {
 
     public OutputStream getErrorStream() {
         return errorStream;
+    }
+
+    public void openInput(){
+        Platform.runLater(()->{
+           inputArea.setEditable(true);
+            inputArea.getCaretSelectionBind().moveToAreaEnd();
+
+        });
+    }
+
+    public void closeInput(){
+        Platform.runLater(()->{
+            inputArea.setEditable(false);
+        });
     }
 
     public void logToUser(String message){

@@ -5,7 +5,11 @@ import java.util.Locale;
 public enum SemanticTokenType {
     Namespace, Type, Class, Enum, Interface, Struct, TypeParameter, Parameter,
     Variable, Property, EnumMember, Event, Function, Method, Macro,
-    Keyword, Modifier, Comment, String, Number, Regexp, Operator, Decorator;
+    Keyword, Modifier, Comment, String, Number, Regexp, Operator, Decorator,
+
+    // cpp
+    Unknown, Concept, Bracket, Label;
+
     static final SemanticTokenType[] value = SemanticTokenType.values();
 
     public static SemanticTokenType fromString(String str){
