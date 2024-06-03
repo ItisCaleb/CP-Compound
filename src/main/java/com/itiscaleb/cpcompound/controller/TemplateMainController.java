@@ -4,13 +4,17 @@ import com.itiscaleb.cpcompound.component.EditableLabel;
 import com.itiscaleb.cpcompound.component.TemplateItem;
 import com.itiscaleb.cpcompound.utils.APPData;
 import com.itiscaleb.cpcompound.utils.TemplateManager;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 import org.kordamp.ikonli.dashicons.Dashicons;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -92,11 +96,11 @@ public class TemplateMainController {
             categoryContent.getStyleClass().add("category-content");
             VBox contentArea = new VBox(5);
             contentArea.getStyleClass().add("contentArea");
+            HBox categoryHeader = createCategoryHeader(contentArea,categoryName);
             for (TemplateItem item : items) {
                 VBox itemInfo = createItemInfoHBox(item,categoryName);
                 contentArea.getChildren().add(itemInfo);
             }
-            HBox categoryHeader = createCategoryHeader(contentArea,categoryName);
             categoryContent.getChildren().addAll(categoryHeader,contentArea);
             templateVBox.getChildren().add(categoryContent);
         }
@@ -177,9 +181,23 @@ public class TemplateMainController {
         Button removeItemBtn = new Button();
         removeItemBtn.setGraphic(new FontIcon());
         removeItemBtn.getStyleClass().add("remove-item-btn");
-        removeItemBtn.setOnAction(event -> handleRemoveItem());
+        removeItemBtn.setOnAction(event -> handleRemoveItem(item,categoryName,itemInfo));
 
-        infoBtnArea.getChildren().addAll(openItemBtn,removeItemBtn);
+        Button copyCodeBtn = new Button();
+        copyCodeBtn.setGraphic(new FontIcon());
+        copyCodeBtn.getStyleClass().add("copy-code-btn");
+        copyCodeBtn.setOnAction(event -> {
+            copyCodeBtn.getStyleClass().removeAll("copy-code-btn");
+            copyCodeBtn.getStyleClass().add("copy-code-btn-click");
+            handleCopyCode(item);
+            PauseTransition pause = new PauseTransition(Duration.seconds(1));
+            pause.setOnFinished(e -> {
+                copyCodeBtn.getStyleClass().removeAll("copy-code-btn-click");
+                copyCodeBtn.getStyleClass().add("copy-code-btn");
+            });
+            pause.play();
+        });
+        infoBtnArea.getChildren().addAll(copyCodeBtn,openItemBtn,removeItemBtn);
 
         itemMainInfo.getChildren().addAll(itemName,infoBtnArea);
 
@@ -268,6 +286,7 @@ public class TemplateMainController {
         return isConfirmed[0];
 
     }
+
     private void handleDeleteCategory(String categoryName,HBox categoryHeader){
         boolean isConfirm = showConfirmDeleteCategoryAlert();
         if(!isConfirm){
@@ -300,11 +319,67 @@ public class TemplateMainController {
             e.printStackTrace();
         }
     }
+    private boolean showConfirmDeleteItemAlert(){
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("warning");
+        dialog.setHeaderText("Sure to delete the item?");
+        dialog.setContentText("Are you sure you want to delete item?\nThe item will delete forever");
+        ButtonType confirmButtonType = new ButtonType("Confirm");
+        ButtonType cancelButtonType = new ButtonType("Cancel");
+        dialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, cancelButtonType);
+        final boolean[] isConfirmed = new boolean[1];
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == confirmButtonType) {
+                System.out.println("Confirm button clicked");
+                isConfirmed[0] = true;
+                return "Confirmed";
+            } else if (dialogButton == cancelButtonType) {
+                System.out.println("Cancel button clicked");
+                isConfirmed[0] = false;
+                return "Cancelled";
+            }
+            return null;
+        });
+        dialog.showAndWait();
+        return isConfirmed[0];
+
+    }
+    private void handleRemoveItem(TemplateItem item,String categoryName,VBox itemInfo) {
+        System.out.println("handleremoveItem");
+        boolean isConfirm = showConfirmDeleteItemAlert();
+        if(!isConfirm){
+            System.out.println("cancel remove item");
+            return;
+        }
+        VBox parentContentArea = (VBox) itemInfo.getParent();
+        parentContentArea.getChildren().remove(itemInfo);
+        Path filePath = APPData.resolve("Code Template/"+categoryName+"/"+item.getFileName());
+        try{
+            Files.deleteIfExists(filePath);
+            ArrayList<TemplateItem> items = templateManager.getTemplates().get(categoryName);
+            items.remove(item);
+        }catch (IOException e) {
+            showAlert("Error", "Failed to delete the file" );
+        }
+    }
+    private void showAlert(String title) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText("Please try again:)");
+        alert.showAndWait();
+    }
     private void handleOpenItem(TemplateItem item,String categoryName) {
         Path filePaht = APPData.resolve("Code Template/"+categoryName+"/"+item.getFileName());
         File openFile = filePaht.toFile();
         EditorController.getInstance().addNewFile(openFile);
         System.out.println("Open "+openFile.getName());
+    }
+    private void handleCopyCode(TemplateItem item) {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(item.getFileContent());
+        clipboard.setContent(content);
     }
     private Integer showNewFileDialog(){
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -421,10 +496,7 @@ public class TemplateMainController {
         return item;
     }
 
-    private void handleRemoveItem() {
-        System.out.println("handleremoveItem");
 
-    }
     private void initTemplateManager() throws IOException{
         //build templateManager through "code template" folder
         templateManager = new TemplateManager();

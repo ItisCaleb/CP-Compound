@@ -29,7 +29,7 @@
 }
 
 #add-category-btn{
-    -fx-padding: 0 8 0 0;
+    -fx-padding: 0 16 0 0;
     /*-fx-border-color: green;*/
     -fx-background-color: transparent;
     -fx-cursor: HAND;
@@ -162,9 +162,38 @@
 }
 .remove-item-btn .ikonli-font-icon:hover{
     -fx-icon-color: #FFFFFF;
-    -fx-icon-size: 22px;
 }
 
+.copy-code-btn{
+    -fx-padding: 0;
+    /*-fx-border-color: green;*/
+    -fx-background-color: transparent;
+    -fx-cursor: HAND;
+    -fx-alignment: CENTER_RIGHT;
+}
+.copy-code-btn .ikonli-font-icon{
+    -fx-icon-code: "mdoal-content_copy";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 18px;
+}
+.copy-code-btn .ikonli-font-icon:hover{
+    -fx-icon-color: #FFFFFF;
+}
+.copy-code-btn-click{
+    -fx-padding: 0;
+    /*-fx-border-color: green;*/
+    -fx-background-color: transparent;
+    -fx-cursor: HAND;
+    -fx-alignment: CENTER_RIGHT;
+}
+.copy-code-btn-click .ikonli-font-icon{
+    -fx-icon-code: "mdoal-content_copy";
+    -fx-icon-color: #86ccf6;
+    -fx-icon-size: 16px;
+}
+.copy-code-btn-click-btn .ikonli-font-icon:hover{
+    -fx-icon-color: #FFFFFF;
+}
 .open-item-btn{
     -fx-padding: 0;
     /*-fx-border-color: green;*/
