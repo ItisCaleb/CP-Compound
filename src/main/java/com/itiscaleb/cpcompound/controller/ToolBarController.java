@@ -3,22 +3,18 @@ package com.itiscaleb.cpcompound.controller;
 import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
-import io.github.palexdev.materialfx.controls.MFXButton;
-import io.github.palexdev.materialfx.controls.MFXToggleButton;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.util.Pair;
-import org.kordamp.ikonli.carbonicons.CarbonIcons;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.concurrent.CompletableFuture;
 
-public class EditorToolBarController {
+public class ToolBarController {
+    static ToolBarController instance;
 //    @FXML
 //    ToolBar mainEditorToolBar;
     @FXML
@@ -40,13 +36,12 @@ public class EditorToolBarController {
     }
     @FXML
     private void handleAddNewFile() {
-        CPCompound.getBaseController().getEditorController().handleAddNewFile();
+        EditorController.getInstance().handleAddNewFile();
     }
 
     @FXML
     public CompletableFuture<Pair<EditorContext, Boolean>> handleCompile(){
-        CPCompound.getBaseController()
-                .getEditorController()
+        EditorController.getInstance()
                 .saveContext();
         Editor editor = CPCompound.getEditor();
         if (editor.getCurrentContext() == null) return CompletableFuture.completedFuture(new Pair<>(null,false));
@@ -103,7 +98,12 @@ public class EditorToolBarController {
     // }
     @FXML
     public void initialize() {
+        instance = this;
         initIcons();
         CPCompound.getLogger().info("initialize MainEditorToolBar");
+    }
+
+    public static ToolBarController getInstance() {
+        return instance;
     }
 }

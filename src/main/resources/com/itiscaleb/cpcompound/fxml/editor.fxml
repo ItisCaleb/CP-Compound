@@ -1,35 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 
-<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import java.net.*?>
-<SplitPane fx:id="codeAreaSplitPane" dividerPositions="0.2" layoutX="165.0" layoutY="39.0" prefHeight="241.0" prefWidth="398.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="54.0"
-           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.EditorController">
-     <items>
-    <!--             <VBox fx:id="functionPaneBox" prefHeight="341.0" prefWidth="398.0" styleClass="function-pane-box">-->
-    <!--                 <HBox styleClass="tab-btn-hbox">-->
-    <!--                     <Button fx:id="functionTabButton"  styleClass="function-tab-btn" text="Checker" onAction="#handleTabSwitch"/>-->
-    <!--                     <Button fx:id="terminalTabButton"  styleClass="terminal-tab-btn" text="Terminal" onAction="#handleTabSwitch"/>-->
-    <!--                 </HBox>-->
-    <!--                 <StackPane fx:id="functionPaneContentArea" styleClass="function-pane-content-area" VBox.vgrow="ALWAYS">-->
-    <!--                 </StackPane>-->
-    <!--                 <stylesheets>-->
-    <!--                     <URL value="@../styles/editor-function-pane-style.css" />-->
-    <!--                 </stylesheets>-->
-    <!--             </VBox>-->
-         <TabPane id="editor-text-tab-pane" fx:id="editorTextTabPane" prefHeight="341.0" prefWidth="397.0" rotateGraphic="true">
-             <cursor>
-                 <Cursor fx:constant="HAND" />
-             </cursor>
-             <stylesheets>
-                 <URL value="@../styles/editor-tab-pane-style.css" />
-             </stylesheets>
-         </TabPane>
-     </items>
+<TabPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.EditorController"
+         id="editor-text-tab-pane" fx:id="editorTextTabPane" prefHeight="341.0" prefWidth="397.0" rotateGraphic="true">
+    <cursor>
+        <Cursor fx:constant="HAND" />
+    </cursor>
     <stylesheets>
+        <URL value="@../styles/editor-tab-pane-style.css" />
         <URL value="@../styles/editor-main-style.css" />
         <URL value="@../styles/editor-scroll-bar.css" />
         <URL value="@../styles/editor-code-area-style.css" />
@@ -37,5 +18,6 @@
         <URL value="@../styles/python-highlight.css" />
         <URL value="@../styles/semantic-highlight.css" />
     </stylesheets>
-</SplitPane>
+</TabPane>
+
 

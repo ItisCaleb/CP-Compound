@@ -11,7 +11,8 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EditorFunctionPaneController {
+public class FunctionPaneController {
+    static FunctionPaneController instance;
     @FXML
     Button functionTabButton, terminalTabButton;
     @FXML
@@ -43,12 +44,8 @@ public class EditorFunctionPaneController {
         itemIcon = (FontIcon) currentActiveMenuItem.getGraphic();
         itemIcon.setStyle(itemIcon.getStyle()+"-fx-icon-color: #FFFFFF;");
         currentActiveMenuItem.setGraphic(itemIcon);
-        CPCompound.getBaseController().getEditorController().getEditorMenuBarController().setCurrentActiveMenuItem(currentActiveMenuItem);
+        MenuBarController.getInstance().setCurrentActiveMenuItem(currentActiveMenuItem);
         switch(itemId){
-            case "Home-button":
-                loadContent("fxml/home.fxml");
-                functionTabButton.setText("Home");
-                break;
             case "File-button":
                 loadContent("fxml/file-treeView.fxml");
                 functionTabButton.setText("File View");
@@ -80,7 +77,7 @@ public class EditorFunctionPaneController {
         if (clickedButton == functionTabButton) {
             functionTabButton.setStyle("-fx-border-color: transparent transparent transparent white;-fx-opacity: 1");
             terminalTabButton.setStyle("-fx-border-color: transparent transparent transparent transparent;-fx-opacity: 0.5");
-            functionPaneContentArea.getChildren().setAll( CPCompound.getBaseController().getEditorController().getEditorFunctionPaneController().currentFunctionContent);
+            functionPaneContentArea.getChildren().setAll(FunctionPaneController.getInstance().currentFunctionContent);
         } else if (clickedButton == terminalTabButton) {
             terminalTabButton.setStyle("-fx-border-color: transparent transparent transparent white;-fx-opacity: 1");
             functionTabButton.setStyle("-fx-border-color: transparent transparent transparent transparent;-fx-opacity: 0.5");
@@ -121,15 +118,19 @@ public class EditorFunctionPaneController {
             CPCompound.getLogger().error("Error occurred", e);
         }
     }
-    private void initFunctonPane(Button menuButton,String fxmlFilePath){
+    private void initFunctonPane(String fxmlFilePath){
         loadContent(fxmlFilePath);
-        CPCompound.getBaseController().getEditorController().getEditorMenuBarController().setCurrentActiveMenuItem(menuButton);
-        this.currentActiveMenuItem = CPCompound.getBaseController().getEditorController().getEditorMenuBarController().getCurrentActiveMenuItem();
-        assignFunctionTab(fxmlFilePath,menuButton);
+        this.currentActiveMenuItem = MenuBarController.getInstance().getCurrentActiveMenuItem();
+        assignFunctionTab(fxmlFilePath,currentActiveMenuItem);
     }
     @FXML
     public void initialize() {
-        initFunctonPane(CPCompound.getBaseController().getEditorController().getEditorMenuBarController().getCurrentActiveMenuItem(),"fxml/file-treeView.fxml");
+        instance = this;
+        initFunctonPane("fxml/file-treeView.fxml");
         CPCompound.getLogger().info("initialize EditorFunctionPane");
+    }
+
+    public static FunctionPaneController getInstance() {
+        return instance;
     }
 }

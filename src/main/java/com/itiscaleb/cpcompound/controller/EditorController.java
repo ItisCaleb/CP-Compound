@@ -1,13 +1,9 @@
 package com.itiscaleb.cpcompound.controller;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.itiscaleb.cpcompound.CPCompound;
@@ -27,16 +23,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
-import javafx.scene.control.skin.ContextMenuSkin;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Popup;
-import javafx.util.Pair;
 import org.eclipse.lsp4j.*;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
@@ -54,21 +46,7 @@ public class EditorController {
     @FXML
     private SplitPane codeAreaSplitPane, codeAreaBase;
 
-    static EditorMenuBarController editorMenuBarController;
-    static EditorToolBarController editorToolBarController;
-    static EditorFunctionPaneController editorFunctionPaneController;
-
-    public EditorMenuBarController getEditorMenuBarController() {
-        return editorMenuBarController;
-    }
-
-    public EditorToolBarController getEditorToolBarController() {
-        return editorToolBarController;
-    }
-
-    public EditorFunctionPaneController getEditorFunctionPaneController() {
-        return editorFunctionPaneController;
-    }
+    static EditorController instance;
 
     CodeArea mainTextArea = new CodeArea();
     Tab currentTab;
@@ -82,6 +60,21 @@ public class EditorController {
     StyleSpans<Collection<String>> diagnosticSpans = null;
     StyleSpans<Collection<String>> highlightSpans = null;
     StyleSpans<Collection<String>> semanticSpans = null;
+
+    @FXML
+    public void initialize() {
+        instance = this;
+        Platform.runLater(()->{
+            initEditorTextArea();
+            setHandleChangeTab();
+
+            CPCompound.getLogger().info("initialize editor");
+        });
+    }
+
+    public static EditorController getInstance() {
+        return instance;
+    }
 
     private void switchCodeArea(Tab setUpTab){
         VirtualizedScrollPane<CodeArea> vsPane = new VirtualizedScrollPane<>(mainTextArea);
@@ -130,8 +123,8 @@ public class EditorController {
 
         CPCompound.getEditor().switchContext(key);
         switchCodeArea(newTab);
-        if(CPCompound.getBaseController().getEditorController().getEditorFunctionPaneController().getCheckerController()!=null){
-            CPCompound.getBaseController().getEditorController().getEditorFunctionPaneController().getCheckerController().updatePath();
+        if(FunctionPaneController.getInstance().getCheckerController()!=null){
+            FunctionPaneController.getInstance().getCheckerController().updatePath();
         }
         tabManager.addTab(newTab, key.substring(key.lastIndexOf("/") + 1));
         editorTextTabPane.getTabs().add(newTab);
@@ -150,8 +143,8 @@ public class EditorController {
             if(newTab != null){
                 String key = (String)newTab.getUserData();
                 CPCompound.getEditor().switchContext(key);
-                if(CPCompound.getBaseController().getEditorController().getEditorFunctionPaneController().getCheckerController()!=null){
-                    CPCompound.getBaseController().getEditorController().getEditorFunctionPaneController().getCheckerController().updatePath();
+                if(FunctionPaneController.getInstance().getCheckerController()!=null){
+                    FunctionPaneController.getInstance().getCheckerController().updatePath();
                 }
                 switchCodeArea(newTab);
             }
@@ -165,6 +158,7 @@ public class EditorController {
             EditorContext context = editor.getCurrentContext();
             if(lastContext != context){
                 lastContext = context;
+                this.diagnostics = context.getDiagnostics();
                 requestHighlight();
                 return;
             }
@@ -197,6 +191,8 @@ public class EditorController {
         Editor editor = CPCompound.getEditor();
         EditorContext context = editor.getCurrentContext();
         LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
+        this.diagnosticSpans = computeDiagnostic(mainTextArea, this.diagnostics);
+
         this.semanticSpans = SemanticHighlighter.computeHighlighting(mainTextArea, proxy.semanticTokens(context));
         // highlight
         this.highlightSpans = editor.computeHighlighting(context);
@@ -207,51 +203,9 @@ public class EditorController {
         EditorStyler.setSpans(mainTextArea, highlightSpans, diagnosticSpans, semanticSpans);
     }
 
-    private void loadEditorToolBar(){
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/editor-tool-bar.fxml"));
-            HBox mainEditorToolBar = fxmlLoader.load();
-            CPCompound.getBaseController().appBase.getChildren().add(mainEditorToolBar);
-            editorToolBarController =fxmlLoader.getController();
-        } catch (Exception e) {
-            CPCompound.getLogger().error("Error occurred", e);
-        }
-    }
-    private void loadEditorMenuBar(){
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/editor-menu-bar.fxml"));
-            VBox mainEditorMenuBar = fxmlLoader.load();
-            CPCompound.getBaseController().appBase.getChildren().add(mainEditorMenuBar);
-            editorMenuBarController = fxmlLoader.getController();
 
-        } catch (Exception e) {
-            CPCompound.getLogger().error("Error occurred", e);
-        }
-    }
-    private void loadEditorFunctionPane(){
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/editor-function-pane.fxml"));
-            VBox editorFunctionPane = fxmlLoader.load();
-            codeAreaSplitPane.getItems().add(0,editorFunctionPane);
-            editorFunctionPaneController=fxmlLoader.getController();
-            editorFunctionPaneController.setCurrentActiveMenuItem(editorMenuBarController.getCurrentActiveMenuItem());
-        } catch (Exception e) {
-            CPCompound.getLogger().error("Error occurred", e);
-        }
-    }
 
-    @FXML
-    public void initialize() {
-        Platform.runLater(()->{
-            loadEditorMenuBar();
-            loadEditorFunctionPane();
-            loadEditorToolBar();
-            initEditorTextArea();
-            setHandleChangeTab();
 
-            CPCompound.getLogger().info("initialize editor");
-        });
-    }
 
     int rangeToPosition(StyleClassedTextArea area, Position p) {
         return area.getAbsolutePosition(p.getLine(), p.getCharacter());
@@ -453,7 +407,7 @@ public class EditorController {
         ListChangeListener<? super Diagnostic> listener = (list) -> Platform.runLater(() -> {
             // do your GUI stuff here
             this.diagnostics = (List<Diagnostic>) list.getList();
-            this.diagnosticSpans = computeDiagnostic(this.diagnostics, mainTextArea.getLength());
+            this.diagnosticSpans = computeDiagnostic(mainTextArea, this.diagnostics);
             refreshSpans();
         });
 
@@ -464,14 +418,14 @@ public class EditorController {
     // Reference:
     // https://github.com/FXMisc/RichTextFX/blob/master/richtextfx-demos/src/main/java/org/fxmisc/richtext/demo/SpellCheckingDemo.java
     // for compute diagnostic style
-    public StyleSpans<Collection<String>> computeDiagnostic(List<Diagnostic> diagnostics, int codeLength) {
+    public StyleSpans<Collection<String>> computeDiagnostic(StyleClassedTextArea area, List<Diagnostic> diagnostics) {
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
         int last = 0;
         for (Diagnostic diagnostic : diagnostics) {
             // convert line and character to index
             Range range = diagnostic.getRange();
-            int from = rangeToPosition(mainTextArea, range.getStart());
-            int to = rangeToPosition(mainTextArea, range.getEnd());
+            int from = rangeToPosition(area, range.getStart());
+            int to = rangeToPosition(area, range.getEnd());
             int len = from - last;
             if(len < 0) continue;
             spansBuilder.add(Collections.emptyList(), len);
@@ -486,7 +440,7 @@ public class EditorController {
                     break;
             }
         }
-        spansBuilder.add(Collections.emptyList(), codeLength - last);
+        spansBuilder.add(Collections.emptyList(), area.getLength() - last);
         return spansBuilder.create();
     }
 

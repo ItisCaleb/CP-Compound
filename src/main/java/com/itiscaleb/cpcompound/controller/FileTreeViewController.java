@@ -135,7 +135,7 @@ public class FileTreeViewController {
             File file = selectedItem.getValue();
             if(file.isDirectory()) return;
             if (selectedItem != null) {
-                CPCompound.getBaseController().getEditorController().addNewFile(selectedItem.getValue());
+                EditorController.getInstance().addNewFile(selectedItem.getValue());
             }
         }
     }
