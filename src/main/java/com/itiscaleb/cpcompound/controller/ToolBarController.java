@@ -5,11 +5,15 @@ import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
+import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 public class ToolBarController {
@@ -84,7 +88,14 @@ public class ToolBarController {
         }
 
     }
-
+    @FXML
+    private void handleOpenTemplateStage() throws IOException {
+        System.out.println("open template");
+        Stage templateStage = new Stage();
+        FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/template-main.fxml"));
+        templateStage.setScene(new Scene(fxmlLoader.load(),600,800));
+        templateStage.show();
+    }
     // for custom stage title bar's button function
     // @FXML
     // private void minimizeWindow() {

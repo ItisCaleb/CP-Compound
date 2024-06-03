@@ -93,7 +93,7 @@ public class TemplateMainController {
             VBox contentArea = new VBox(5);
             contentArea.getStyleClass().add("contentArea");
             for (TemplateItem item : items) {
-                VBox itemInfo = createItemInfoHBox(item);
+                VBox itemInfo = createItemInfoHBox(item,categoryName);
                 contentArea.getChildren().add(itemInfo);
             }
             HBox categoryHeader = createCategoryHeader(contentArea,categoryName);
@@ -138,7 +138,6 @@ public class TemplateMainController {
         deleteItemBtn.setGraphic(new FontIcon());
         deleteItemBtn.getStyleClass().add("delete-item-btn");
 
-
         HBox categoryHeader=new HBox(5);
         categoryHeader.getStyleClass().add("header-hbox");
         HBox headerBtnArea=new HBox(5);
@@ -153,7 +152,7 @@ public class TemplateMainController {
         HBox.setHgrow(headerLabel,Priority.ALWAYS);
         return categoryHeader;
     }
-    private VBox createItemInfoHBox(TemplateItem item) {
+    private VBox createItemInfoHBox(TemplateItem item,String categoryName) {
         VBox itemInfo = new VBox(2); // Spacing between elements
         itemInfo.getStyleClass().add("item-info");
         HBox itemMainInfo = new HBox(10);
@@ -173,7 +172,7 @@ public class TemplateMainController {
         Button openItemBtn = new Button();
         openItemBtn.setGraphic(new FontIcon());
         openItemBtn.getStyleClass().add("open-item-btn");
-        openItemBtn.setOnAction(event -> handleOpenItem());
+        openItemBtn.setOnAction(event -> handleOpenItem(item,categoryName));
 
         Button removeItemBtn = new Button();
         removeItemBtn.setGraphic(new FontIcon());
@@ -190,7 +189,7 @@ public class TemplateMainController {
         Label fileExtension = new Label("type: "+item.getExtension());
         fileExtension.getStyleClass().add("file-extension");
 
-        Label lastUpdateDate = new Label("edit "+item.getLastModified().toString());
+        Label lastUpdateDate = new Label("edit "+item.getLastModified());
         lastUpdateDate.getStyleClass().add("last-update-date");
         itemInfo.setOnMouseEntered(event -> {itemName.getLabel().setStyle("-fx-text-fill: #FFFFFF");});
         itemInfo.setOnMouseExited(event -> {itemName.getLabel().setStyle("-fx-text-fill: #A49F9F");});
@@ -301,8 +300,11 @@ public class TemplateMainController {
             e.printStackTrace();
         }
     }
-    private void handleOpenItem() {
-        System.out.println("Open Item");
+    private void handleOpenItem(TemplateItem item,String categoryName) {
+        Path filePaht = APPData.resolve("Code Template/"+categoryName+"/"+item.getFileName());
+        File openFile = filePaht.toFile();
+        EditorController.getInstance().addNewFile(openFile);
+        System.out.println("Open "+openFile.getName());
     }
     private Integer showNewFileDialog(){
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -334,7 +336,7 @@ public class TemplateMainController {
                 Path targetDirectory = APPData.resolve("Code Template/"+categoryName);
                 Files.copy(file.toPath(), targetDirectory.resolve(file.getName()), StandardCopyOption.REPLACE_EXISTING);
                 TemplateItem item= addTemplateItemToManager(file, targetDirectory);
-                addTemplateItemToContentArea(contentArea,item);
+                addTemplateItemToContentArea(contentArea,item,categoryName);
             } catch (IOException e) {
                 showAlert("Error", "Failed to copy file.");
             }
@@ -351,13 +353,13 @@ public class TemplateMainController {
 
         typeResult.ifPresent(type -> {
             Path targetDirectory = APPData.resolve("Code Template/"+categoryName);
-            String baseName = "untitled";
+            String baseName = "untitle";
             String extension = "." + type;
             File file = findUniqueFileName(targetDirectory, baseName, extension);
             try {
                 Files.createFile(file.toPath());
                 TemplateItem item= addTemplateItemToManager(file, targetDirectory);
-                addTemplateItemToContentArea(contentArea,item);
+                addTemplateItemToContentArea(contentArea,item,categoryName);
             } catch (IOException e) {
                 showAlert("Error", "Failed to create file.");
             }
@@ -386,8 +388,8 @@ public class TemplateMainController {
         }
         System.out.println("handleAddItem");
     }
-    private void addTemplateItemToContentArea(VBox contentArea,TemplateItem item) {
-        VBox itemInfo = createItemInfoHBox(item);
+    private void addTemplateItemToContentArea(VBox contentArea,TemplateItem item,String categoryName) {
+        VBox itemInfo = createItemInfoHBox(item,categoryName);
         contentArea.getChildren().add(itemInfo);
     }
     private TemplateItem addTemplateItemToManager(File file, Path directory) {
@@ -421,6 +423,7 @@ public class TemplateMainController {
 
     private void handleRemoveItem() {
         System.out.println("handleremoveItem");
+
     }
     private void initTemplateManager() throws IOException{
         //build templateManager through "code template" folder

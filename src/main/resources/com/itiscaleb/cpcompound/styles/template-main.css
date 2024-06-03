@@ -29,7 +29,7 @@
 }
 
 #add-category-btn{
-    -fx-padding: 0;
+    -fx-padding: 0 8 0 0;
     /*-fx-border-color: green;*/
     -fx-background-color: transparent;
     -fx-cursor: HAND;
@@ -50,7 +50,7 @@
 }
 #template-base{
     /*-fx-background-color: #2d2d2d;*/
-    -fx-background-color: #1E1E1E;
+    -fx-background-color: #524b52;
 }
 #templateVBox{
     /*-fx-border-color: red;*/
@@ -75,7 +75,8 @@
     -fx-border-width: 0;
 }
 .header-hbox{
-    -fx-border-color: transparent;
+    -fx-border-color: #524b52;
+    -fx-border-width: 0 0 1 0;
     /*-fx-border-color: yellow;*/
     -fx-background-radius: 6 6 0 0;
     -fx-padding: 0;

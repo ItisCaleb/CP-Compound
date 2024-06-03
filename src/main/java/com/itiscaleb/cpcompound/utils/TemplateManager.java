@@ -141,7 +141,7 @@ public class TemplateManager {
         else if(days == 1) return days + " day ago";
         else if (hours > 0) return hours + " hours ago";
         else if (minutes > 1) return "minutes ago";
-        else return "just modified";
+        else return "recently";
     }
     public void displayTemplates() {
         if (templates.isEmpty()) {
