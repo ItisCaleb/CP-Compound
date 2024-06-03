@@ -17,11 +17,11 @@
         <Button id="Search-icon-button" fx:id="searchIconBtn" />
         <Button id="Replace-icon-button" fx:id="replaceIconBtn"/>
         <Button id="Help-icon-button" fx:id="helpIconBtn"/>
-        <!--            <MFXButton id="Minimize-window-icon-button" fx:id="minimizeWindowBtn" onAction="#minimizeWindow" rippleAnimateBackground="false" rippleColor="#bdbdbd00" stylesheets="@../styles/editor-tool-bar-style.css" text="" textAlignment="RIGHT" />-->
+        <!--            <MFXButton id="Minimize-window-icon-button" fx:id="minimizeWindowBtn" onAction="#minimizeWindow" rippleAnimateBackground="false" rippleColor="#bdbdbd00" stylesheets="@../styles/tool-bar-style.css" text="" textAlignment="RIGHT" />-->
         <!--            <ToggleButton id="Adjust-window-icon-button" fx:id="adjustWindowBtn" mnemonicParsing="false" onAction="#adjustWindow" />-->
-        <!--            <MFXButton id="Close-window-icon-button" fx:id="closeWindowBtn" onAction="#closeWindow" rippleAnimateBackground="false" rippleColor="#bdbdbd00" stylesheets="@../styles/editor-tool-bar-style.css" text="" textAlignment="RIGHT" />-->
+        <!--            <MFXButton id="Close-window-icon-button" fx:id="closeWindowBtn" onAction="#closeWindow" rippleAnimateBackground="false" rippleColor="#bdbdbd00" stylesheets="@../styles/tool-bar-style.css" text="" textAlignment="RIGHT" />-->
     </children>
     <stylesheets>
-        <URL value="@../styles/editor-tool-bar-style.css" />
+        <URL value="@../styles/tool-bar-style.css" />
     </stylesheets>
 </HBox>

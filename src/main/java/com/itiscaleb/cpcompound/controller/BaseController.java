@@ -4,6 +4,7 @@ import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.component.EditorPopup;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Orientation;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
@@ -12,14 +13,11 @@ import javafx.scene.layout.VBox;
 
 public class BaseController {
 
-
-
-
     @FXML
     AnchorPane appBase;
 
     @FXML
-    SplitPane mainSplitPane;
+    SplitPane mainSplitPane, rightSplitPane;
 
     @FXML
     EditorPopup messagePopup = new EditorPopup();
@@ -57,15 +55,36 @@ public class BaseController {
         }
     }
 
+
+
+    private void loadRightPane(){
+        rightSplitPane = new SplitPane();
+        rightSplitPane.setDividerPositions(0.8);
+        rightSplitPane.setOrientation(Orientation.VERTICAL);
+        this.mainSplitPane.getItems().add(rightSplitPane);
+        loadEditor();
+        loadConsole();
+    }
     private void loadEditor(){
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/editor.fxml"));
             TabPane editorTabPane = fxmlLoader.load();
-            mainSplitPane.getItems().add(editorTabPane);
+            rightSplitPane.getItems().add(editorTabPane);
         } catch (Exception e) {
             CPCompound.getLogger().error("Error occurred", e);
         }
     }
+
+    private void loadConsole(){
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/console.fxml"));
+            SplitPane editorTabPane = fxmlLoader.load();
+            rightSplitPane.getItems().add(editorTabPane);
+        } catch (Exception e) {
+            CPCompound.getLogger().error("Error occurred", e);
+        }
+    }
+
 
 
     @FXML
@@ -73,7 +92,8 @@ public class BaseController {
             loadToolBar();
             loadMenuBar();
             loadFunctionPane();
-            loadEditor();
+            loadRightPane();
+            System.out.println(rightSplitPane.getItems());
             CPCompound.getLogger().info("initialize App Base");
     }
 

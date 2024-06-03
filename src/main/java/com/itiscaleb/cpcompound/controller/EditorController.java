@@ -19,7 +19,6 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
@@ -27,7 +26,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import org.eclipse.lsp4j.*;
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -42,9 +40,7 @@ import org.fxmisc.richtext.model.TwoDimensional;
 public class EditorController {
     private final KeyCombination saveCombination =  new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN);
     @FXML
-    private TabPane functionTabPane, editorTextTabPane;
-    @FXML
-    private SplitPane codeAreaSplitPane, codeAreaBase;
+    private TabPane  editorTextTabPane;
 
     static EditorController instance;
 
@@ -202,10 +198,6 @@ public class EditorController {
     private void refreshSpans(){
         EditorStyler.setSpans(mainTextArea, highlightSpans, diagnosticSpans, semanticSpans);
     }
-
-
-
-
 
     int rangeToPosition(StyleClassedTextArea area, Position p) {
         return area.getAbsolutePosition(p.getLine(), p.getCharacter());

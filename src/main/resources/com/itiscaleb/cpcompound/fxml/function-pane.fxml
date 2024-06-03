@@ -16,6 +16,6 @@
     <StackPane fx:id="functionPaneContentArea" styleClass="function-pane-content-area" VBox.vgrow="ALWAYS">
     </StackPane>
     <stylesheets>
-        <URL value="@../styles/editor-function-pane-style.css" />
+        <URL value="@../styles/function-pane-style.css" />
     </stylesheets>
 </VBox>

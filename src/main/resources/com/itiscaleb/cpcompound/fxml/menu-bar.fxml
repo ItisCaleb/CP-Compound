@@ -17,6 +17,6 @@
         <Button id="Setting-button" fx:id="settingBtn" mnemonicParsing="false" onAction="#handleMenuSwitch"/>
     </children>
     <stylesheets>
-        <URL value="@../styles/editor-menu-bar-style.css" />
+        <URL value="@../styles/menu-bar-style.css" />
     </stylesheets>
 </VBox>

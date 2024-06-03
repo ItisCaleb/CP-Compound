@@ -7,7 +7,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToolBar;
 import javafx.util.Pair;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -45,7 +44,10 @@ public class ToolBarController {
                 .saveContext();
         Editor editor = CPCompound.getEditor();
         if (editor.getCurrentContext() == null) return CompletableFuture.completedFuture(new Pair<>(null,false));
-        return editor.compile(editor.getCurrentContext(), System.out, System.err);
+        var console = ConsoleController.getInstance();
+        console.clear();
+        console.logToUser("Compiling \""+editor.getCurrentContext().getPath()+"\" ...");
+        return editor.compile(editor.getCurrentContext(), console.getOutputStream(), console.getErrorStream());
     }
 
     @FXML
@@ -62,7 +64,11 @@ public class ToolBarController {
                     return;
                 }
                 EditorContext context = result.getKey();
-                editor.execute(context, System.in, System.out, System.err, false)
+                var console = ConsoleController.getInstance();
+                console.clear();
+                console.logToUser("Executing \""+context.getExePath()+"\" ...");
+                editor.execute(context, console.getInputStream(), console.getOutputStream(),
+                                console.getErrorStream(), false)
                         .whenComplete((_r,_t)->{
                             Platform.runLater(()->{
                                 runToggleBtn.setText("Run");
