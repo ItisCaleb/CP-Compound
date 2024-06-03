@@ -14,10 +14,14 @@ import org.kordamp.ikonli.dashicons.Dashicons;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TemplateMainController {
     @FXML
@@ -29,11 +33,57 @@ public class TemplateMainController {
     @FXML
     private void handleAddCategory(){
         System.out.println("Add Category");
+        try {
+            Path templateFolderPath = APPData.resolve("Code Template");
+            String baseName = "untitle";
+            int maxNumber = 0;
+            boolean baseExists = false;
 
+            // Using DirectoryStream to find all matching folders
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(templateFolderPath, baseName + "*")) {
+                Pattern pattern = Pattern.compile(baseName + "(\\d*)");
+                for (Path entry : stream) {
+                    Matcher matcher = pattern.matcher(entry.getFileName().toString());
+                    if (matcher.matches()) {
+                        if (matcher.group(1).isEmpty()) {
+                            baseExists = true;  // The base untitle directory exists
+                        } else {
+                            maxNumber = Math.max(maxNumber, Integer.parseInt(matcher.group(1)));
+                        }
+                    }
+                }
+            }
+
+            // Determine the new directory name
+            String newDirName = baseExists ? baseName + (maxNumber + 1) : baseName;
+            Path newDirPath = templateFolderPath.resolve(newDirName);
+            Files.createDirectory(newDirPath);
+
+            // Refresh UI
+            addNewCategoryUI(newDirName);
+            //update templates in TabManager
+            templates.put(newDirName,new ArrayList<>());
+            //update order in TabManager
+            templateManager.pushBackOrder(newDirName);
+            System.out.println("Added new category: " + newDirName);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Failed to add category due to IO error.");
+        }
+    }
+    private void addNewCategoryUI(String newDirName){
+        VBox categoryContent = new VBox(5); // Spacing between items
+        categoryContent.getStyleClass().add("category-content");
+        VBox contentArea = new VBox(5);
+        contentArea.getStyleClass().add("contentArea");
+        HBox categoryHeader = createCategoryHeader(contentArea,newDirName);
+        categoryContent.getChildren().addAll(categoryHeader,contentArea);
+        templateVBox.getChildren().add(categoryContent);
     }
     private void loadTemplatesUI(){
         templateVBox.getChildren().clear();
-        templates = templateManager.getTemplates();
+        templates = templateManager.getTemplatesByOrder();
         for (Map.Entry<String, ArrayList<TemplateItem>> entry : templates.entrySet()) {
             String categoryName = entry.getKey();
             ArrayList<TemplateItem> items = entry.getValue();
@@ -73,6 +123,7 @@ public class TemplateMainController {
         });
 
         EditableLabel headerLabel = new EditableLabel();
+        setupEditableLabel(headerLabel,categoryName);
         headerLabel.getStyleClass().add("header-label");
         headerLabel.setText(categoryName);
 
@@ -151,6 +202,49 @@ public class TemplateMainController {
     private void handleAddItem() {
         System.out.println("handleAddItem");
     }
+    public void setupEditableLabel(EditableLabel editableLabel, String oldDirectoryName) {
+        editableLabel.setOnCommit(() -> {
+            String newDirectoryName = editableLabel.getText();
+            if(renameDirectory(oldDirectoryName, newDirectoryName)){
+                setupEditableLabel(editableLabel, newDirectoryName);
+            }else{
+                editableLabel.setText(oldDirectoryName);
+            }
+        });
+    }
+
+    private boolean renameDirectory(String oldName, String newName) {
+        System.out.println("newName: "+newName);
+        System.out.println("oldName: "+oldName);
+        Path source = APPData.resolve("Code Template/"+oldName);
+        Path target = APPData.resolve("Code Template/"+newName);
+        if (newName.equals("Code Template")) {
+            showAlert("Rename Error", "You can't rename 'Code Template' in Code Template");
+            return false;
+        }
+        try {
+            Files.move(source, target);
+            templates.put(newName,templates.get(oldName));
+            templates.remove(oldName);
+            //update order in templateManager
+            templateManager.updateOrderByName(oldName,newName);
+
+        }catch (FileAlreadyExistsException e){
+            showAlert("Rename Error", "A folder named '" + newName + "' already exists. Please choose a different name.");
+            return false;
+        }catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("error");
+        alert.setHeaderText(title);
+        alert.setContentText(content);
+        alert.show();
+    }
     private void handleDeleteCategory(){
         System.out.println("handleDeleteCategory");
     }
@@ -164,7 +258,7 @@ public class TemplateMainController {
     private void initTemplateManager() throws IOException{
         //build templateManager through "code template" folder
         templateManager = new TemplateManager();
-        templateManager.displayTemplates();
+//        templateManager.displayTemplates();
     }
     private void initIcon(){
         addCategoryBtn.setGraphic(new FontIcon());
@@ -181,6 +275,7 @@ public class TemplateMainController {
         initTemplateManager();
         loadTemplatesUI();
         initIcon();
+
     }
 
 

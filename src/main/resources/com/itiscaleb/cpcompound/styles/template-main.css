@@ -179,11 +179,13 @@
 .open-item-btn .ikonli-font-icon:hover{
     -fx-icon-color: #FFFFFF;
     -fx-icon-size: 22px;
+    -fx-font-weight: bold;
 }
 
 .item-name .label, .item-name .text-field{
     -fx-text-fill: #A49F9F;
     -fx-font-size: 14;
+    -fx-font-weight: bold;
 }
 .item-main-info{
     /*-fx-border-color: red;*/

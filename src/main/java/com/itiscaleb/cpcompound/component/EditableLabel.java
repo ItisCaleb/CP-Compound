@@ -12,7 +12,7 @@ import javafx.scene.layout.StackPane;
 public class EditableLabel extends StackPane {
     private Label label = new Label();
     private TextField textField = new TextField();
-
+    private Runnable onCommit = null;
     public EditableLabel() {
         this("ssss");
     }
@@ -28,7 +28,16 @@ public class EditableLabel extends StackPane {
         this.getStyleClass().add("editable-label");
         setupInteractions();
     }
-
+    public void setOnCommit(Runnable onCommit) {
+        this.onCommit = onCommit;
+    }
+    private void commitText() {
+        label.setText(textField.getText());
+        showLabel();
+        if (onCommit != null) {
+            onCommit.run();
+        }
+    }
     private void setupInteractions() {
         label.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
@@ -38,6 +47,7 @@ public class EditableLabel extends StackPane {
 
         textField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
+                System.out.println("commit on key pressed");
                 label.setText(textField.getText());
                 showLabel();
             }
@@ -45,8 +55,8 @@ public class EditableLabel extends StackPane {
 
         textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (!isNowFocused) {
-                label.setText(textField.getText());
-                showLabel();
+                System.out.println("commit on focused");
+                commitText();
             }
         });
     }
