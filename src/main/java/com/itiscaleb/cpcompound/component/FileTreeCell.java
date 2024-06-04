@@ -33,7 +33,7 @@ public class FileTreeCell extends TreeCell<File> {
         arrowIcon.setTranslateY(6);
         arrowIcon.setTranslateX(8);
         setDisclosureNode(arrowIcon);
-        if (treeItem.isLeaf()) {
+        if (!treeItem.getValue().isDirectory()) {
             FontIcon icon = new FontIcon(BoxiconsSolid.FILE);
             icon.setIconColor(Color.valueOf("#B3CED8FF"));
             setGraphic(icon);

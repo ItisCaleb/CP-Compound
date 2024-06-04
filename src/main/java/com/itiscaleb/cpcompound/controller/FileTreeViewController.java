@@ -96,10 +96,7 @@ public class FileTreeViewController {
         }
     }
     private void expandAll(TreeItem<File> item) {
-        if(item.isLeaf()){
-            return;
-        }
-        if (!item.isLeaf() && !item.isExpanded()) {
+        if (item.getValue().isDirectory() && !item.isExpanded()) {
             item.setExpanded(true);
         }
         for (TreeItem<File> child : item.getChildren()) {
@@ -130,11 +127,11 @@ public class FileTreeViewController {
         });
     }
     private void handleTreeItemClick(MouseEvent event) {
-        if(event.getClickCount() == 2){
+        if(event.getClickCount() == 2) {
             TreeItem<File> selectedItem = fileTreeView.getSelectionModel().getSelectedItem();
-            File file = selectedItem.getValue();
-            if(file.isDirectory()) return;
             if (selectedItem != null) {
+                File file = selectedItem.getValue();
+                if (file.isDirectory()) return;
                 EditorController.getInstance().addNewFile(file);
             }
         }
