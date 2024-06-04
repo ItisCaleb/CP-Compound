@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import com.itiscaleb.cpcompound.component.EditableLabel?>
+
+<?import javafx.scene.control.ScrollPane?>
+<AnchorPane id="template-base" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.TemplateMainController">
+   <children>
+       <HBox id="template-navbar" prefHeight="48.0" prefWidth="100.0" AnchorPane.leftAnchor="36.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="10.0">
+           <EditableLabel fx:id="templateTitle" id="template-title"></EditableLabel>
+           <Button fx:id="addCategoryBtn" id="add-category-btn" onAction="#handleAddCategory"></Button>
+       </HBox>
+       <ScrollPane fitToWidth="true" fitToHeight="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="36.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="60.0">
+       <VBox fx:id="templateVBox" id="templateVBox" >
+<!--         <VBox fx:id="templateVBox" id="template-vbox"  AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="36.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="60.0">-->
+         <children>
+
+         </children>
+      </VBox>
+       </ScrollPane>
+   </children>
+   <stylesheets>
+      <URL value="@../styles/template-main.css" />
+      <URL value="@../styles/editor-scroll-bar.css" />
+
+   </stylesheets>
+</AnchorPane>

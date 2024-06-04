@@ -11,7 +11,7 @@
 <HBox id="main-editor-tool-bar" layoutX="48.0" layoutY="6.0" prefHeight="47.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.ToolBarController">
     <children>
         <Button id="Add-file-button" fx:id="addFileBtn" onAction="#handleAddNewFile"/>
-        <Button id="Template-button" fx:id="templateBtn" text="Template" textAlignment="RIGHT"/>
+        <Button id="Template-button" fx:id="templateBtn" onAction="#handleOpenTemplateStage" text="Template" textAlignment="RIGHT"/>
         <Button id="Compile-button" fx:id="compileBtn" onAction="#handleCompile" text="Compile"/>
         <ToggleButton id="Run-button" fx:id="runToggleBtn"  onAction="#handleExecute" text="Run"/>
         <Button id="Search-icon-button" fx:id="searchIconBtn" />
