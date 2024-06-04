@@ -138,8 +138,13 @@ public class EditorController {
     private void handleTabClosed(Event event, Tab closedTab){
         if(!tabManager.getTabSaveState(closedTab)){
             //saveContext(closedTab);
-            CPCompound.getEditor().removeContext((String) closedTab.getUserData());
         }
+
+        CPCompound.getEditor().removeContext((String) closedTab.getUserData());
+        if(CPCompound.getEditor().getCurrentContext() == null){
+            Platform.runLater(mainTextArea::clear);
+        }
+
     }
     private void setHandleChangeTab(){
         editorTextTabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
@@ -159,6 +164,7 @@ public class EditorController {
         mainTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             Editor editor = CPCompound.getEditor();
             EditorContext context = editor.getCurrentContext();
+            if(context == null) return;
             if(lastContext != context){
                 lastContext = context;
                 this.diagnostics = context.getDiagnostics();

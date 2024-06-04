@@ -90,6 +90,9 @@ public class Editor {
 
     public void removeContext(String name) {
         EditorContext context = contexts.remove(name);
+        if(contexts.isEmpty()){
+            currentContext = null;
+        }
         generateCompileCommands();
         if(context != null){
             LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
