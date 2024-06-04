@@ -20,3 +20,11 @@
     -fx-fill: #d878e1 !important;
     -fx-font-weight: bold;
 }
+.semantic-enum{
+    -fx-fill: #d878e1 !important;
+    -fx-font-weight: bold;
+}
+.semantic-operator{
+    -fx-fill: #d878e1 !important;
+    -fx-font-weight: bold;
+}

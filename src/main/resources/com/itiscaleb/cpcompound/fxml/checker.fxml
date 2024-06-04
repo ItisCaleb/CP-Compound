@@ -9,27 +9,24 @@
    <children>
       <BorderPane>
          <top>
-            <VBox spacing="10" BorderPane.alignment="CENTER">
-               <HBox>
+            <VBox  BorderPane.alignment="CENTER">
+               <HBox id="btnAreaHBox">
                   <Button fx:id="addTestCaseBtn" id="add-test-case-btn" onAction="#addTestCase"/>
                   <Button fx:id="runAllTestCaseBtn" id="run-all-test-case-btn"  onAction="#runAllTestCase"/>
                   <Button fx:id="deleteAllTestCaseBtn" id="delete-all-test-case-btn"  onAction="#deleteAllTestCase"/>
                </HBox>
-               <padding>
-                  <Insets top="10" right="10" bottom="10" left="10"/>
-               </padding>
-               <HBox spacing="10" alignment="CENTER">
-                  <Button text="strict compare?" fx:id="testCaseLabel"/>
-                  <CheckBox text="strict?" fx:id="strictMatchCheckBox"/>
+<!--               <padding>-->
+<!--                  <Insets top="10" right="10" bottom="10" left="10"/>-->
+<!--               </padding>-->
+               <HBox spacing="10" alignment="CENTER" id="strictCompareHBox">
+                  <CheckBox text="strict compare" fx:id="strictMatchCheckBox" id="strictMatchCheckBox"/>
                </HBox>
             </VBox>
          </top>
          <center>
-            <ScrollPane fitToWidth="true">
-               <VBox fx:id="testCaseBox" spacing="10">
-                  <padding>
-                     <Insets top="10" right="10" bottom="10" left="10"/>
-                  </padding>
+            <ScrollPane fitToWidth="true" styleClass="testCaseScrollPane">
+               <VBox fx:id="testCaseBox" spacing="10" styleClass="testCaseBox">
+
                </VBox>
             </ScrollPane>
          </center>
