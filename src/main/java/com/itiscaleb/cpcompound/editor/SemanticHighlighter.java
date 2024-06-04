@@ -23,19 +23,26 @@ public class SemanticHighlighter {
             int from = area.getAbsolutePosition(token.getLine(), token.getStart());
             int to = area.getAbsolutePosition(token.getLine(), token.getEnd());
             spansBuilder.add(Collections.emptyList(), from - lastKwEnd);
-            Collection<String> collection = null;
-            switch (token.getType()){
-                case Function -> collection = Collections.singleton("semantic-function");
-                case Variable -> collection = Collections.singleton("semantic-variable");
-                case Namespace -> collection = Collections.singleton("semantic-namespace");
-                case Class -> collection = Collections.singleton("semantic-class");
-                case Struct -> collection = Collections.singleton("semantic-struct");
-                default -> collection = Collections.emptyList();
-            }
+            Collection<String> collection = fromEnum(token);
             spansBuilder.add(collection, to - from);
             lastKwEnd = to;
         }
         spansBuilder.add(Collections.emptyList(), area.getLength() - lastKwEnd);
         return spansBuilder.create();
+    }
+
+    private static Collection<String> fromEnum(SemanticToken token) {
+        Collection<String> collection;
+        switch (token.getType()){
+            case Function -> collection = Collections.singleton("semantic-function");
+            case Variable -> collection = Collections.singleton("semantic-variable");
+            case Namespace -> collection = Collections.singleton("semantic-namespace");
+            case Class -> collection = Collections.singleton("semantic-class");
+            case Struct -> collection = Collections.singleton("semantic-struct");
+            case Enum -> collection = Collections.singleton("semantic-enum");
+            case Operator -> collection = Collections.singleton("semantic-operator");
+            default -> collection = Collections.emptyList();
+        }
+        return collection;
     }
 }
