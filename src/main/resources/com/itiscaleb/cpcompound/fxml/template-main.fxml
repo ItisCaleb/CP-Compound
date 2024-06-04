@@ -12,7 +12,7 @@
 <AnchorPane id="template-base" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.TemplateMainController">
    <children>
        <HBox id="template-navbar" prefHeight="48.0" prefWidth="100.0" AnchorPane.leftAnchor="36.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="10.0">
-           <EditableLabel  id="template-title"></EditableLabel>
+           <EditableLabel fx:id="templateTitle" id="template-title"></EditableLabel>
            <Button fx:id="addCategoryBtn" id="add-category-btn" onAction="#handleAddCategory"></Button>
        </HBox>
        <ScrollPane fitToWidth="true" fitToHeight="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="36.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="60.0">

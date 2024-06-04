@@ -33,59 +33,11 @@ public class TemplateMainController {
     Button addCategoryBtn;
     @FXML
     VBox templateVBox;
+    @FXML
+    EditableLabel templateTitle;
     TemplateManager templateManager;
     Map<String, ArrayList<TemplateItem>> templates;
-    @FXML
-    private void handleAddCategory(){
-        System.out.println("Add Category");
-        try {
-            Path templateFolderPath = APPData.resolve("Code Template");
-            String baseName = "untitle";
-            int maxNumber = 0;
-            boolean baseExists = false;
 
-            // Using DirectoryStream to find all matching folders
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(templateFolderPath, baseName + "*")) {
-                Pattern pattern = Pattern.compile(baseName + "(\\d*)");
-                for (Path entry : stream) {
-                    Matcher matcher = pattern.matcher(entry.getFileName().toString());
-                    if (matcher.matches()) {
-                        if (matcher.group(1).isEmpty()) {
-                            baseExists = true;  // The base untitle directory exists
-                        } else {
-                            maxNumber = Math.max(maxNumber, Integer.parseInt(matcher.group(1)));
-                        }
-                    }
-                }
-            }
-
-            // Determine the new directory name
-            String newDirName = baseExists ? baseName + (maxNumber + 1) : baseName;
-            Path newDirPath = templateFolderPath.resolve(newDirName);
-            Files.createDirectory(newDirPath);
-
-            // Refresh UI
-            addNewCategoryUI(newDirName);
-            //update templates in TabManager
-            templates.put(newDirName,new ArrayList<>());
-            //update order in TabManager
-            templateManager.pushBackOrder(newDirName);
-            System.out.println("Added new category: " + newDirName);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Failed to add category due to IO error.");
-        }
-    }
-    private void addNewCategoryUI(String newDirName){
-        VBox categoryContent = new VBox(5); // Spacing between items
-        categoryContent.getStyleClass().add("category-content");
-        VBox contentArea = new VBox(5);
-        contentArea.getStyleClass().add("contentArea");
-        HBox categoryHeader = createCategoryHeader(contentArea,newDirName);
-        categoryContent.getChildren().addAll(categoryHeader,contentArea);
-        templateVBox.getChildren().add(categoryContent);
-    }
     private void loadTemplatesUI(){
         templateVBox.getChildren().clear();
         templates = templateManager.getTemplatesByOrder();
@@ -128,7 +80,7 @@ public class TemplateMainController {
         });
 
         EditableLabel headerLabel = new EditableLabel();
-        setupEditableLabel(headerLabel,categoryName);
+        setupHeaderLabel(headerLabel,categoryName);
         headerLabel.getStyleClass().add("header-label");
         headerLabel.setText(categoryName);
 
@@ -167,7 +119,7 @@ public class TemplateMainController {
         EditableLabel itemName = new EditableLabel();
         itemName.setText(item.getFileName());
         itemName.getStyleClass().add("item-name");
-
+        setupItemName(itemName,item,categoryName,itemName.getText());
         HBox infoBtnArea =new HBox(5);
         infoBtnArea.setAlignment(Pos.CENTER_RIGHT);
         HBox.setHgrow(infoBtnArea,Priority.ALWAYS);
@@ -218,18 +170,18 @@ public class TemplateMainController {
         return itemInfo;
     }
 
-    public void setupEditableLabel(EditableLabel editableLabel, String oldDirectoryName) {
+    public void setupHeaderLabel(EditableLabel editableLabel, String oldDirectoryName) {
         editableLabel.setOnCommit(() -> {
             String newDirectoryName = editableLabel.getText();
             if(renameDirectory(oldDirectoryName, newDirectoryName)){
-                setupEditableLabel(editableLabel, newDirectoryName);
+                setupHeaderLabel(editableLabel, newDirectoryName);
             }else{
                 editableLabel.setText(oldDirectoryName);
             }
         });
     }
-
     private boolean renameDirectory(String oldName, String newName) {
+        System.out.println("Template action: rename directory");
         System.out.println("newName: "+newName);
         System.out.println("oldName: "+oldName);
         Path source = APPData.resolve("Code Template/"+oldName);
@@ -244,7 +196,6 @@ public class TemplateMainController {
             templates.remove(oldName);
             //update order in templateManager
             templateManager.updateOrderByName(oldName,newName);
-
         }catch (FileAlreadyExistsException e){
             showAlert("Rename Error", "A folder named '" + newName + "' already exists. Please choose a different name.");
             return false;
@@ -254,18 +205,98 @@ public class TemplateMainController {
         }
         return true;
     }
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("error");
-        alert.setHeaderText(title);
-        alert.setContentText(content);
-        alert.show();
+
+    public void setupItemName(EditableLabel editableLabel,TemplateItem item,String categoryName,String oldFileName) {
+        editableLabel.setOnCommit(() -> {
+            System.out.println("Template action: rename item Name");
+            String newFileName = editableLabel.getText();
+            Path source = APPData.resolve("Code Template/"+categoryName+"/"+item.getFileName());
+            Path target = APPData.resolve("Code Template/"+categoryName+"/"+newFileName);
+            try {
+                // Rename the file on disk
+                Files.move(source, target);
+                item.setFileName(newFileName);
+            }catch(FileAlreadyExistsException e){
+                showAlert("Rename Error", "A file named '" + newFileName + "' already exists. Please choose a different name.");
+                editableLabel.setText(oldFileName);
+            }catch (IOException e) {
+                showAlert("Error", "Failed to rename file.\nPlease try again.");
+                editableLabel.setText(oldFileName);
+            }
+        }
+        );
+    }
+
+    @FXML
+    private void handleAddCategory(){
+        System.out.println("Template action: Add Category");
+        try {
+            Path templateFolderPath = APPData.resolve("Code Template");
+            String baseName = "untitle";
+            int maxNumber = 0;
+            boolean baseExists = false;
+
+            // Using DirectoryStream to find all matching folders
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(templateFolderPath, baseName + "*")) {
+                Pattern pattern = Pattern.compile(baseName + "(\\d*)");
+                for (Path entry : stream) {
+                    Matcher matcher = pattern.matcher(entry.getFileName().toString());
+                    if (matcher.matches()) {
+                        if (matcher.group(1).isEmpty()) {
+                            baseExists = true;
+                        } else {
+                            maxNumber = Math.max(maxNumber, Integer.parseInt(matcher.group(1)));
+                        }
+                    }
+                }
+            }
+
+            // Determine the new directory name
+            String newDirName = baseExists ? baseName + (maxNumber + 1) : baseName;
+            Path newDirPath = templateFolderPath.resolve(newDirName);
+            //crate folder
+            Files.createDirectory(newDirPath);
+            // Refresh UI
+            addNewCategoryUI(newDirName);
+            //update templates in TabManager
+            templates.put(newDirName,new ArrayList<>());
+            //push back order in TabManager
+            templateManager.pushBackOrder(newDirName);
+            System.out.println("added new category: " + newDirName);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error :(", "Failed to add new category, please try again");
+            System.out.println("Failed to add category due to IO error.");
+        }
+    }
+    private void addNewCategoryUI(String newDirName){
+        VBox categoryContent = new VBox(5);
+        categoryContent.getStyleClass().add("category-content");
+        VBox contentArea = new VBox(5);
+        contentArea.getStyleClass().add("contentArea");
+        HBox categoryHeader = createCategoryHeader(contentArea,newDirName);
+        categoryContent.getChildren().addAll(categoryHeader,contentArea);
+        templateVBox.getChildren().add(categoryContent);
+    }
+
+    private void handleDeleteCategory(String categoryName,HBox categoryHeader){
+        System.out.println("Template action: delete Category");
+        boolean isConfirm = showConfirmDeleteCategoryAlert();
+        if(!isConfirm){
+            return;
+        }
+        VBox parentVBox = (VBox) categoryHeader.getParent();
+        templateVBox.getChildren().remove(parentVBox);
+        templates.remove(categoryName);
+        deleteCategoryDirectory(categoryName);
+        templateManager.removeOrderByName(categoryName);
     }
     private boolean showConfirmDeleteCategoryAlert(){
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("warning");
         dialog.setHeaderText("Sure to delete the category?");
-        dialog.setContentText("Are you sure you want to delete this category?\nAll the files in category will disappear");
+        dialog.setContentText("All the files in category will delete forever");
         ButtonType confirmButtonType = new ButtonType("Confirm");
         ButtonType cancelButtonType = new ButtonType("Cancel");
         dialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, cancelButtonType);
@@ -284,25 +315,11 @@ public class TemplateMainController {
         });
         dialog.showAndWait();
         return isConfirmed[0];
-
-    }
-
-    private void handleDeleteCategory(String categoryName,HBox categoryHeader){
-        boolean isConfirm = showConfirmDeleteCategoryAlert();
-        if(!isConfirm){
-            return;
-        }
-        VBox parentVBox = (VBox) categoryHeader.getParent();
-        templateVBox.getChildren().remove(parentVBox);
-        templates.remove(categoryName);
-        deleteCategoryDirectory(categoryName);
-        templateManager.removeOrderByName(categoryName);
-        System.out.println("handleDeleteCategory");
     }
     private void deleteCategoryDirectory(String categoryName) {
         try {
             Path directoryPath =APPData.resolve("Code Template/"+categoryName);
-            System.out.println("try delete category: "+directoryPath);
+            System.out.println("try delete folder: "+directoryPath);
             Files.walkFileTree(directoryPath, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -317,6 +334,165 @@ public class TemplateMainController {
             });
         } catch (IOException e) {
             e.printStackTrace();
+            showAlert("Error :(", "Failed to delete category, please restart template and try again");
+        }
+    }
+
+    private void handleAddItem(String categoryName, VBox contentArea) {
+        System.out.println("Template action: Add Item in "+categoryName+" category");
+        Integer chooseWay = showNewFileDialog();
+        if(chooseWay == 1){
+            System.out.println("choose copyFromFile to add item");
+            copyFromFile(categoryName,contentArea);
+        }else if(chooseWay == 2){
+            System.out.println("choose createEmptyFile to add item");
+            createEmptyFile(categoryName,contentArea);
+        }else{
+            System.out.println("cancel action");
+            return;
+        }
+    }
+    private Integer showNewFileDialog(){
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Add New File");
+        dialog.setHeaderText("Choose way to add new file");
+        dialog.setContentText("If choose Copy from Folder will copy file to template\nIf choose Add Empty File will create empty file in template");
+        ButtonType copyFromFileButton = new ButtonType("Copy from Folder", ButtonBar.ButtonData.OK_DONE);
+        ButtonType addEmptyFileButton = new ButtonType("Add Empty File", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(copyFromFileButton, addEmptyFileButton, ButtonType.CANCEL);
+        Optional<ButtonType> result = dialog.showAndWait();
+        final Integer[] chooseWay = new Integer[1];
+        result.ifPresent(response -> {
+            if (response == copyFromFileButton) {
+                chooseWay[0] = 1;
+            } else if (response == addEmptyFileButton) {
+                chooseWay[0] = 2;
+            }else{
+                chooseWay[0] = 3;
+            }
+        });
+        return chooseWay[0];
+    }
+    private void copyFromFile(String categoryName,VBox contentArea) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select File to Copy");
+        File file = fileChooser.showOpenDialog(null);
+        if (file != null && isTextFile(file.getName())) {
+            try {
+                System.out.println("try copy file: "+file.getAbsolutePath());
+                Path targetDirectory = APPData.resolve("Code Template/"+categoryName);
+                Files.copy(file.toPath(), targetDirectory.resolve(file.getName()), StandardCopyOption.REPLACE_EXISTING);
+                TemplateItem item= addTemplateItemToManager(file, targetDirectory);
+                addTemplateItemToContentArea(contentArea,item,categoryName);
+            } catch (IOException e) {
+                showAlert("Error", "Failed to read file content or add template item.\nPlease try again.");
+            }
+        } else {
+            showAlert("Error", "Invalid file type or operation cancelled.");
+        }
+    }
+    private boolean isTextFile(String fileName) {
+        return fileName.endsWith(".cc") || fileName.endsWith(".cpp") || fileName.endsWith(".c") || fileName.endsWith(".py") || fileName.endsWith(".txt");
+    }
+    private void createEmptyFile(String categoryName,VBox contentArea) {
+        List<String> options = Arrays.asList("cpp", "c", "py","text");
+        ChoiceDialog<String> typeDialog = new ChoiceDialog<>("cpp", options);
+        typeDialog.setTitle("Select File Type");
+        typeDialog.setHeaderText("Choose a file type for the new file:");
+        Optional<String> typeResult = typeDialog.showAndWait();
+        typeResult.ifPresent(type -> {
+            Path targetDirectory = APPData.resolve("Code Template/"+categoryName);
+            String baseName = "untitle";
+            String extension = "." + type;
+            File file = findUniqueFileName(targetDirectory, baseName, extension);
+            try {
+                System.out.println("try create empty file: "+file.getAbsolutePath());
+                Files.createFile(file.toPath());
+                TemplateItem item= addTemplateItemToManager(file, targetDirectory);
+                addTemplateItemToContentArea(contentArea,item,categoryName);
+            } catch (IOException e) {
+                showAlert("Error", "Failed to create file or add template item.\nPlease try again.");
+            }
+        });
+    }
+    private File findUniqueFileName(Path directory, String baseName, String extension) {
+        int num = 0;
+        while (true) {
+            File file = new File(directory.resolve(baseName + (num > 0 ? num : "") + extension).toString());
+            if (!file.exists()) return file;
+            num++;
+        }
+    }
+    private TemplateItem addTemplateItemToManager(File file, Path directory) throws IOException {
+        TemplateItem item=null;
+        try {
+            // Read file content
+            String content = new String(Files.readAllBytes(file.toPath()));
+            String extension = templateManager.getFileExtension(file.toPath());
+            LocalDateTime lastModified = LocalDateTime.ofInstant(
+                    Files.getLastModifiedTime(file.toPath()).toInstant(),
+                    ZoneId.systemDefault()
+            );
+            // Create a new TemplateItem
+            item = new TemplateItem(
+                    file.getName(),
+                    extension,
+                    content,
+                    templateManager.formatRelativeTime(lastModified)
+            );
+            // Assume directory.getName() returns the category name under which this file should be classified
+            templates.get(directory.getFileName().toString()).add(item);
+        } catch (IOException e) {
+            System.out.println("Error reading file or adding item: " + e.getMessage());
+            throw e;
+        }
+        return item;
+    }
+    private void addTemplateItemToContentArea(VBox contentArea,TemplateItem item,String categoryName) {
+        System.out.println("load new item UI into contentArea");
+        VBox itemInfo = createItemInfoHBox(item,categoryName);
+        contentArea.getChildren().add(itemInfo);
+    }
+
+    private void handleCopyCode(TemplateItem item) {
+        System.out.println("Template action: Copy Code");
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(item.getFileContent());
+        clipboard.setContent(content);
+    }
+
+    private void handleOpenItem(TemplateItem item,String categoryName) {
+        System.out.println("Template action: Open Item in EditorArea");
+        Path filePaht = APPData.resolve("Code Template/"+categoryName+"/"+item.getFileName());
+        File openFile = filePaht.toFile();
+        EditorController.getInstance().addNewFile(openFile);
+        System.out.println("Open "+openFile.getName());
+    }
+
+    private void handleRemoveItem(TemplateItem item,String categoryName,VBox itemInfo) {
+        System.out.println("Template action: remove item in "+categoryName+" category");
+        boolean isConfirm = showConfirmDeleteItemAlert();
+        if(!isConfirm){
+            System.out.println("cancel remove item");
+            return;
+        }
+        VBox parentContentArea = (VBox) itemInfo.getParent();
+        parentContentArea.getChildren().remove(itemInfo);
+        Path filePath = APPData.resolve("Code Template/"+categoryName+"/"+item.getFileName());
+        try{
+            System.out.println("try remove item");
+            System.out.println("before remove item, templates items:");
+            templateManager.printTemplateItem(categoryName);
+            Files.deleteIfExists(filePath);
+//            templates.remove(categoryName,item);
+            ArrayList<TemplateItem> items = templates.get(categoryName);
+            items.remove(item);
+            templates.put(categoryName, items);
+            System.out.println("after remove item, templates items:");
+            templateManager.printTemplateItem(categoryName);
+        }catch (IOException e) {
+            showAlert("Error", "Failed to delete the file\nPlease try again." );
         }
     }
     private boolean showConfirmDeleteItemAlert(){
@@ -342,161 +518,21 @@ public class TemplateMainController {
         });
         dialog.showAndWait();
         return isConfirmed[0];
+    }
 
-    }
-    private void handleRemoveItem(TemplateItem item,String categoryName,VBox itemInfo) {
-        System.out.println("handleremoveItem");
-        boolean isConfirm = showConfirmDeleteItemAlert();
-        if(!isConfirm){
-            System.out.println("cancel remove item");
-            return;
-        }
-        VBox parentContentArea = (VBox) itemInfo.getParent();
-        parentContentArea.getChildren().remove(itemInfo);
-        Path filePath = APPData.resolve("Code Template/"+categoryName+"/"+item.getFileName());
-        try{
-            Files.deleteIfExists(filePath);
-            ArrayList<TemplateItem> items = templateManager.getTemplates().get(categoryName);
-            items.remove(item);
-        }catch (IOException e) {
-            showAlert("Error", "Failed to delete the file" );
-        }
-    }
-    private void showAlert(String title) {
+    private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText("Please try again:)");
-        alert.showAndWait();
+        alert.setTitle("error");
+        alert.setHeaderText(title);
+        alert.setContentText(content);
+        alert.show();
     }
-    private void handleOpenItem(TemplateItem item,String categoryName) {
-        Path filePaht = APPData.resolve("Code Template/"+categoryName+"/"+item.getFileName());
-        File openFile = filePaht.toFile();
-        EditorController.getInstance().addNewFile(openFile);
-        System.out.println("Open "+openFile.getName());
-    }
-    private void handleCopyCode(TemplateItem item) {
-        Clipboard clipboard = Clipboard.getSystemClipboard();
-        ClipboardContent content = new ClipboardContent();
-        content.putString(item.getFileContent());
-        clipboard.setContent(content);
-    }
-    private Integer showNewFileDialog(){
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Add New File");
 
-        ButtonType copyFromFileButton = new ButtonType("Copy from Folder", ButtonBar.ButtonData.OK_DONE);
-        ButtonType addEmptyFileButton = new ButtonType("Add Empty File", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(copyFromFileButton, addEmptyFileButton, ButtonType.CANCEL);
-
-        Optional<ButtonType> result = dialog.showAndWait();
-        final Integer[] chooseWay = new Integer[1];
-        result.ifPresent(response -> {
-            if (response == copyFromFileButton) {
-                chooseWay[0] = 1;
-            } else if (response == addEmptyFileButton) {
-                chooseWay[0] = 2;
-            }else{
-                chooseWay[0] = 3;
-            }
-        });
-        return chooseWay[0];
-    }
-    private void copyFromFile(String categoryName,VBox contentArea) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select File to Copy");
-        File file = fileChooser.showOpenDialog(null);
-        if (file != null && isTextFile(file.getName())) {
-            try {
-                Path targetDirectory = APPData.resolve("Code Template/"+categoryName);
-                Files.copy(file.toPath(), targetDirectory.resolve(file.getName()), StandardCopyOption.REPLACE_EXISTING);
-                TemplateItem item= addTemplateItemToManager(file, targetDirectory);
-                addTemplateItemToContentArea(contentArea,item,categoryName);
-            } catch (IOException e) {
-                showAlert("Error", "Failed to copy file.");
-            }
-        } else {
-            showAlert("Error", "Invalid file type or operation cancelled.");
-        }
-    }
-    private void createEmptyFile(String categoryName,VBox contentArea) {
-        List<String> options = Arrays.asList("text", "cpp", "c", "py");
-        ChoiceDialog<String> typeDialog = new ChoiceDialog<>("text", options);
-        typeDialog.setTitle("Select File Type");
-        typeDialog.setHeaderText("Choose a file type for the new file:");
-        Optional<String> typeResult = typeDialog.showAndWait();
-
-        typeResult.ifPresent(type -> {
-            Path targetDirectory = APPData.resolve("Code Template/"+categoryName);
-            String baseName = "untitle";
-            String extension = "." + type;
-            File file = findUniqueFileName(targetDirectory, baseName, extension);
-            try {
-                Files.createFile(file.toPath());
-                TemplateItem item= addTemplateItemToManager(file, targetDirectory);
-                addTemplateItemToContentArea(contentArea,item,categoryName);
-            } catch (IOException e) {
-                showAlert("Error", "Failed to create file.");
-            }
+    private void setupTitleEditable() {
+        templateTitle.setOnCommit(() -> {
+            templateManager.setTemplateTitle(templateTitle.getText());
         });
     }
-
-    private File findUniqueFileName(Path directory, String baseName, String extension) {
-        int num = 0;
-        while (true) {
-            File file = new File(directory.resolve(baseName + (num > 0 ? num : "") + extension).toString());
-            if (!file.exists()) return file;
-            num++;
-        }
-    }
-    private boolean isTextFile(String fileName) {
-        return fileName.endsWith(".cc") || fileName.endsWith(".cpp") || fileName.endsWith(".c") || fileName.endsWith(".py") || fileName.endsWith(".txt");
-    }
-    private void handleAddItem(String categoryName, VBox contentArea) {
-        Integer chooseWay = showNewFileDialog();
-        if(chooseWay == 1){
-            copyFromFile(categoryName,contentArea);
-        }else if(chooseWay == 2){
-            createEmptyFile(categoryName,contentArea);
-        }else{
-            return;
-        }
-        System.out.println("handleAddItem");
-    }
-    private void addTemplateItemToContentArea(VBox contentArea,TemplateItem item,String categoryName) {
-        VBox itemInfo = createItemInfoHBox(item,categoryName);
-        contentArea.getChildren().add(itemInfo);
-    }
-    private TemplateItem addTemplateItemToManager(File file, Path directory) {
-        TemplateItem item=null;
-        try {
-            // Read file content
-            String content = new String(Files.readAllBytes(file.toPath()));
-            String extension = templateManager.getFileExtension(file.toPath());
-            LocalDateTime lastModified = LocalDateTime.ofInstant(
-                    Files.getLastModifiedTime(file.toPath()).toInstant(),
-                    ZoneId.systemDefault()
-            );
-
-            // Create a new TemplateItem
-            item = new TemplateItem(
-                    file.getName(),
-                    extension,
-                    content,
-                    templateManager.formatRelativeTime(lastModified)
-            );
-
-            // Assume directory.getName() returns the category name under which this file should be classified
-            templates.get(directory.getFileName().toString()).add(item);
-
-        } catch (IOException e) {
-            System.out.println("Error reading file or adding item: " + e.getMessage());
-            showAlert("Error", "Failed to read file content or add template item.");
-        }
-        return item;
-    }
-
-
     private void initTemplateManager() throws IOException{
         //build templateManager through "code template" folder
         templateManager = new TemplateManager();
@@ -505,20 +541,17 @@ public class TemplateMainController {
     private void initIcon(){
         addCategoryBtn.setGraphic(new FontIcon());
     }
+    private void initTemplateTitle(){
+        templateTitle.setText(templateManager.getTemplateTitle());
+        setupTitleEditable();
+        HBox.setHgrow(templateTitle, Priority.ALWAYS);
+    }
     public void initialize() throws IOException {
-        Path NewtemplatePath = APPData.resolve("Code Template");
-        System.out.println("path: " + NewtemplatePath);
-        if(!Files.exists(NewtemplatePath)) {
-            System.out.println("creating folder: Code Template");
-            Files.createDirectory(NewtemplatePath);
-        }else{
-            System.out.println("folder already exists");
-        }
         initTemplateManager();
         loadTemplatesUI();
         initIcon();
-
+        templateTitle.setText(templateManager.getTemplateTitle());
+        setupTitleEditable();
+        initTemplateTitle();
     }
-
-
 }

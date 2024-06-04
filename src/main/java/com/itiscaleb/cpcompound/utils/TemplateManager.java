@@ -1,4 +1,5 @@
 package com.itiscaleb.cpcompound.utils;
+import com.itiscaleb.cpcompound.component.EditableLabel;
 import com.itiscaleb.cpcompound.component.TemplateItem;
 
 import java.io.IOException;
@@ -12,10 +13,12 @@ import java.util.*;
 public class TemplateManager {
     private Map<String, ArrayList<TemplateItem>> templates = new HashMap<>();
     private List<String> order = new ArrayList<>();
-    private Path orderFilePath;
+    private Path orderFilePath, templateTitlePath;
+    private String templateTitle;
     public TemplateManager() {
         System.out.println("Creating TemplateManager......");
         orderFilePath = APPData.resolve(".config/order");
+        templateTitlePath = APPData.resolve(".config/title");
         build();
     }
     private void createConfigDirectory() {
@@ -31,6 +34,7 @@ public class TemplateManager {
 
     private void build() {
         createConfigDirectory();
+        loadTitle();
         loadOrder();
         Path templatesFolder = APPData.resolve("Code Template");
         try {
@@ -70,6 +74,36 @@ public class TemplateManager {
         }
 
         updateOrder(templates);
+    }
+    private void loadTitle() {
+        try {
+            if (Files.exists(templateTitlePath)) {
+                templateTitle = new String(Files.readAllBytes(templateTitlePath));
+            }else{
+                Files.createFile(templateTitlePath);
+                templateTitle = "Template Title(double click could edit)";
+                saveTitle();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            templateTitle = "Template Title(double click could edit)";
+        }
+    }
+
+    public void saveTitle() {
+        try {
+            Files.write(templateTitlePath, templateTitle.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public String getTemplateTitle() {
+        return templateTitle;
+    }
+
+    public void setTemplateTitle(String title) {
+        this.templateTitle = title;
+        saveTitle();
     }
     private void loadOrder() {
         try {
@@ -142,6 +176,12 @@ public class TemplateManager {
         else if (hours > 0) return hours + " hours ago";
         else if (minutes > 1) return "minutes ago";
         else return "recently";
+    }
+    public void printTemplateItem(String key){
+        for(TemplateItem item : templates.get(key)){
+            System.out.print(item.getFileName()+"->");
+        }
+        System.out.println();
     }
     public void displayTemplates() {
         if (templates.isEmpty()) {

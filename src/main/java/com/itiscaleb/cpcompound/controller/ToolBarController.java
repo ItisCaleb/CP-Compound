@@ -26,7 +26,7 @@ public class ToolBarController {
 //    ToggleButton adjustWindowBtn;
     @FXML
     ToggleButton runToggleBtn;
-
+    private Stage templateStage;
     private void initIcons() {
         addFileBtn.setGraphic(new FontIcon());
         compileBtn.setGraphic(new FontIcon());
@@ -93,10 +93,14 @@ public class ToolBarController {
     @FXML
     private void handleOpenTemplateStage() throws IOException {
         System.out.println("open template");
-        Stage templateStage = new Stage();
-        FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/template-main.fxml"));
-        templateStage.setScene(new Scene(fxmlLoader.load(),600,800));
-        templateStage.show();
+        if(templateStage !=null && templateStage.isShowing()) {
+            templateStage.toFront();
+        }else{
+            templateStage = new Stage();
+            FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/template-main.fxml"));
+            templateStage.setScene(new Scene(fxmlLoader.load(),500,650));
+            templateStage.show();
+        }
     }
     // for custom stage title bar's button function
     // @FXML

@@ -3,6 +3,10 @@ package com.itiscaleb.cpcompound.component;
 import java.time.LocalDateTime;
 
 public class TemplateItem {
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
     private String fileName;
     private String extension;
     private String fileContent;
