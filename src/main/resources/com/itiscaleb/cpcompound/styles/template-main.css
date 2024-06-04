@@ -53,7 +53,7 @@
 }
 #template-base{
     /*-fx-background-color: #2d2d2d;*/
-    -fx-background-color: #5C6370;
+    -fx-background-color: #1E1E1E;
 }
 #templateVBox{
     /*-fx-border-color: red;*/
@@ -78,7 +78,7 @@
     -fx-border-width: 0;
 }
 .header-hbox{
-    -fx-border-color: #5C6370;
+    -fx-border-color: #1E1E1E;
     -fx-border-width: 0 0 1 0;
     /*-fx-border-color: yellow;*/
     -fx-background-radius: 6 6 0 0;

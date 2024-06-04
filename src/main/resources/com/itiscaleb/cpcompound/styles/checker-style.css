@@ -1,0 +1,47 @@
+#add-test-case-btn{
+    -fx-background-color: transparent;
+    -fx-cursor: HAND;
+    /*-fx-border-color: red;*/
+}
+#add-test-case-btn .ikonli-font-icon{
+    -fx-icon-code: "cil-playlist-add";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 24px;
+}
+#add-test-case-btn .ikonli-font-icon:hover{
+    -fx-icon-color: #FFFFFF;
+}
+
+#run-all-test-case-btn{
+    -fx-background-color: transparent;
+    -fx-cursor: HAND;
+    /*-fx-border-color: red;*/
+}
+#run-all-test-case-btn .ikonli-font-icon{
+    -fx-icon-code: "ci-play";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 24px;
+}
+#run-all-test-case-btn .ikonli-font-icon:hover{
+    -fx-icon-color: #FFFFFF;
+}
+
+#delete-all-test-case-btn{
+    -fx-background-color: transparent;
+    -fx-cursor: HAND;
+    /*-fx-border-color: red;*/
+}
+#delete-all-test-case-btn .ikonli-font-icon{
+    -fx-icon-code: "mdal-delete_outline";
+    -fx-icon-color: #CCCCCC;
+    -fx-icon-size: 24px;
+}
+#delete-all-test-case-btn .ikonli-font-icon:hover{
+    -fx-icon-color: #FFFFFF;
+}
+.forbidden-label{
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-text-alignment: CENTER;
+    -fx-font-size: 12;
+}

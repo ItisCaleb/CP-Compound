@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.*;
 import java.io.File;
@@ -27,11 +28,11 @@ import java.nio.charset.Charset;
 
 public class CheckerController {
     @FXML
-    private VBox testCaseBox;
+    private VBox testCaseBox,checkerBase;
     @FXML
     private CheckBox strictMatchCheckBox;
     @FXML
-    private Button testCaseLabel;
+    private Button addTestCaseBtn,runAllTestCaseBtn,deleteAllTestCaseBtn;
 
     private List<TestCase> testCases;
     private int testCaseCount;
@@ -53,17 +54,26 @@ public class CheckerController {
     }
 
 
-
+    private void initIcons(){
+        addTestCaseBtn.setGraphic(new FontIcon());
+        runAllTestCaseBtn.setGraphic(new FontIcon());
+        deleteAllTestCaseBtn.setGraphic(new FontIcon());
+    }
+    @FXML
     public void initialize() throws URISyntaxException {
+        System.out.println("Initializing CheckerController");
         editor = CPCompound.getEditor();
         editorContext = editor.getCurrentContext();
-
         testCases = new ArrayList<>();
         testCaseCount = 1;
-
+        initIcons();
         if (editorContext == null) {
             // UI please open cpp file
             // Yuankai ;)
+            checkerBase.getChildren().clear();
+            Label forbiddenLabel = new Label("Doesn't have any document associated with this checker\nPlease open a document:)");
+            forbiddenLabel.getStyleClass().add("forbidden-label");
+            checkerBase.getChildren().addAll(forbiddenLabel);
         } else {
             cph_path = editorContext.getFileURI();
             createNewFolder(cph_path);
