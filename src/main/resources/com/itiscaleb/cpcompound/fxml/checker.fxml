@@ -4,11 +4,17 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox id="checker" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.CheckerController">
+<?import java.net.URL?>
+<VBox fx:id="checkerBase" id="checker" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itiscaleb.cpcompound.controller.CheckerController">
    <children>
       <BorderPane>
          <top>
             <VBox spacing="10" BorderPane.alignment="CENTER">
+               <HBox>
+                  <Button fx:id="addTestCaseBtn" id="add-test-case-btn" onAction="#addTestCase"/>
+                  <Button fx:id="runAllTestCaseBtn" id="run-all-test-case-btn"  onAction="#runAllTestCase"/>
+                  <Button fx:id="deleteAllTestCaseBtn" id="delete-all-test-case-btn"  onAction="#deleteAllTestCase"/>
+               </HBox>
                <padding>
                   <Insets top="10" right="10" bottom="10" left="10"/>
                </padding>
@@ -16,9 +22,6 @@
                   <Button text="strict compare?" fx:id="testCaseLabel"/>
                   <CheckBox text="strict?" fx:id="strictMatchCheckBox"/>
                </HBox>
-               <Button text="Add TestCase" onAction="#addTestCase"/>
-               <Button text="Run All TestCase" onAction="#runAllTestCase"/>
-               <Button text="Delete All TestCase" onAction="#deleteAllTestCase"/>
             </VBox>
          </top>
          <center>
@@ -32,4 +35,9 @@
          </center>
       </BorderPane>
    </children>
+   <stylesheets>
+      <URL value="@../styles/checker-style.css" />
+      <URL value="@../styles/editor-scroll-bar.css" />
+
+   </stylesheets>
 </VBox>

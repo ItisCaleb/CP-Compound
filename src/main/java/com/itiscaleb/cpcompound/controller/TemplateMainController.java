@@ -80,7 +80,7 @@ public class TemplateMainController {
         });
 
         EditableLabel headerLabel = new EditableLabel();
-        setupHeaderLabel(headerLabel,categoryName);
+        setupHeaderLabel(headerLabel,categoryName,categoryName);
         headerLabel.getStyleClass().add("header-label");
         headerLabel.setText(categoryName);
 
@@ -170,15 +170,19 @@ public class TemplateMainController {
         return itemInfo;
     }
 
-    public void setupHeaderLabel(EditableLabel editableLabel, String oldDirectoryName) {
+    public void setupHeaderLabel(EditableLabel editableLabel, String oldDirectoryName,String categoryName) {
         editableLabel.setOnCommit(() -> {
             String newDirectoryName = editableLabel.getText();
             if(renameDirectory(oldDirectoryName, newDirectoryName)){
-                setupHeaderLabel(editableLabel, newDirectoryName);
+                setCategoryName(newDirectoryName,categoryName);
+                setupHeaderLabel(editableLabel, newDirectoryName,categoryName);
             }else{
                 editableLabel.setText(oldDirectoryName);
             }
         });
+    }
+    private void setCategoryName(String newName,String categoryName){
+        categoryName=newName;
     }
     private boolean renameDirectory(String oldName, String newName) {
         System.out.println("Template action: rename directory");
@@ -340,6 +344,10 @@ public class TemplateMainController {
 
     private void handleAddItem(String categoryName, VBox contentArea) {
         System.out.println("Template action: Add Item in "+categoryName+" category");
+        VBox categoryContent = (VBox) contentArea.getParent();
+        HBox categoryHeader=(HBox) categoryContent.getChildren().get(0);
+        EditableLabel categoryLabel = (EditableLabel)categoryHeader.getChildren().get(1);
+        categoryName = categoryLabel.getText();
         Integer chooseWay = showNewFileDialog();
         if(chooseWay == 1){
             System.out.println("choose copyFromFile to add item");

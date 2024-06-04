@@ -19,6 +19,8 @@
     </HBox>
     <TreeView fx:id="fileTreeView" layoutY="56.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0" VBox.vgrow="ALWAYS" />
     <stylesheets>
-            <URL value="@../styles/file-tree-view-style.css" />
+        <URL value="@../styles/file-tree-view-style.css" />
+        <URL value="@../styles/editor-scroll-bar.css" />
+
     </stylesheets>
 </VBox>

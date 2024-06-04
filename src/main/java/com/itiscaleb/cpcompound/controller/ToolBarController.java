@@ -99,6 +99,7 @@ public class ToolBarController {
             templateStage = new Stage();
             FXMLLoader fxmlLoader = new FXMLLoader(CPCompound.class.getResource("fxml/template-main.fxml"));
             templateStage.setScene(new Scene(fxmlLoader.load(),500,650));
+            templateStage.setTitle("Code Template");
             templateStage.show();
         }
     }
