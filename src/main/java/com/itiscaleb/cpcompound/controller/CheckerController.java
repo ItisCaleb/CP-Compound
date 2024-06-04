@@ -70,10 +70,15 @@ public class CheckerController {
         if (editorContext == null) {
             // UI please open cpp file
             // Yuankai ;)
+            System.out.println("EditorContext is null");
+            VBox forbiddenLabelBox = new VBox(10);
+            HBox.setHgrow(forbiddenLabelBox, Priority.ALWAYS);
+            forbiddenLabelBox.getStyleClass().add("forbidden-label-vbox");
             checkerBase.getChildren().clear();
             Label forbiddenLabel = new Label("Doesn't have any document associated with this checker\nPlease open a document:)");
             forbiddenLabel.getStyleClass().add("forbidden-label");
-            checkerBase.getChildren().addAll(forbiddenLabel);
+            forbiddenLabelBox.getChildren().add(forbiddenLabel);
+            checkerBase.getChildren().addAll(forbiddenLabelBox);
         } else {
             cph_path = editorContext.getFileURI();
             createNewFolder(cph_path);
@@ -245,14 +250,25 @@ public class CheckerController {
         public TestCase(int number, String input, String expectedOutput, String receivedOutput,String standardError) {
             this.number = number;
             inputField = new TextArea(input);
+            setUpTextArea(inputField);
+            updateHeight(inputField);
             expectedField = new TextArea(expectedOutput);
+            setUpTextArea(expectedField);
+            updateHeight(expectedField);
             receivedField = new TextArea(receivedOutput);
+            setUpTextArea(receivedField);
+            updateHeight(receivedField);
             errorField = new TextArea(standardError);
+            setUpTextArea(errorField);
+            updateHeight(errorField);
             resultLabel = new Label("Result: ");
+            resultLabel.getStyleClass().add("result-label");
             errorLabel = new Label("standard Error:");
+            errorLabel.getStyleClass().add("error-label");
             current = false;
 
             pane = new VBox(10);
+            pane.getStyleClass().add("test-case-pane");
             pane.setPadding(new Insets(5));
 
             if(expectedOutput.isEmpty()) {
@@ -288,10 +304,22 @@ public class CheckerController {
             deleteButton.setOnAction(e -> deleteOneTestCase());
 
             HBox buttonsBox = new HBox(10);
+            buttonsBox.getStyleClass().add("buttons-box");
             buttonsBox.getChildren().addAll(recompareButton, deleteButton);
             pane.getChildren().add(0, buttonsBox);
         }
-
+        public void setUpTextArea(TextArea textArea){
+            System.out.println("set up "+ textArea.getText());
+            textArea.setWrapText(false);
+            textArea.textProperty().addListener((obs, oldText, newText) -> {
+                updateHeight(textArea);
+            });
+        }
+        private void updateHeight(TextArea textArea) {
+            double lineHeight = 16;
+            int numLines = textArea.getText().split("\n", -1).length;
+            textArea.setPrefHeight(lineHeight * numLines );
+        }
         public void setNumber(int number) {
             this.number = number;
             updatePane();

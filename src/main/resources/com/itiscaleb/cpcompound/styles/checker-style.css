@@ -1,3 +1,11 @@
+#btnAreaHBox{
+    /*-fx-border-color: red;*/
+}
+#strictCompareHBox{
+    -fx-padding: 0 25 0 25;
+    /*-fx-border-color: green;*/
+    -fx-alignment: CENTER_LEFT;
+}
 #add-test-case-btn{
     -fx-background-color: transparent;
     -fx-cursor: HAND;
@@ -6,7 +14,7 @@
 #add-test-case-btn .ikonli-font-icon{
     -fx-icon-code: "cil-playlist-add";
     -fx-icon-color: #CCCCCC;
-    -fx-icon-size: 24px;
+    -fx-icon-size: 20px;
 }
 #add-test-case-btn .ikonli-font-icon:hover{
     -fx-icon-color: #FFFFFF;
@@ -20,7 +28,7 @@
 #run-all-test-case-btn .ikonli-font-icon{
     -fx-icon-code: "ci-play";
     -fx-icon-color: #CCCCCC;
-    -fx-icon-size: 24px;
+    -fx-icon-size: 20px;
 }
 #run-all-test-case-btn .ikonli-font-icon:hover{
     -fx-icon-color: #FFFFFF;
@@ -34,7 +42,7 @@
 #delete-all-test-case-btn .ikonli-font-icon{
     -fx-icon-code: "mdal-delete_outline";
     -fx-icon-color: #CCCCCC;
-    -fx-icon-size: 24px;
+    -fx-icon-size: 20px;
 }
 #delete-all-test-case-btn .ikonli-font-icon:hover{
     -fx-icon-color: #FFFFFF;
@@ -44,4 +52,72 @@
     -fx-font-weight: bold;
     -fx-text-alignment: CENTER;
     -fx-font-size: 12;
+}
+.forbidden-label-vbox{
+    -fx-padding: 20 10 0 10;
+    -fx-alignment: CENTER;
+}
+
+#strictMatchCheckBox{
+    -fx-padding: 0 0 0 10;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-font-size: 16;
+}
+.check-box .box {
+    -fx-background-color: #CCCCCC;
+    -fx-border-color: #CCCCCC;
+    -fx-border-radius: 2;
+    -fx-border-radius: 2;
+   -fx-pref-width: 14;
+    -fx-pref-height: 14;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: transparent;
+}
+.check-box:selected .box {
+    -fx-background-color: #308c9f;
+}
+.testCaseBox{
+    -fx-background-color: #2b2d30;
+    /*-fx-border-color: red;*/
+    -fx-border-width: 0;
+    -fx-padding: 0 20 0 20;
+}
+.testCaseScrollPane{
+    -fx-background-color: transparent;
+    /*-fx-border-color: blue;*/
+    -fx-border-width: 0;
+}
+.test-case-pane{
+    -fx-background-color: #2b2d30;
+    /*-fx-opacity: 0.9;*/
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 16;
+    -fx-border-color: #3c3f40;
+    -fx-padding: 0 20 0 20;
+}
+.test-case-pane .label{
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 16;
+}
+.text-area{
+    -fx-font-size: 14;
+    -fx-background-color: #414141;
+
+}
+.result-label{
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 16;
+}
+.error-label{
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 16;
+}
+.buttons-box{
+    /*-fx-background-color: red;*/
 }
