@@ -1,15 +1,15 @@
 .semantic-function{
-    -fx-fill: #e0dc89 !important;
+    -fx-fill: #E5C07B !important;
     -fx-font-weight: bold;
 }
 
 .semantic-variable{
-    -fx-fill: #98fa9f !important;
+    -fx-fill: #8CB8E4 !important;
     -fx-font-weight: bold;
 }
 
 .semantic-namespace{
-    -fx-fill: #d878e1 !important;
+    -fx-fill: #98C379 !important;
     -fx-font-weight: bold;
 }
 .semantic-class{
@@ -25,6 +25,6 @@
     -fx-font-weight: bold;
 }
 .semantic-operator{
-    -fx-fill: #d878e1 !important;
+    -fx-fill: #bb8ccf !important;
     -fx-font-weight: bold;
 }
