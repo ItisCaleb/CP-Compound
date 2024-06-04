@@ -1,20 +1,20 @@
 .cpp-keyword{
-    -fx-fill: #cf9a42 !important;
+    -fx-fill: #EE99C2 !important;
     -fx-font-weight: bold;
 }
 
 .cpp-type-keyword{
-    -fx-fill: #68c073 !important;
+    -fx-fill: #5C88C4 !important;
     -fx-font-weight: bold;
 }
 
 .cpp-modifier-keyword{
-    -fx-fill: #9248c9 !important;
+    -fx-fill: #cd8cff !important;
     -fx-font-weight: bold;
 }
 
 .cpp-preprocessor-keyword{
-    -fx-fill: #1687d1 !important;
+    -fx-fill: #d878e1 !important;
     -fx-font-weight: bold;
 }
 
@@ -23,19 +23,19 @@
 }
 
 .cpp-paren {
-    -fx-fill: #cdcbcb !important;
+    -fx-fill: #756AB6 !important;
     -fx-font-weight: bold;
 }
 .cpp-bracket {
-    -fx-fill: #cdcbcb !important;
+    -fx-fill: #756AB6 !important;
     -fx-font-weight: bold;
 }
 .cpp-brace {
-    -fx-fill: #cdcbcb !important;
+    -fx-fill: #756AB6 !important;
     -fx-font-weight: bold;
 }
 .cpp-string {
-    -fx-fill: #619b6b !important;
+    -fx-fill: #98C379 !important;
 }
 
 .cpp-comment {
