@@ -1,10 +1,10 @@
 .semantic-function{
-    -fx-fill: #FFE5E5 !important;
+    -fx-fill: #E5C07B !important;
     -fx-font-weight: bold;
 }
 
 .semantic-variable{
-    -fx-fill: #AC87C5 !important;
+    -fx-fill: #8CB8E4 !important;
     -fx-font-weight: bold;
 }
 
@@ -25,6 +25,6 @@
     -fx-font-weight: bold;
 }
 .semantic-operator{
-    -fx-fill: #d878e1 !important;
+    -fx-fill: #bb8ccf !important;
     -fx-font-weight: bold;
 }
