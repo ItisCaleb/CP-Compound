@@ -26,6 +26,7 @@ module com.itiscaleb.cpcompound {
     requires org.kordamp.ikonli.dashicons;
     requires org.kordamp.ikonli.material;
     requires org.kordamp.ikonli.material2;
+    requires sevenzipjbinding;
 
 
     exports com.itiscaleb.cpcompound;
