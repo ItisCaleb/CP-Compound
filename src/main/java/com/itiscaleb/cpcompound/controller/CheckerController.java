@@ -49,7 +49,7 @@ public class CheckerController {
     }
     @FXML
     public void initialize() throws URISyntaxException {
-        System.out.println("Initializing CheckerController");
+        CPCompound.getLogger().info("Initializing CheckerController");
         testCases = new ArrayList<>();
         testCaseCount = 1;
         initIcons();
@@ -64,7 +64,7 @@ public class CheckerController {
     }
 
     private void updatePath() {
-        cph_path = editorContext.getFileURI();
+        cph_path = editorContext.getPath().toString();
         createNewFolder(cph_path);
         testCases.clear();
         testCaseBox.getChildren().clear();
@@ -76,11 +76,11 @@ public class CheckerController {
         VBox forbiddenLabelBox = new VBox(10);
         HBox.setHgrow(forbiddenLabelBox, Priority.ALWAYS);
         forbiddenLabelBox.getStyleClass().add("forbidden-label-vbox");
-        checkerBase.getChildren().clear();
+        testCaseBox.getChildren().clear();
         Label forbiddenLabel = new Label("Doesn't have any document associated with this checker\nPlease open a document:)");
         forbiddenLabel.getStyleClass().add("forbidden-label");
         forbiddenLabelBox.getChildren().add(forbiddenLabel);
-        checkerBase.getChildren().addAll(forbiddenLabelBox);
+        testCaseBox.getChildren().addAll(forbiddenLabelBox);
     }
 
     private void loadTestCasesFromJson() {
@@ -89,8 +89,7 @@ public class CheckerController {
             return;
         }
         try {
-            URI uri = new URI(cph_path);
-            String ccFilePath = Paths.get(uri).toString();
+            String ccFilePath = Paths.get(cph_path).toString();
             String cphFolderPath = ccFilePath.substring(0, ccFilePath.lastIndexOf(File.separator) + 1) + "cph";
             String jsonFileName = cphFolderPath + File.separator + ccFilePath.substring(ccFilePath.lastIndexOf(File.separator) + 1, ccFilePath.lastIndexOf('.')) + ".json";
             Path jsonFilePath = Paths.get(jsonFileName);
@@ -119,8 +118,6 @@ public class CheckerController {
             }
         } catch (IOException e) {
             CPCompound.getLogger().error("Error occurred", e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -146,8 +143,7 @@ public class CheckerController {
             return;
         }
         try {
-            URI uri = new URI(cph_path);
-            String ccFilePath = Paths.get(uri).toString();
+            String ccFilePath = Paths.get(cph_path).toString();
             String cphFolderPath = ccFilePath.substring(0, ccFilePath.lastIndexOf(File.separator) + 1) + "cph";
             Path cphFolder = Paths.get(cphFolderPath);
             if (!Files.exists(cphFolder)) {
@@ -171,7 +167,7 @@ public class CheckerController {
             }
             Files.write(jsonFilePath, gson.toJson(testCaseDataList).getBytes());
             CPCompound.getLogger().info("Test cases saved to JSON file: {}", jsonFileName);
-        } catch (URISyntaxException | IOException e) {
+        } catch (IOException e) {
             CPCompound.getLogger().error("Error occurred", e);
         }
     }
@@ -304,7 +300,6 @@ public class CheckerController {
             pane.getChildren().add(0, buttonsBox);
         }
         public void setUpTextArea(TextArea textArea){
-            System.out.println("set up "+ textArea.getText());
             textArea.setWrapText(false);
             textArea.textProperty().addListener((obs, oldText, newText) -> {
                 updateHeight(textArea);
