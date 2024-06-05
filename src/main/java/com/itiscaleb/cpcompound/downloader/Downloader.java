@@ -33,7 +33,6 @@ public abstract class Downloader {
                 .uri(new URI(url))
                 .GET().build();
         File downloadDir = APPData.resolve("downloads").toFile();
-        downloadDir.mkdir();
         HttpResponse<Path> res = client.send(req,
                 HttpResponse.BodyHandlers
                         .ofFileDownload(downloadDir.getCanonicalFile().toPath(), CREATE, WRITE));
@@ -56,7 +55,6 @@ public abstract class Downloader {
                 .uri(new URI(url))
                 .GET().build();
         File downloadDir = APPData.resolve("downloads").toFile();
-        downloadDir.mkdir();
         var handler = progressBodyHandler(1024*1024, (bytes)->{
                 progress.set((float)bytes/length);
             },HttpResponse.BodyHandlers

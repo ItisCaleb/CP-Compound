@@ -21,6 +21,8 @@ public class APPData {
                 try {
                     Files.createDirectory(dataFolder);
                     Files.createDirectory(dataFolder.resolve("tmp"));
+                    Files.createDirectory(dataFolder.resolve("downloads"));
+                    Files.createDirectory(dataFolder.resolve("installed"));
                 } catch (IOException e) {
                     CPCompound.getLogger().error("Error occurred", e);
                 }
