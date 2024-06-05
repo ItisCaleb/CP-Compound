@@ -16,7 +16,7 @@ public class TabManager {
         tab.setText(tabName);
         tabSaveStateMap.put(tab, true);
     }
-    public void setTabSaveState(Tab tab, boolean state) {
+    private void setTabSaveState(Tab tab, boolean state) {
         tabSaveStateMap.put(tab, state);
     }
     public Boolean getTabSaveState(Tab tab) {
