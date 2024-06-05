@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 public class EditorArea extends CodeArea {
     private static final KeyCombination saveCombination =  new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN);
     private static final String ignoreChars = "!@#$%^&*()+{}[]:;'\">/?~` \t\n";
-    private EditorContext context;
+    private final EditorContext context;
 
     private ContextMenu completionMenu;
     EditorPopup diagPopup;
