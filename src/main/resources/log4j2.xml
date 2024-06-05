@@ -4,11 +4,16 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n %throwable}" disableAnsi="false"/>
         </Console>
+        <File name="File" fileName="${sys:logfile.name}">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n %throwable"/>
+        </File>
     </Appenders>
+
     <Loggers>
         <Logger name="CPCompound" level="INFO"/>
         <Root level="error">
             <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
         </Root>
     </Loggers>
 </Configuration>
