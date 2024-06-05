@@ -37,21 +37,9 @@ public class CheckerController {
     private List<TestCase> testCases;
     private int testCaseCount;
 
-    private Editor editor;
     private EditorContext editorContext;
     public String cph_path;
     static Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-
-    public void updatePath() {
-        editor = CPCompound.getEditor();
-        editorContext = editor.getCurrentContext();
-        cph_path = editorContext.getFileURI();
-        testCases.clear();
-        testCaseBox.getChildren().clear();
-        testCaseCount = 1;
-        loadTestCasesFromJson();
-    }
 
 
     private void initIcons(){
@@ -62,28 +50,37 @@ public class CheckerController {
     @FXML
     public void initialize() throws URISyntaxException {
         System.out.println("Initializing CheckerController");
-        editor = CPCompound.getEditor();
-        editorContext = editor.getCurrentContext();
         testCases = new ArrayList<>();
         testCaseCount = 1;
         initIcons();
-        if (editorContext == null) {
-            // UI please open cpp file
-            // Yuankai ;)
-            System.out.println("EditorContext is null");
-            VBox forbiddenLabelBox = new VBox(10);
-            HBox.setHgrow(forbiddenLabelBox, Priority.ALWAYS);
-            forbiddenLabelBox.getStyleClass().add("forbidden-label-vbox");
-            checkerBase.getChildren().clear();
-            Label forbiddenLabel = new Label("Doesn't have any document associated with this checker\nPlease open a document:)");
-            forbiddenLabel.getStyleClass().add("forbidden-label");
-            forbiddenLabelBox.getChildren().add(forbiddenLabel);
-            checkerBase.getChildren().addAll(forbiddenLabelBox);
-        } else {
-            cph_path = editorContext.getFileURI();
-            createNewFolder(cph_path);
-            loadTestCasesFromJson();
-        }
+        editorContext = CPCompound.getEditor().getCurrentContext();
+        if(editorContext != null) updatePath();
+        else clear();
+        CPCompound.getEditor().addOnSwitch((e, oldContext, newContext) -> {
+            editorContext = newContext;
+            if(editorContext != null) updatePath();
+            else clear();
+        });
+    }
+
+    private void updatePath() {
+        cph_path = editorContext.getFileURI();
+        createNewFolder(cph_path);
+        testCases.clear();
+        testCaseBox.getChildren().clear();
+        testCaseCount = 1;
+        loadTestCasesFromJson();
+    }
+
+    private void clear(){
+        VBox forbiddenLabelBox = new VBox(10);
+        HBox.setHgrow(forbiddenLabelBox, Priority.ALWAYS);
+        forbiddenLabelBox.getStyleClass().add("forbidden-label-vbox");
+        checkerBase.getChildren().clear();
+        Label forbiddenLabel = new Label("Doesn't have any document associated with this checker\nPlease open a document:)");
+        forbiddenLabel.getStyleClass().add("forbidden-label");
+        forbiddenLabelBox.getChildren().add(forbiddenLabel);
+        checkerBase.getChildren().addAll(forbiddenLabelBox);
     }
 
     private void loadTestCasesFromJson() {
@@ -129,9 +126,7 @@ public class CheckerController {
 
     private void createNewFolder(String filePath) {
         try {
-            URI uri = new URI(filePath);
-            String realPath = Paths.get(uri).toString();
-            Path parentDirectory = Paths.get(realPath).getParent();
+            Path parentDirectory = Paths.get(filePath).getParent();
             if (parentDirectory != null) {
                 String newFolderName = "cph";
                 Path newFolderPath = parentDirectory.resolve(newFolderName);
@@ -140,7 +135,7 @@ public class CheckerController {
                     Files.createDirectories(newFolderPath);
                 }
             }
-        } catch (URISyntaxException | IOException e) {
+        } catch (IOException e) {
             CPCompound.getLogger().error("Error occurred", e);
         }
     }

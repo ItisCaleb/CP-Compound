@@ -24,7 +24,6 @@ public class LSPClient implements LanguageClient {
             return;
         }
         context.setDiagnostics(diagnostics.getDiagnostics());
-        editor.refreshDiagnostic();
     }
 
     @Override

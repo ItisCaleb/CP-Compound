@@ -32,13 +32,15 @@ public class CPCompound extends Application {
     static BaseController baseController;
     static Config config;
     static HashMap<Language, LSPProxy> proxies = new HashMap<>();
-    static Logger logger = LogManager.getLogger("CPCompound");
+    static Logger logger;
     static Editor editor;
     static Stage primaryStage;
 
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        System.setProperty("logfile.name", APPData.resolve("latest.log").toString());
+        logger =  LogManager.getLogger("CPCompound");
         config = Config.load(APPData.resolve("config.json"));
         config.save();
         CPCompound.primaryStage = primaryStage;

@@ -9,6 +9,9 @@ import com.itiscaleb.cpcompound.langServer.Language;
 import com.itiscaleb.cpcompound.utils.APPData;
 import com.itiscaleb.cpcompound.utils.Config;
 import com.itiscaleb.cpcompound.utils.SysInfo;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
@@ -29,12 +32,10 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class Editor {
-    EditorContext currentContext;
+    ObjectProperty<EditorContext> currentContext = new SimpleObjectProperty<>();
     HashMap<String, EditorContext> contexts = new HashMap<>();
     HashMap<Language, Highlighter> highlighters = new HashMap<>();
 
-    private final ObservableList<Diagnostic> diagnostics = FXCollections.observableArrayList();
-    private final ObservableList<CompletionItem> completionItems = FXCollections.observableArrayList();
     private int lastUnnamed = 0;
 
     private Process currentProcess = null;
@@ -49,13 +50,12 @@ public class Editor {
     public void switchContext(String key){
         EditorContext context = contexts.get(key);
         if(context != null){
-            currentContext = context;
-            refreshDiagnostic();
+            currentContext.setValue(context);
         }
     }
 
     public EditorContext getCurrentContext(){
-        return currentContext;
+        return currentContext.get();
     }
 
     public EditorContext getContext(String key){
@@ -91,7 +91,7 @@ public class Editor {
     public void removeContext(String name) {
         EditorContext context = contexts.remove(name);
         if(contexts.isEmpty()){
-            currentContext = null;
+            currentContext.setValue(null);
         }
         generateCompileCommands();
         if(context != null){
@@ -99,17 +99,6 @@ public class Editor {
             if(proxy != null){
                 proxy.didClose(context);
             }
-        }
-    }
-
-    public void refreshDiagnostic(){
-        this.diagnostics.setAll(currentContext.getDiagnostics());
-    }
-
-    public void setCompletionList(List<CompletionItem> items){
-        CPCompound.getLogger().info("Completion List");
-        if(items != null){
-            this.completionItems.setAll(items);
         }
     }
 
@@ -206,14 +195,6 @@ public class Editor {
         return contexts;
     }
 
-    public ObservableList<CompletionItem> getCompletionList(){
-        return this.completionItems;
-    }
-
-    public ObservableList<Diagnostic> getDiagnostics() {
-        return this.diagnostics;
-    }
-
     public StyleSpans<Collection<String>> computeHighlighting(String key) {
         EditorContext context = contexts.get(key);
         return computeHighlighting(context);
@@ -221,5 +202,9 @@ public class Editor {
 
     public StyleSpans<Collection<String>> computeHighlighting(EditorContext context) {
         return highlighters.get(context.getLang()).computeHighlighting(context.getCode());
+    }
+
+    public void addOnSwitch(ChangeListener<EditorContext> listener){
+        currentContext.addListener(listener);
     }
 }

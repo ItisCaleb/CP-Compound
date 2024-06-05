@@ -3,9 +3,13 @@ package com.itiscaleb.cpcompound.editor;
 import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.langServer.Language;
 import com.itiscaleb.cpcompound.fileSystem.FileManager;
-import com.itiscaleb.cpcompound.utils.Config;
 import com.itiscaleb.cpcompound.utils.SysInfo;
-import javafx.util.Pair;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Diagnostic;
 
 import java.io.*;
@@ -13,13 +17,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;
-import java.util.Scanner;
-import java.util.concurrent.CompletableFuture;
-
-
-
-import java.util.*;
-
 
 
 public class EditorContext {
@@ -28,7 +25,9 @@ public class EditorContext {
     private Language lang;
     private int version;
     private boolean isTemp;
-    private boolean changed = true;
+    private final BooleanProperty changed = new SimpleBooleanProperty(false);
+
+    private final ObservableList<CompletionItem> completions = FXCollections.observableArrayList();;
 
     private List<Diagnostic> diagnostics = new ArrayList<>();
     EditorContext(Path path, Language lang, String code, boolean isTemp) {
@@ -60,17 +59,28 @@ public class EditorContext {
         return lang;
     }
 
+    public void setCompletionList(List<CompletionItem> items){
+        CPCompound.getLogger().info("Completion List");
+        if(items != null){
+            this.completions.setAll(items);
+        }
+    }
+
+    public ObservableList<CompletionItem> getCompletionList(){
+        return completions;
+    }
+
 
     public void setCode(String code){
         this.code = code;
         this.version++;
-        changed = true;
+        changed.set(true);
     }
 
     public void save(){
-        if(this.changed){
+        if(this.changed.get()){
             FileManager.writeTextFile(this.path, code);
-            this.changed = false;
+            this.changed.set(false);
         }
     }
 
@@ -127,6 +137,10 @@ public class EditorContext {
 
     public String getFileName(){
         return this.path.getFileName().toString();
+    }
+
+    public void addOnChanged(ChangeListener<Boolean> onChanged){
+        changed.addListener(onChanged);
     }
 
 }
