@@ -7,6 +7,7 @@ module com.itiscaleb.cpcompound {
     requires org.eclipse.lsp4j;
     requires org.eclipse.lsp4j.jsonrpc;
     requires org.apache.logging.log4j;
+    requires org.apache.logging.log4j.core;
     requires MaterialFX;
     requires org.fxmisc.flowless;
     requires org.kordamp.ikonli.core;
@@ -27,6 +28,9 @@ module com.itiscaleb.cpcompound {
     requires org.kordamp.ikonli.material;
     requires org.kordamp.ikonli.material2;
     requires sevenzipjbinding;
+
+    // for SSL handshake
+    requires jdk.crypto.ec;
 
 
     exports com.itiscaleb.cpcompound;

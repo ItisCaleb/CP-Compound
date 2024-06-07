@@ -29,7 +29,6 @@ tasks.withType(JavaCompile) {
 application {
     mainModule = 'com.itiscaleb.cpcompound'
     mainClass = 'com.itiscaleb.cpcompound.CPCompound'
-    tasks.run.workingDir = "./build"
     applicationDefaultJvmArgs = ["--add-opens","javafx.controls/com.sun.javafx.scene.control=com.itiscaleb.cpcompound"]
 }
 
@@ -79,6 +78,13 @@ def currentOS = DefaultNativePlatform.currentOperatingSystem
 jlink {
     addExtraDependencies("javafx")
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+    forceMerge('log4j-api')
+    mergedModule {
+        additive = true
+        uses 'org.apache.logging.log4j.util.PropertySource'
+        uses 'org.apache.logging.log4j.spi.Provider'
+        uses 'org.apache.logging.log4j.message.ThreadDumpMessage.ThreadInfoFactory'
+    }
     launcher {
         name = 'CP-Compound'
     }
