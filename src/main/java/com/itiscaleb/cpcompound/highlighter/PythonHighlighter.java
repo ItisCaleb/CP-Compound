@@ -19,10 +19,10 @@ public class PythonHighlighter extends Highlighter {
 
     private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
     private static final String STRING_PATTERN = Highlighter.STRING_PATTERN + "|" +"'([^'\\\\]|\\\\.)*'";;
-    private static final String COMMENT_PATTERN = "#[^\n]*" + "|" + "'''\\*(.|\\R)*?\\*'''"   // for whole text processing (text blocks)
-            + "|" + "/\\*[^\\v]*" + "|" + "^\\h*\\*([^\\v]*|/)";  // for visible paragraph processing (line by line)
-    private static final String NUMBER_PATTERN = Highlighter.NUMBER_PATTERN + "|" +
-            "-?0x[\\da-fA-F]+" + "|" + "-?0b[01]+" + "|" + "-?0o\\d+";;
+    private static final String COMMENT_PATTERN = "#[^\n]*" + "|" + "'''(.|\\R)*?'''"   // for whole text processing (text blocks)
+            + "|" + "\"\"\"(.|\\R)*?\"\"\"";  // for visible paragraph processing (line by line)
+    private static final String NUMBER_PATTERN = Highlighter.NUMBER_PATTERN + "\\b|" +
+            "\\b-?0x[\\da-fA-F]+\\b" + "|" + "\\b-?0b[01]+\\b" + "|" + "\\b-?0o\\d+\\b";;
 
     private static final Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
@@ -40,7 +40,8 @@ public class PythonHighlighter extends Highlighter {
                     new Pair<>("BRACE", "py-brace"),
                     new Pair<>("BRACKET", "py-bracket"),
                     new Pair<>("STRING", "py-string"),
-                    new Pair<>("COMMENT", "py-comment"))
+                    new Pair<>("COMMENT", "py-comment"),
+                    new Pair<>("NUMBER", "py-number"))
     );
 
     public PythonHighlighter(){

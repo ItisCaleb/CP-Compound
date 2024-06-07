@@ -16,7 +16,7 @@ public abstract class Highlighter {
     protected static final String BRACKET_PATTERN = "\\[|\\]";
     protected static final String SEMICOLON_PATTERN = "\\;";
     protected static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
-    protected static final String NUMBER_PATTERN = "-?(?:0|[1-9]\\d*)(?:\\.\\d+)?";
+    protected static final String NUMBER_PATTERN = "\\b-?(?:0|[1-9]\\d*)(?:\\.\\d+)?";
 
     Pattern pattern;
     List<Pair<String, String>> group;

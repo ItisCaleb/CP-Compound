@@ -1,5 +1,5 @@
-.py-keyword{
-    -fx-fill: #cf9a42 !important;
+.cpp-keyword{
+    -fx-fill: #EE99C2 !important;
     -fx-font-weight: bold;
 }
 
@@ -16,9 +16,14 @@
     -fx-font-weight: bold;
 }
 .py-string {
-    -fx-fill: #619b6b !important;
+    -fx-fill: #98C379 !important;
 }
 
-.cpp-comment {
+.py-comment {
     -fx-fill: cadetblue !important;
+}
+
+
+.py-number {
+    -fx-fill: #ff9d56 !important;
 }

@@ -44,8 +44,8 @@ public class CppHighlighter extends Highlighter {
     private static final String PREPROCESSOR_KEYWORD_PATTERN = "#\\s*(" + String.join("|", PREPROCESSOR_KEYWORDS) + ")\\b";
     private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/"   // for whole text processing (text blocks)
             + "|" + "/\\*[^\\v]*" + "|" + "^\\h*\\*([^\\v]*|/)";  // for visible paragraph processing (line by line)
-    private static final String NUMBER_PATTERN = Highlighter.NUMBER_PATTERN + "(?:[eE][+-]?\\d+)?[fF]?"
-            + "|" + "-?0x[\\da-fA-F]+" + "|" + "-?0b[01]+";
+    private static final String NUMBER_PATTERN = Highlighter.NUMBER_PATTERN + "(?:[eE][+-]?\\d+)?[fF]?\\b"
+            + "|" + "\\b-?0x[\\da-fA-F]+\\b" + "|" + "\\b-?0b[01]+\\b";
 
     private static final Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
@@ -71,7 +71,8 @@ public class CppHighlighter extends Highlighter {
                     new Pair<>("BRACKET", "cpp-bracket"),
                     new Pair<>("SEMICOLON", "cpp-semicolon"),
                     new Pair<>("STRING", "cpp-string"),
-                    new Pair<>("COMMENT", "cpp-comment"))
+                    new Pair<>("COMMENT", "cpp-comment"),
+                    new Pair<>("NUMBER", "cpp-number"))
     );
 
     public CppHighlighter(){

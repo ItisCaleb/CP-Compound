@@ -41,3 +41,7 @@
 .cpp-comment {
     -fx-fill: cadetblue !important;
 }
+
+.cpp-number {
+    -fx-fill: #ff9d56 !important;
+}
