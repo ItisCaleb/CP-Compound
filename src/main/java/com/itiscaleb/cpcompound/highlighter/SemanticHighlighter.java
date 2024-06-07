@@ -1,4 +1,4 @@
-package com.itiscaleb.cpcompound.editor;
+package com.itiscaleb.cpcompound.highlighter;
 
 import com.itiscaleb.cpcompound.langServer.SemanticToken;
 import org.fxmisc.richtext.StyleClassedTextArea;
@@ -41,6 +41,7 @@ public class SemanticHighlighter {
             case Struct -> collection = Collections.singleton("semantic-struct");
             case Enum -> collection = Collections.singleton("semantic-enum");
             case Operator -> collection = Collections.singleton("semantic-operator");
+            case Property -> collection = Collections.singleton("semantic-property");
             default -> collection = Collections.emptyList();
         }
         return collection;

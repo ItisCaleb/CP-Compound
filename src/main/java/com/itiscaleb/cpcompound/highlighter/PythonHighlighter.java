@@ -1,4 +1,4 @@
-package com.itiscaleb.cpcompound.editor;
+package com.itiscaleb.cpcompound.highlighter;
 
 import javafx.util.Pair;
 
@@ -17,15 +17,12 @@ public class PythonHighlighter extends Highlighter {
             "yield"
     };
 
-
-
     private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
-    private static final String PAREN_PATTERN = "\\(|\\)";
-    private static final String BRACE_PATTERN = "\\{|\\}";
-    private static final String BRACKET_PATTERN = "\\[|\\]";
-    private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\""+ "|" +"'([^'\\\\]|\\\\.)*'";;
+    private static final String STRING_PATTERN = Highlighter.STRING_PATTERN + "|" +"'([^'\\\\]|\\\\.)*'";;
     private static final String COMMENT_PATTERN = "#[^\n]*" + "|" + "'''\\*(.|\\R)*?\\*'''"   // for whole text processing (text blocks)
             + "|" + "/\\*[^\\v]*" + "|" + "^\\h*\\*([^\\v]*|/)";  // for visible paragraph processing (line by line)
+    private static final String NUMBER_PATTERN = Highlighter.NUMBER_PATTERN + "|" +
+            "-?0x[\\da-fA-F]+" + "|" + "-?0b[01]+" + "|" + "-?0o\\d+";;
 
     private static final Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
@@ -34,6 +31,7 @@ public class PythonHighlighter extends Highlighter {
                     + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
                     + "|(?<STRING>" + STRING_PATTERN + ")"
                     + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
+                    + "|(?<NUMBER>" + NUMBER_PATTERN + ")"
     );
     private static final List<Pair<String,String>> GROUP = new ArrayList<>(
             Arrays.asList(
@@ -45,7 +43,7 @@ public class PythonHighlighter extends Highlighter {
                     new Pair<>("COMMENT", "py-comment"))
     );
 
-    PythonHighlighter(){
+    public PythonHighlighter(){
         this.pattern = PATTERN;
         this.group = GROUP;
     }

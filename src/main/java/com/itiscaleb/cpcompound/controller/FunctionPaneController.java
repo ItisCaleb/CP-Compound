@@ -14,7 +14,7 @@ import java.util.Map;
 public class FunctionPaneController {
     static FunctionPaneController instance;
     @FXML
-    Button functionTabButton, terminalTabButton;
+    Button functionTabButton;
     @FXML
     StackPane functionPaneContentArea;
 
@@ -71,19 +71,6 @@ public class FunctionPaneController {
 
     }
 
-    @FXML
-    private void handleTabSwitch(javafx.event.ActionEvent event) {
-        Button clickedButton = (Button) event.getSource();
-        if (clickedButton == functionTabButton) {
-            functionTabButton.setStyle("-fx-border-color: transparent transparent transparent white;-fx-opacity: 1");
-            terminalTabButton.setStyle("-fx-border-color: transparent transparent transparent transparent;-fx-opacity: 0.5");
-            functionPaneContentArea.getChildren().setAll(FunctionPaneController.getInstance().currentFunctionContent);
-        } else if (clickedButton == terminalTabButton) {
-            terminalTabButton.setStyle("-fx-border-color: transparent transparent transparent white;-fx-opacity: 1");
-            functionTabButton.setStyle("-fx-border-color: transparent transparent transparent transparent;-fx-opacity: 0.5");
-            loadContent("fxml/terminal.fxml");
-        }
-    }
     //id,object
     final private Map<String,VBox> functionPaneCache = new HashMap<>();
     private void loadContent(String fxmlFile) {

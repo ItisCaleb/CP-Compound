@@ -32,7 +32,6 @@ public class EditorController {
         instance = this;
         Platform.runLater(()->{
             setHandleChangeTab();
-
             CPCompound.getLogger().info("initialize editor");
         });
     }

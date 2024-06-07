@@ -174,6 +174,7 @@ public class CheckerController {
 
     @FXML
     private void addTestCase() {
+        if(editorContext == null) return;
         TestCase testCase = new TestCase(testCaseCount,"","","","");
         testCases.add(testCase);
         testCaseBox.getChildren().add(testCase.getPane());
@@ -192,6 +193,7 @@ public class CheckerController {
 
     @FXML
     private void runAllTestCase() {
+        if(editorContext == null) return;
         saveTestCasesToJson();
         boolean strictMatch = strictMatchCheckBox.isSelected();
         CPCompound.getLogger().info("run all testcase");

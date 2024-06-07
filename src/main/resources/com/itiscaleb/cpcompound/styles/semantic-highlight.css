@@ -8,6 +8,11 @@
     -fx-font-weight: bold;
 }
 
+.semantic-property{
+    -fx-fill: #8CB8E4 !important;
+    -fx-font-weight: bold;
+}
+
 .semantic-namespace{
     -fx-fill: #98C379 !important;
     -fx-font-weight: bold;

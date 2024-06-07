@@ -7,7 +7,7 @@ import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.langServer.Language;
-import com.itiscaleb.cpcompound.langServer.c.CPPSemanticTokenType;
+import com.itiscaleb.cpcompound.langServer.cpp.CPPSemanticTokenType;
 import com.itiscaleb.cpcompound.utils.APPData;
 import com.itiscaleb.cpcompound.utils.Config;
 import io.github.palexdev.materialfx.theming.JavaFXThemes;

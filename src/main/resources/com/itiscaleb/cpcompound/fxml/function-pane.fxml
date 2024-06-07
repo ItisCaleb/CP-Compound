@@ -10,8 +10,7 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.itiscaleb.cpcompound.controller.FunctionPaneController">
     <HBox styleClass="tab-btn-hbox">
-        <Button fx:id="functionTabButton"  styleClass="function-tab-btn" text="File View" onAction="#handleTabSwitch"/>
-        <Button fx:id="terminalTabButton"  styleClass="terminal-tab-btn" text="Terminal" onAction="#handleTabSwitch"/>
+        <Button fx:id="functionTabButton"  styleClass="function-tab-btn" text="File View"/>
     </HBox>
     <StackPane fx:id="functionPaneContentArea" styleClass="function-pane-content-area" VBox.vgrow="ALWAYS">
     </StackPane>

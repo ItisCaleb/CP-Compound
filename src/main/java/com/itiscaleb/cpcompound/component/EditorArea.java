@@ -4,7 +4,8 @@ import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.controller.EditorController;
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
-import com.itiscaleb.cpcompound.editor.SemanticHighlighter;
+import com.itiscaleb.cpcompound.highlighter.DiagnosticHighlighter;
+import com.itiscaleb.cpcompound.highlighter.SemanticHighlighter;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -23,8 +24,8 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.event.MouseOverTextEvent;
+import org.fxmisc.richtext.model.PlainTextChange;
 import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.fxmisc.richtext.model.TwoDimensional;
 
 import java.nio.file.Path;
@@ -52,6 +53,7 @@ public class EditorArea extends CodeArea {
         this.context = context;
         this.insertText(0, context.getCode());
         initEditorTextArea();
+        CPCompound.getLSPProxy(context).semanticTokens(context);
         requestHighlight();
     }
 
@@ -73,6 +75,7 @@ public class EditorArea extends CodeArea {
             LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
             // request to change
             proxy.didChange(context);
+            proxy.semanticTokens(context);
 
             // request for completion request
             int paragraph = this.getCurrentParagraph();
@@ -94,7 +97,9 @@ public class EditorArea extends CodeArea {
     void initUtility(){
         this.setParagraphGraphicFactory(LineNumberFactory.get(this));
         final Pattern whiteSpace = Pattern.compile("^\\s+");
-        this.addEventHandler(KeyEvent.KEY_PRESSED, KE -> {
+        this.addEventFilter(KeyEvent.KEY_PRESSED, KE -> {
+            int caretPosition = this.getAnchor();
+
             // save code
             if (saveCombination.match(KE)) {
                 Path lastPath = context.getPath();
@@ -106,48 +111,27 @@ public class EditorArea extends CodeArea {
 
             // auto-indent
             if (KE.getCode() == KeyCode.ENTER) {
-                if(KE.isShiftDown()){
-                    // we need to prepend \n ourself
-                    int caretPosition = this.getAnchor();
-                    int currentParagraph = this.getCurrentParagraph();
-                    Matcher m0 = whiteSpace.matcher(this.getParagraph(currentParagraph).getSegments().get(0));
-                    if(m0.find()){
-                        Platform.runLater(() -> this.insertText(caretPosition, "\n"+m0.group()));
-                    }else {
-                        this.insertText(caretPosition, "\n");
-                    }
+                // we need to prepend \n ourself
+                int currentParagraph = this.getCurrentParagraph();
+                Matcher m0 = whiteSpace.matcher(this.getParagraph(currentParagraph).getSegments().get(0));
+                if(m0.find()){
+                    this.insertText(caretPosition, "\n"+m0.group());
                 }else {
-                    // the editor will prepend \n for us first
-                    int caretPosition = this.getAnchor();
-                    // allow shift-enter
-
-                    int currentParagraph = this.getCurrentParagraph();
-                    Matcher m0 = whiteSpace.matcher(this.getParagraph(currentParagraph - 1).getSegments().get(0));
-                    if (m0.find()) {
-                        Platform.runLater(() -> this.insertText(caretPosition, m0.group()));
-                    }
+                    this.insertText(caretPosition, "\n");
                 }
+                KE.consume();
+            }
+
+            if (KE.getCode() == KeyCode.BACK_SPACE) {
+                int currentParagraph = this.getCurrentParagraph();
+                if(currentParagraph == 0) return;
             }
 
             // replace tab to four space
             if (KE.getCode() == KeyCode.TAB) {
-                int caretPosition = this.getCaretPosition();
-                this.replaceText(caretPosition - 1, caretPosition, "    ");
+                this.insertText(caretPosition, "    ");
+                KE.consume();
             }
-
-//            // auto complete bracket
-//            int caretPosition = this.getAnchor() - 1;
-//            String right = "";
-//            switch (KE.getText()) {
-//                case "[" -> right = "]";
-//                case "(" -> right = ")";
-//            }
-//            if(!right.isEmpty()){
-//                String finalRight = right;
-//                Platform.runLater(()->{
-//                    this.insertText(caretPosition + 1, finalRight);
-//                });
-//            }
         });
 
         // hide completion menu when caret moved
@@ -156,23 +140,31 @@ public class EditorArea extends CodeArea {
                 completionMenu.hide();
             }
         });
+
+        // Reference: https://github.com/FXMisc/RichTextFX/issues/771
+        this.multiPlainChanges().subscribe((List<PlainTextChange> changeList)->{
+            String inserted = changeList.get(0).getInserted();
+            int position = this.getCaretPosition();
+            int paragraph = this.getCurrentParagraph();
+            switch (inserted){
+                case "[": this.insertText(position, "]"); break;
+                case "{": this.insertText(position, "}"); break;
+                case "(": this.insertText(position, ")"); break;
+            }
+        });
     }
 
     private void requestHighlight(){
         Editor editor = CPCompound.getEditor();
         EditorContext context = editor.getCurrentContext();
-        LSPProxy proxy = CPCompound.getLSPProxy(context.getLang());
-        this.diagnosticSpans = computeDiagnostic(this, context.getDiagnostics());
+        this.diagnosticSpans = DiagnosticHighlighter.computeHighlighting(this, context.getDiagnostics());
 
-        this.semanticSpans = SemanticHighlighter.computeHighlighting(this, proxy.semanticTokens(context));
+        this.semanticSpans = SemanticHighlighter.computeHighlighting(this, context.getSemanticTokens());
         // highlight
         this.highlightSpans = editor.computeHighlighting(context);
-        refreshSpans();
-    }
-
-    private void refreshSpans(){
         EditorStyler.setSpans(this, highlightSpans, diagnosticSpans, semanticSpans);
     }
+
 
     int rangeToPosition(StyleClassedTextArea area, org.eclipse.lsp4j.Position p) {
         return area.getAbsolutePosition(p.getLine(), p.getCharacter());
@@ -228,7 +220,9 @@ public class EditorArea extends CodeArea {
             Range range = (Range) item.getUserData();
             int from = rangeToPosition(this, range.getStart());
             int to = rangeToPosition(this, range.getEnd());
-            this.replaceText(from, to, text);
+            if(!text.equals(getText(from, to))) {
+                this.replaceText(from, to, text);
+            }
         });
 
         completionMenu.getStyleClass().add("completion-menu");
@@ -264,36 +258,6 @@ public class EditorArea extends CodeArea {
 
         // listen for completion change
         context.getCompletionList().addListener(listener);
-    }
-
-    // Reference:
-    // https://github.com/FXMisc/RichTextFX/blob/master/richtextfx-demos/src/main/java/org/fxmisc/richtext/demo/SpellCheckingDemo.java
-    // for compute diagnostic style
-    public StyleSpans<Collection<String>> computeDiagnostic(StyleClassedTextArea area, List<Diagnostic> diagnostics) {
-        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-        int last = 0;
-        if(diagnostics == null) return null;
-        for (Diagnostic diagnostic : diagnostics) {
-            // convert line and character to index
-            Range range = diagnostic.getRange();
-            int from = rangeToPosition(area, range.getStart());
-            int to = rangeToPosition(area, range.getEnd());
-            int len = from - last;
-            if(len < 0) continue;
-            spansBuilder.add(Collections.emptyList(), len);
-            last = to;
-            switch (diagnostic.getSeverity()) {
-                case Error:
-                    spansBuilder.add(Collections.singleton("underlined-red"), to - from);
-                    break;
-                case Warning:
-                case Information:
-                    spansBuilder.add(Collections.singleton("underlined-yellow"), to - from);
-                    break;
-            }
-        }
-        spansBuilder.add(Collections.emptyList(), area.getLength() - last);
-        return spansBuilder.create();
     }
 
 }
