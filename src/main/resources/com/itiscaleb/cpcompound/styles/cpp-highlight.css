@@ -18,30 +18,4 @@
     -fx-font-weight: bold;
 }
 
-.cpp-semicolon{
-    -fx-font-weight: bold;
-}
 
-.cpp-paren {
-    -fx-fill: #756AB6 !important;
-    -fx-font-weight: bold;
-}
-.cpp-bracket {
-    -fx-fill: #756AB6 !important;
-    -fx-font-weight: bold;
-}
-.cpp-brace {
-    -fx-fill: #756AB6 !important;
-    -fx-font-weight: bold;
-}
-.cpp-string {
-    -fx-fill: #98C379 !important;
-}
-
-.cpp-comment {
-    -fx-fill: cadetblue !important;
-}
-
-.cpp-number {
-    -fx-fill: #ff9d56 !important;
-}

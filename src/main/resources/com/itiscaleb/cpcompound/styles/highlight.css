@@ -1,0 +1,27 @@
+.semicolon{
+    -fx-font-weight: bold;
+}
+
+.paren {
+    -fx-fill: #756AB6 !important;
+    -fx-font-weight: bold;
+}
+.bracket {
+    -fx-fill: #756AB6 !important;
+    -fx-font-weight: bold;
+}
+.brace {
+    -fx-fill: #756AB6 !important;
+    -fx-font-weight: bold;
+}
+.string {
+    -fx-fill: #98C379 !important;
+}
+
+.comment {
+    -fx-fill: cadetblue !important;
+}
+
+.number {
+    -fx-fill: #ff9d56 !important;
+}

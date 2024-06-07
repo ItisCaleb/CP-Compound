@@ -100,6 +100,7 @@ public class CPCompound extends Application {
         proxies.put(Language.CPP, clang);
         proxies.put(Language.C, clang);
         LSPProxy mock = new LSPProxy("");
+        proxies.put(Language.JSON, mock);
         proxies.put(Language.Python, mock);
         proxies.put(Language.None, mock);
         ServerCapabilities capabilities = clang.start();

@@ -63,13 +63,13 @@ public class CHighlighter extends Highlighter {
                     new Pair<>("TYPE", "cpp-type-keyword"),
                     new Pair<>("MODIFIER", "cpp-modifier-keyword"),
                     new Pair<>("PREPROCESSOR", "cpp-preprocessor-keyword"),
-                    new Pair<>("PAREN", "cpp-paren"),
-                    new Pair<>("BRACE", "cpp-brace"),
-                    new Pair<>("BRACKET", "cpp-bracket"),
-                    new Pair<>("SEMICOLON", "cpp-semicolon"),
-                    new Pair<>("STRING", "cpp-string"),
-                    new Pair<>("COMMENT", "cpp-comment"),
-                    new Pair<>("NUMBER", "cpp-number"))
+                    new Pair<>("PAREN", "paren"),
+                    new Pair<>("BRACE", "brace"),
+                    new Pair<>("BRACKET", "bracket"),
+                    new Pair<>("SEMICOLON", "semicolon"),
+                    new Pair<>("STRING", "string"),
+                    new Pair<>("COMMENT", "comment"),
+                    new Pair<>("NUMBER", "number"))
     );
 
     public CHighlighter(){

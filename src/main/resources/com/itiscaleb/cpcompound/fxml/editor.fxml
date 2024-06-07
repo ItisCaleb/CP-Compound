@@ -14,6 +14,8 @@
         <URL value="@../styles/editor-main-style.css" />
         <URL value="@../styles/editor-scroll-bar.css" />
         <URL value="@../styles/editor-code-area-style.css" />
+
+        <URL value="@../styles/highlight.css" />
         <URL value="@../styles/cpp-highlight.css" />
         <URL value="@../styles/python-highlight.css" />
         <URL value="@../styles/semantic-highlight.css" />

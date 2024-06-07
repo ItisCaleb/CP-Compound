@@ -83,8 +83,7 @@ public class EditorContext {
     public List<SemanticToken> getSemanticTokens(){
         return switch (this.getLang()){
             case CPP, C-> CPPSemanticToken.fromIntList(this.semantics);
-            case Python -> new ArrayList<>();
-            case None -> new ArrayList<>();
+            default -> new ArrayList<>();
         };
     }
 
@@ -119,6 +118,8 @@ public class EditorContext {
             this.lang = Language.C;
         }else if (p.endsWith(".py")){
             this.lang = Language.Python;
+        }else if (p.endsWith(".json")){
+            this.lang = Language.JSON;
         }else this.lang = Language.None;
     }
 

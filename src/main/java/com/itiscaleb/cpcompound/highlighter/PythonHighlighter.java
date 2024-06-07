@@ -36,12 +36,12 @@ public class PythonHighlighter extends Highlighter {
     private static final List<Pair<String,String>> GROUP = new ArrayList<>(
             Arrays.asList(
                     new Pair<>("KEYWORD", "py-keyword"),
-                    new Pair<>("PAREN", "py-paren"),
-                    new Pair<>("BRACE", "py-brace"),
-                    new Pair<>("BRACKET", "py-bracket"),
-                    new Pair<>("STRING", "py-string"),
-                    new Pair<>("COMMENT", "py-comment"),
-                    new Pair<>("NUMBER", "py-number"))
+                    new Pair<>("PAREN", "paren"),
+                    new Pair<>("BRACE", "brace"),
+                    new Pair<>("BRACKET", "bracket"),
+                    new Pair<>("STRING", "string"),
+                    new Pair<>("COMMENT", "comment"),
+                    new Pair<>("NUMBER", "number"))
     );
 
     public PythonHighlighter(){

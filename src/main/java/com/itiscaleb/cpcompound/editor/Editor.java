@@ -41,6 +41,7 @@ public class Editor {
         highlighters.put(Language.CPP, new CppHighlighter());
         highlighters.put(Language.C, new CHighlighter());
         highlighters.put(Language.Python, new PythonHighlighter());
+        highlighters.put(Language.JSON, new JSONHighlighter());
         highlighters.put(Language.None, new NoneHighlighter());
     }
 
