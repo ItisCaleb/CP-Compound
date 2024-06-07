@@ -37,6 +37,7 @@ public class InitController {
             });
         });
         Config config = CPCompound.getConfig();
+        CPCompound.getLogger().info("Start downloading...");
         if(!config.lang_server_downloaded) downloadClangd();
         else if(!config.gcc_downloaded) downloadGCC();
     }

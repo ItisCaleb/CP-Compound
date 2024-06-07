@@ -45,19 +45,20 @@ public class CPCompound extends Application {
         config.save();
         CPCompound.primaryStage = primaryStage;
         CPCompound.primaryStage.initStyle(StageStyle.DECORATED);
+        primaryStage.setOnCloseRequest((event)->{
+            for (var proxy: proxies.values()){
+                proxy.stop();
+            }
+            if(editor != null) editor.stopExecute();
+            System.exit(0);
+        });
         if(!config.lang_server_downloaded || !config.gcc_downloaded){
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/init.fxml"));
             primaryStage.setScene(new Scene(fxmlLoader.load(), 800, 600));
         }else {
             setIDEStage();
         }
-        primaryStage.setOnCloseRequest((event)->{
-            for (var proxy: proxies.values()){
-                proxy.stop();
-            }
-            editor.stopExecute();
-            System.exit(0);
-        });
+
         primaryStage.setTitle("CP Compound");
         primaryStage.show();
     }
