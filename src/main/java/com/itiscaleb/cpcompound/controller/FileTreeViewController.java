@@ -10,6 +10,8 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class FileTreeViewController {
     static FileTreeViewController instance;
@@ -59,6 +61,7 @@ public class FileTreeViewController {
     private void loadChildItems(TreeItem<File> item, File dir) {
         File[] files = dir.listFiles();
         if (files != null) {
+            Arrays.sort(files, Comparator.comparing(File::isFile).thenComparing(File::getName));
             for (File f : files) {
                 TreeItem<File> childItem = new TreeItem<>(f);
                 if (f.isDirectory()) {
