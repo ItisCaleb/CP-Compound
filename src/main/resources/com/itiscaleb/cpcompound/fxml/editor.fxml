@@ -15,10 +15,12 @@
         <URL value="@../styles/editor-scroll-bar.css" />
         <URL value="@../styles/editor-code-area-style.css" />
 
-        <URL value="@../styles/highlight.css" />
-        <URL value="@../styles/cpp-highlight.css" />
-        <URL value="@../styles/python-highlight.css" />
-        <URL value="@../styles/semantic-highlight.css" />
+
+        <URL value="@../styles/highlight/highlight.css" />
+        <URL value="@../styles/highlight/cpp-highlight.css" />
+        <URL value="@../styles/highlight/python-highlight.css" />
+        <URL value="@../styles/highlight/json-highlight.css" />
+        <URL value="@../styles/highlight/semantic-highlight.css" />
     </stylesheets>
 </TabPane>
 
