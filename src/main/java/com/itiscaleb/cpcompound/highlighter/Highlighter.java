@@ -1,4 +1,4 @@
-package com.itiscaleb.cpcompound.editor;
+package com.itiscaleb.cpcompound.highlighter;
 
 import javafx.util.Pair;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -11,6 +11,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class Highlighter {
+    protected static final String PAREN_PATTERN = "\\(|\\)";
+    protected static final String BRACE_PATTERN = "\\{|\\}";
+    protected static final String BRACKET_PATTERN = "\\[|\\]";
+    protected static final String SEMICOLON_PATTERN = "\\;";
+    protected static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
+    protected static final String NUMBER_PATTERN = "\\b-?(?:0|[1-9]\\d*)(?:\\.\\d+)?";
+
     Pattern pattern;
     List<Pair<String, String>> group;
 

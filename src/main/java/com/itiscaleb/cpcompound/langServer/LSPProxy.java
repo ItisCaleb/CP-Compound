@@ -2,7 +2,7 @@ package com.itiscaleb.cpcompound.langServer;
 
 import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.editor.EditorContext;
-import com.itiscaleb.cpcompound.langServer.c.CPPSemanticToken;
+import com.itiscaleb.cpcompound.langServer.cpp.CPPSemanticToken;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.eclipse.lsp4j.launch.LSPLauncher;
@@ -11,6 +11,7 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class LSPProxy {
@@ -169,9 +170,9 @@ public class LSPProxy {
         }
     }
 
-    public List<SemanticToken> semanticTokens(EditorContext context){
+    public void semanticTokens(EditorContext context){
         if(launcher == null){
-            return null;
+            return;
         }
         SemanticTokensParams params = new SemanticTokensParams();
         params.setTextDocument(new VersionedTextDocumentIdentifier(
@@ -184,13 +185,11 @@ public class LSPProxy {
 
         try {
             var tokens = future.get();
-            return CPPSemanticToken.fromIntList(tokens.getData());
+            context.setSemantics(tokens.getData());
         }catch (InterruptedException | ExecutionException e){
             CPCompound.getLogger().error("Error occurred", e);
-            return null;
         }
     }
-
 
     public void stop() {
         if(launcher == null){

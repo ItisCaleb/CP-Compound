@@ -3,7 +3,8 @@ package com.itiscaleb.cpcompound.editor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.itiscaleb.cpcompound.CPCompound;
-import com.itiscaleb.cpcompound.langServer.c.CompileCommand;
+import com.itiscaleb.cpcompound.highlighter.*;
+import com.itiscaleb.cpcompound.langServer.cpp.CompileCommand;
 import com.itiscaleb.cpcompound.langServer.LSPProxy;
 import com.itiscaleb.cpcompound.langServer.Language;
 import com.itiscaleb.cpcompound.utils.APPData;
@@ -12,11 +13,7 @@ import com.itiscaleb.cpcompound.utils.SysInfo;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.util.Pair;
-import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.Diagnostic;
 import org.fxmisc.richtext.model.StyleSpans;
 
 import java.io.IOException;
@@ -44,6 +41,7 @@ public class Editor {
         highlighters.put(Language.CPP, new CppHighlighter());
         highlighters.put(Language.C, new CHighlighter());
         highlighters.put(Language.Python, new PythonHighlighter());
+        highlighters.put(Language.JSON, new JSONHighlighter());
         highlighters.put(Language.None, new NoneHighlighter());
     }
 

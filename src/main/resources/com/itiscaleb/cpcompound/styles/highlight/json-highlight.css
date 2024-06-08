@@ -1,0 +1,9 @@
+.json-key{
+    -fx-fill: #d878e1 !important;
+    -fx-font-weight: bold;
+}
+
+.json-keyword{
+    -fx-fill: #5C88C4 !important;
+    -fx-font-weight: bold;
+}

@@ -1,4 +1,4 @@
-package com.itiscaleb.cpcompound.langServer.c;
+package com.itiscaleb.cpcompound.langServer.cpp;
 
 import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.editor.EditorContext;

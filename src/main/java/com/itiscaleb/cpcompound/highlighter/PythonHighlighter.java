@@ -1,4 +1,4 @@
-package com.itiscaleb.cpcompound.editor;
+package com.itiscaleb.cpcompound.highlighter;
 
 import javafx.util.Pair;
 
@@ -17,15 +17,12 @@ public class PythonHighlighter extends Highlighter {
             "yield"
     };
 
-
-
     private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
-    private static final String PAREN_PATTERN = "\\(|\\)";
-    private static final String BRACE_PATTERN = "\\{|\\}";
-    private static final String BRACKET_PATTERN = "\\[|\\]";
-    private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\""+ "|" +"'([^'\\\\]|\\\\.)*'";;
-    private static final String COMMENT_PATTERN = "#[^\n]*" + "|" + "'''\\*(.|\\R)*?\\*'''"   // for whole text processing (text blocks)
-            + "|" + "/\\*[^\\v]*" + "|" + "^\\h*\\*([^\\v]*|/)";  // for visible paragraph processing (line by line)
+    private static final String STRING_PATTERN = Highlighter.STRING_PATTERN + "|" +"'([^'\\\\]|\\\\.)*'";;
+    private static final String COMMENT_PATTERN = "#[^\n]*" + "|" + "'''(.|\\R)*?'''"   // for whole text processing (text blocks)
+            + "|" + "\"\"\"(.|\\R)*?\"\"\"";  // for visible paragraph processing (line by line)
+    private static final String NUMBER_PATTERN = Highlighter.NUMBER_PATTERN + "\\b|" +
+            "\\b-?0x[\\da-fA-F]+\\b" + "|" + "\\b-?0b[01]+\\b" + "|" + "\\b-?0o\\d+\\b";;
 
     private static final Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
@@ -34,18 +31,20 @@ public class PythonHighlighter extends Highlighter {
                     + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
                     + "|(?<STRING>" + STRING_PATTERN + ")"
                     + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
+                    + "|(?<NUMBER>" + NUMBER_PATTERN + ")"
     );
     private static final List<Pair<String,String>> GROUP = new ArrayList<>(
             Arrays.asList(
                     new Pair<>("KEYWORD", "py-keyword"),
-                    new Pair<>("PAREN", "py-paren"),
-                    new Pair<>("BRACE", "py-brace"),
-                    new Pair<>("BRACKET", "py-bracket"),
-                    new Pair<>("STRING", "py-string"),
-                    new Pair<>("COMMENT", "py-comment"))
+                    new Pair<>("PAREN", "paren"),
+                    new Pair<>("BRACE", "brace"),
+                    new Pair<>("BRACKET", "bracket"),
+                    new Pair<>("STRING", "string"),
+                    new Pair<>("COMMENT", "comment"),
+                    new Pair<>("NUMBER", "number"))
     );
 
-    PythonHighlighter(){
+    public PythonHighlighter(){
         this.pattern = PATTERN;
         this.group = GROUP;
     }

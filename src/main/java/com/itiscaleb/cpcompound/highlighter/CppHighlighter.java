@@ -1,4 +1,4 @@
-package com.itiscaleb.cpcompound.editor;
+package com.itiscaleb.cpcompound.highlighter;
 
 import javafx.util.Pair;
 
@@ -42,13 +42,10 @@ public class CppHighlighter extends Highlighter {
     private static final String TYPE_KEYWORD_PATTERN = "\\b(" + String.join("|", TYPE_KEYWORDS) + ")\\b";
     private static final String MODIFIER_KEYWORD_PATTERN = "\\b(" + String.join("|", MODIFIER_KEYWORDS) + ")\\b";
     private static final String PREPROCESSOR_KEYWORD_PATTERN = "#\\s*(" + String.join("|", PREPROCESSOR_KEYWORDS) + ")\\b";
-    private static final String PAREN_PATTERN = "\\(|\\)";
-    private static final String BRACE_PATTERN = "\\{|\\}";
-    private static final String BRACKET_PATTERN = "\\[|\\]";
-    private static final String SEMICOLON_PATTERN = "\\;";
-    private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
     private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/"   // for whole text processing (text blocks)
             + "|" + "/\\*[^\\v]*" + "|" + "^\\h*\\*([^\\v]*|/)";  // for visible paragraph processing (line by line)
+    private static final String NUMBER_PATTERN = Highlighter.NUMBER_PATTERN + "(?:[eE][+-]?\\d+)?[fF]?\\b"
+            + "|" + "\\b-?0x[\\da-fA-F]+\\b" + "|" + "\\b-?0b[01]+\\b";
 
     private static final Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
@@ -61,6 +58,7 @@ public class CppHighlighter extends Highlighter {
                     + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
                     + "|(?<STRING>" + STRING_PATTERN + ")"
                     + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
+                    + "|(?<NUMBER>" + NUMBER_PATTERN + ")"
     );
     private static final List<Pair<String,String>> GROUP = new ArrayList<>(
             Arrays.asList(
@@ -68,15 +66,16 @@ public class CppHighlighter extends Highlighter {
                     new Pair<>("TYPE", "cpp-type-keyword"),
                     new Pair<>("MODIFIER", "cpp-modifier-keyword"),
                     new Pair<>("PREPROCESSOR", "cpp-preprocessor-keyword"),
-                    new Pair<>("PAREN", "cpp-paren"),
-                    new Pair<>("BRACE", "cpp-brace"),
-                    new Pair<>("BRACKET", "cpp-bracket"),
-                    new Pair<>("SEMICOLON", "cpp-semicolon"),
-                    new Pair<>("STRING", "cpp-string"),
-                    new Pair<>("COMMENT", "cpp-comment"))
+                    new Pair<>("PAREN", "paren"),
+                    new Pair<>("BRACE", "brace"),
+                    new Pair<>("BRACKET", "bracket"),
+                    new Pair<>("SEMICOLON", "semicolon"),
+                    new Pair<>("STRING", "string"),
+                    new Pair<>("COMMENT", "comment"),
+                    new Pair<>("NUMBER", "number"))
     );
 
-    CppHighlighter(){
+    public CppHighlighter(){
         this.pattern = PATTERN;
         this.group = GROUP;
     }

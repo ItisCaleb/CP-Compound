@@ -3,6 +3,8 @@ package com.itiscaleb.cpcompound.editor;
 import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.langServer.Language;
 import com.itiscaleb.cpcompound.fileSystem.FileManager;
+import com.itiscaleb.cpcompound.langServer.SemanticToken;
+import com.itiscaleb.cpcompound.langServer.cpp.CPPSemanticToken;
 import com.itiscaleb.cpcompound.utils.SysInfo;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -11,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.SemanticTokensEdit;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -27,7 +30,8 @@ public class EditorContext {
     private boolean isTemp;
     private final BooleanProperty changed = new SimpleBooleanProperty(false);
 
-    private final ObservableList<CompletionItem> completions = FXCollections.observableArrayList();;
+    private final ObservableList<CompletionItem> completions = FXCollections.observableArrayList();
+    private List<Integer> semantics = new ArrayList<>();
 
     private List<Diagnostic> diagnostics = new ArrayList<>();
     EditorContext(Path path, Language lang, String code, boolean isTemp) {
@@ -70,6 +74,23 @@ public class EditorContext {
         return completions;
     }
 
+    public void setSemantics(List<Integer> semantics){
+        if(semantics != null){
+            this.semantics = semantics;
+        }
+    }
+
+    public List<SemanticToken> getSemanticTokens(){
+        return switch (this.getLang()){
+            case CPP, C-> CPPSemanticToken.fromIntList(this.semantics);
+            default -> new ArrayList<>();
+        };
+    }
+
+    public void editSemantics(List<SemanticTokensEdit> edits){
+
+    }
+
 
     public void setCode(String code){
         this.code = code;
@@ -97,6 +118,8 @@ public class EditorContext {
             this.lang = Language.C;
         }else if (p.endsWith(".py")){
             this.lang = Language.Python;
+        }else if (p.endsWith(".json")){
+            this.lang = Language.JSON;
         }else this.lang = Language.None;
     }
 

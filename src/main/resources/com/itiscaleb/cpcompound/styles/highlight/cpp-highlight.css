@@ -1,0 +1,21 @@
+.cpp-keyword{
+    -fx-fill: #EE99C2 !important;
+    -fx-font-weight: bold;
+}
+
+.cpp-type-keyword{
+    -fx-fill: #5C88C4 !important;
+    -fx-font-weight: bold;
+}
+
+.cpp-modifier-keyword{
+    -fx-fill: #cd8cff !important;
+    -fx-font-weight: bold;
+}
+
+.cpp-preprocessor-keyword{
+    -fx-fill: #d878e1 !important;
+    -fx-font-weight: bold;
+}
+
+
