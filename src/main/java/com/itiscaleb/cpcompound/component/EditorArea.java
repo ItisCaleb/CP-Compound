@@ -31,6 +31,7 @@ import org.fxmisc.richtext.model.TwoDimensional;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,7 +54,9 @@ public class EditorArea extends CodeArea {
         this.context = context;
         this.insertText(0, context.getCode());
         initEditorTextArea();
-        CPCompound.getLSPProxy(context).semanticTokens(context);
+        CompletableFuture.runAsync(()->{
+            CPCompound.getLSPProxy(context).semanticTokens(context);
+        }).whenComplete((result, throwable)-> Platform.runLater(this::requestHighlight));
         requestHighlight();
     }
 

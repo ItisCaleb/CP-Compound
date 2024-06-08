@@ -11,6 +11,7 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class LSPProxy {
@@ -189,7 +190,6 @@ public class LSPProxy {
             CPCompound.getLogger().error("Error occurred", e);
         }
     }
-
 
     public void stop() {
         if(launcher == null){
