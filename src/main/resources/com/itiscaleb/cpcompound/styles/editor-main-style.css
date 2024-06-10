@@ -26,6 +26,10 @@ TextArea{
     -fx-padding: 5;
 }
 
+.editor-popup .content{
+    -fx-background-color: black;
+}
+
 
 /*---------------------------------------------------SplitPane樣式------------------------------------------------------*/
 

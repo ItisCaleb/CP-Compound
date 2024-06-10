@@ -1,6 +1,7 @@
 package com.itiscaleb.cpcompound.langServer;
 
 import com.itiscaleb.cpcompound.CPCompound;
+import com.itiscaleb.cpcompound.controller.BaseController;
 import com.itiscaleb.cpcompound.editor.Editor;
 import com.itiscaleb.cpcompound.editor.EditorContext;
 import org.eclipse.lsp4j.*;
@@ -29,6 +30,7 @@ public class LSPClient implements LanguageClient {
     @Override
     public void showMessage(MessageParams messageParams) {
         CPCompound.getLogger().info(messageParams.getMessage());
+        BaseController.getInstance().showMessageToUser(messageParams.getMessage());
     }
 
     @Override

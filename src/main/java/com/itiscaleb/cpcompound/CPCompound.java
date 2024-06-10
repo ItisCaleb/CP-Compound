@@ -140,14 +140,6 @@ public class CPCompound extends Application {
         return editor;
     }
 
-    public static Stage getStage(){
-        return primaryStage;
-    }
-
-    public static BaseController getBaseController(){
-        return baseController;
-    }
-
     public static void main(String[] args) {
         launch();
     }

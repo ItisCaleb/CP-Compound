@@ -136,6 +136,7 @@ public class FileTreeViewController {
                 File file = selectedItem.getValue();
                 if (file.isDirectory()) return;
                 EditorController.getInstance().addNewFile(file);
+                BaseController.getInstance().showMessageToUser("Opened file: \"" + file.getPath() + "\"");
             }
         }
     }

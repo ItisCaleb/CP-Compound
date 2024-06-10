@@ -10,8 +10,12 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.PopupWindow;
+import javafx.stage.Window;
 
 public class BaseController {
+
+    static BaseController instance;
 
     @FXML
     AnchorPane appBase;
@@ -20,7 +24,7 @@ public class BaseController {
     SplitPane mainSplitPane, rightSplitPane;
 
     @FXML
-    EditorPopup messagePopup = new EditorPopup();
+    EditorPopup messagePopup;
 
 
     private void loadToolBar(){
@@ -89,17 +93,26 @@ public class BaseController {
 
     @FXML
     public void initialize() {
+            instance = this;
+            this.messagePopup = new EditorPopup(4);
+            this.messagePopup.setAutoHide(true);
+            this.messagePopup.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_BOTTOM_RIGHT);
             loadToolBar();
             loadMenuBar();
             loadFunctionPane();
             loadRightPane();
-            System.out.println(rightSplitPane.getItems());
             CPCompound.getLogger().info("initialize App Base");
+    }
+
+    public static BaseController getInstance() {
+        return instance;
     }
 
     public void showMessageToUser(String str){
         messagePopup.setText(str);
-        messagePopup.show(appBase, appBase.getBoundsInLocal().getWidth() - 50, appBase.getHeight() - 30);
+        Window window = appBase.getScene().getWindow();
+        messagePopup.show(appBase, window.getX() + window.getWidth() - 5,
+                window.getY() + window.getHeight() - 10);
     }
 
 
