@@ -94,7 +94,7 @@ public class BaseController {
     @FXML
     public void initialize() {
             instance = this;
-            this.messagePopup =  new EditorPopup(4);
+            this.messagePopup = new EditorPopup(4);
             this.messagePopup.setAutoHide(true);
             this.messagePopup.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_BOTTOM_RIGHT);
             loadToolBar();
@@ -111,7 +111,7 @@ public class BaseController {
     public void showMessageToUser(String str){
         messagePopup.setText(str);
         Window window = appBase.getScene().getWindow();
-        messagePopup.show(window, window.getX() + window.getWidth() - 5,
+        messagePopup.show(appBase, window.getX() + window.getWidth() - 5,
                 window.getY() + window.getHeight() - 10);
     }
 
