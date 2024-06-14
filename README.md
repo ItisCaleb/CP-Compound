@@ -9,15 +9,15 @@ Currently, the release version 1.0 includes basic file management, a checker, an
 https://www.youtube.com/watch?v=cLIo_OX1ZXA&t=1s
 ## Preview GIFs
 <details>
-<summary>Buttons</summary>
+<summary>Template</summary>
 <br>
-<img src="https://hackmd.io/_uploads/BkIy7y5r0.gif" alt="Buttons" border="0">
+<img src="https://hackmd.io/_uploads/BkIy7y5r0.gif" alt="Template" border="0">
 </details>
 <p></p>
 
 <details>
-<summary>Buttons</summary>
+<summary>Checker</summary>
 <br>
-<img src="https://hackmd.io/_uploads/ry7GBycrR.gif" alt="Buttons" border="0">
+<img src="https://hackmd.io/_uploads/ry7GBycrR.gif" alt="Checker" border="0">
 </details>
 <p></p>
