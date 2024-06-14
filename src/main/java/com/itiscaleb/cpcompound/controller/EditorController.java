@@ -1,6 +1,7 @@
 package com.itiscaleb.cpcompound.controller;
 
 import java.io.File;
+import java.nio.charset.MalformedInputException;
 import java.nio.file.Path;
 
 import com.itiscaleb.cpcompound.CPCompound;
@@ -63,6 +64,11 @@ public class EditorController {
                 }
             }
             newTab(key);
+            BaseController.getInstance().showMessageToUser("Opened file: \"" + file.getPath() + "\"");
+        }catch (MalformedInputException e){
+            CPCompound.getLogger().error("Input Error occurred", e);
+            BaseController.getInstance()
+                    .showMessageToUser(String.format("Can't open file \"%s\": not a valid utf-8 file", file.toPath()));
         }catch (Exception e){
             CPCompound.getLogger().error("Error occurred", e);
         }

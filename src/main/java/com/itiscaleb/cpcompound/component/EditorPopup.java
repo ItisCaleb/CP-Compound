@@ -24,7 +24,7 @@ public class EditorPopup extends Popup {
 
 
     public EditorPopup() {
-        this(1);
+        this(0.5);
     }
 
 
