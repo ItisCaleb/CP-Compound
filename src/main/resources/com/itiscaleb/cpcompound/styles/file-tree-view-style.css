@@ -29,6 +29,15 @@
     -fx-text-fill: #dddfe3;
     -fx-font-size: 15;
     -fx-label-padding: 2 0 0 15;
+    /*-fx-border-color: red;*/
+}
+.tree-cell-dummy {
+    -fx-max-height: 0;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    visibility: hidden;
+    -fx-font-size: 15;
+    /*-fx-border-color: blue;*/
 }
 
 .open-folder-tooltip{

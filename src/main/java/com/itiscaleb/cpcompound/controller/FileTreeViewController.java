@@ -2,7 +2,12 @@ package com.itiscaleb.cpcompound.controller;
 
 import com.itiscaleb.cpcompound.CPCompound;
 import com.itiscaleb.cpcompound.component.FileTreeCell;
+import com.itiscaleb.cpcompound.utils.Config;
+import com.itiscaleb.cpcompound.utils.FileChangeHandler;
+import com.itiscaleb.cpcompound.utils.FileWatcherService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
@@ -10,10 +15,13 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Objects;
 
-public class FileTreeViewController {
+public class FileTreeViewController implements FileChangeHandler {
     static FileTreeViewController instance;
     @FXML
     private TreeView<File> fileTreeView;
@@ -23,11 +31,13 @@ public class FileTreeViewController {
     private Button openFolderButton;
     @FXML
     private Tooltip openFolderTooltip,expandCollapseTooltip;
+    private FileWatcherService fileWatcherService;
+    public File selectedDirectory;
     @FXML
     private void handleOpenFolder() throws IOException {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Folder");
-        File selectedDirectory = directoryChooser.showDialog(fileTreeView.getScene().getWindow());
+        selectedDirectory = directoryChooser.showDialog(fileTreeView.getScene().getWindow());
         if (selectedDirectory != null) {
             loadDirectoryIntoTreeView(selectedDirectory);
             CPCompound.getConfig().last_open_directory = selectedDirectory.getCanonicalPath();
@@ -75,7 +85,7 @@ public class FileTreeViewController {
 
     private void setupLazyLoad(TreeItem<File> item, File dir) {
         item.expandedProperty().addListener((obs, wasExpanded, isNowExpanded) -> {
-            if (isNowExpanded && item.getChildren().size() == 1 && "Loading...".equals(item.getChildren().get(0).getValue().getPath())) {
+            if (isNowExpanded && item.getChildren().size() == 1 && "Loading...".equals(item.getChildren().get(0).getValue().getName())) {
                 item.getChildren().clear();
                 loadChildItems(item, dir);
             }
@@ -147,6 +157,140 @@ public class FileTreeViewController {
         setTooltipsDelay();
         setTreeItemListener();
         fileTreeView.setCellFactory(tv -> new FileTreeCell());
+        System.out.println(CPCompound.getConfig().last_open_directory);
+        Path path = Paths.get(CPCompound.getConfig().last_open_directory);
+        System.out.println("last_open_directory: " + path);
+
+        if(CPCompound.getConfig().last_open_directory != null) {
+            try {
+                fileWatcherService = new FileWatcherService(path);
+                fileWatcherService.registerHandler(this);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
         CPCompound.getLogger().info("FileTreeViewController initialize");
     }
+
+
+    @Override
+    public void onFileCreated(Path path) {
+        CPCompound.getLogger().info("FileTreeViewController register onFileCreated, path: " + path);
+        Platform.runLater(() -> {
+            File file = path.toFile();
+
+            TreeItem<File> parentItem = findTreeItem(fileTreeView.getRoot(), file.getParentFile());
+            System.out.println("parentItem:"+parentItem.getValue());
+            for(TreeItem<File> childItem : parentItem.getChildren()) {
+                if(childItem.getValue().getName().equals(file.getName())) {
+                    System.out.println("replace: "+childItem.getValue());
+                    file = childItem.getValue();
+                }
+            }
+
+            System.out.println("getRoot: " + fileTreeView.getRoot().getValue());
+            if (parentItem != null && !containsChild(parentItem, file)) {
+                System.out.println("find :"+file.getPath());
+                TreeItem<File> newItem = new TreeItem<>(file);
+                System.out.println("created file: " + file.getName()+" "+" "+file.isDirectory());
+                if (file.isDirectory()) {
+                    System.out.println("isDirectory");
+//                    newItem.;
+                    newItem.getChildren().add(new TreeItem<>(new File("Loading...")));
+                }
+//                else {
+                    parentItem.getChildren().add(newItem);
+//                }
+//                parentItem.setExpanded(true);
+            }
+        });
+    }
+
+    @Override
+    public void onFileDeleted(Path path) {
+        CPCompound.getLogger().info("FileTreeViewController register onFileDeleted, path: " + path);
+        Platform.runLater(() -> {
+            File file = path.toFile();
+            TreeItem<File> itemToDelete = findTreeItem(fileTreeView.getRoot(),file);
+            System.out.println("itemToDelete:"+itemToDelete.getValue());
+            if (itemToDelete.getParent() != null) {
+                System.out.println("delete:"+file.getPath());
+                deleteRecursive(itemToDelete);
+            }
+        });
+    }
+    private boolean deleteRecursive(TreeItem<File> item) {
+        if (!item.isLeaf()) {
+            for (TreeItem<File> child : Objects.requireNonNull(item.getChildren())) {
+                deleteRecursive(child);
+            }
+        }
+        return item.getParent().getChildren().remove(item);
+    }
+
+    @Override
+    public void onFileModified(Path path) {
+        CPCompound.getLogger().info("FileTreeViewController register onFileModified, path: " + path);
+        Platform.runLater(() -> {
+            File file = path.toFile();
+            System.out.println("getRoot: " + fileTreeView.getRoot().getValue());
+            TreeItem<File> modifiedItem = findTreeItem(fileTreeView.getRoot(), file);
+            if (modifiedItem != null) {
+                System.out.println("modifiedItem:"+modifiedItem.getValue());
+//                modifiedItem.getParent().getChildren().remove(modifiedItem);
+
+//                modifiedItem.setValue(null);  // Trigger update
+                modifiedItem.setValue(file);
+            }
+        });
+    }
+
+    private TreeItem<File> findTreeItem(TreeItem<File> current, File target) {
+//        System.out.println("findTreeItem current: "+current.getValue()+" target: "+target);
+
+//        if (current.getValue().getName().equals(target.getName())) {
+//            System.out.println("findTreeItem found");
+//            return current;
+//        }
+        if(current.getValue().getName().equals("Loading...")){
+            return current;
+        }
+        if (current.getValue().equals(target)) {
+//            System.out.println("findTreeItem found");
+            return current;
+        }
+//        System.out.println("childs: ");
+//        for (TreeItem<File> child : current.getChildren()) {
+//            System.out.print(child.getValue().getName()+" ");
+//        }
+//        System.out.println();
+        TreeItem<File> result=null;
+        for (TreeItem<File> child : current.getChildren()) {
+
+//            if(!child.isLeaf()) {
+//                TreeItem<File> result = findTreeItem(child, target);
+//                if (child.getValue().equals(target)){
+//                    System.out.println("findTreeItem found: "+child.getValue().getName());
+//                    return child;
+//                }
+           result = findTreeItem(child, target);
+            if (result.getValue().equals(target)) {
+//                System.out.println("findTreeItem found: "+child.getValue());
+                return result;
+            }
+//            }else if(child.getValue().getName().equals(target.getName())) {
+//                return child;
+//            }
+        }
+
+        return current;
+    }
+
+    private boolean containsChild(TreeItem<File> parentItem, File childFile) {
+        return parentItem.getChildren().stream().anyMatch(item -> item.getValue().equals(childFile));
+    }
+
 }
