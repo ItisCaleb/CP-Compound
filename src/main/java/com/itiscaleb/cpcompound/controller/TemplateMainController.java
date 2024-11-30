@@ -475,7 +475,6 @@ public class TemplateMainController {
         Path filePaht = APPData.resolve("Code Template/"+categoryName+"/"+item.getFileName());
         File openFile = filePaht.toFile();
         EditorController.getInstance().addNewFile(openFile);
-        System.out.println("Open "+openFile.getName());
     }
 
     private void handleRemoveItem(TemplateItem item,String categoryName,VBox itemInfo) {
